@@ -1,0 +1,22 @@
+.permit_table table {
+    text-align: center;
+}
+
+.p-field {
+    display: grid;
+}
+
+.tabs-perms {
+    display: flex;
+    align-items: center;
+}
+
+.tabs-perms span {
+    margin-left: 4px;
+    position: relative;
+    bottom: 1px;
+}
+
+.permit_table table tr td {
+    border: 1px solid #e8e8f7;
+}

@@ -1,0 +1,103 @@
+.row.customer-row.ng-star-inserted {
+    max-width: 100%;
+    background: #f3f3f3;
+    margin-top: 30px;
+    padding: 30 px;
+}
+
+.col-lg-12.text-align {
+    text-align: end;
+}
+
+.row.customer-row {
+    margin: 0;
+    border: 1px solid;
+    border-radius: 2px;
+}
+
+.row.customer-row.disp-only {
+    position: relative;
+}
+
+.btn.btn-primary.btn-icon-text.btn-float.ng-star-inserted {
+    width: fit-content;
+    position: fixed;
+    right: 35 px;
+    z-index: 1;
+    top: 50 px;
+    right: 35px;
+    top: 50px;
+}
+
+.for-input {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.styling-input {
+    padding: 0.2rem 0.2rem;
+}
+
+.row.customer-row.disp-only .set-texts {
+    font-weight: bold;
+}
+
+.row.customer-row.disp-only .droparrow {
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.tabs ul {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 10px 0 0 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.tabs ul li {
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    margin: 0 0px;
+    color: #495057;
+    font-weight: 500;
+    border-radius: 0px;
+    min-width: 125px;
+    border-bottom: 1px solid transparent;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+
+.tabs ul li.active {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #e9ecef;
+    border-bottom: transparent;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.tab-content .p-datatable.p-datatable-gridlines .p-datatable-header {
+    border-top: none!important;
+}
+
+.tab-content {
+    border: 1px solid #e9ecef;
+    border-top: none;
+}
+
+.p-dialog .p-dialog-content {
+    padding: 5px !important;
+}
+::ng-deep .p-field .p-dropdown-label.p-inputtext.p-placeholder {
+    margin: 0 !important;
+    line-height: 18px !important;
+}
+::ng-deep .p-field .p-dropdown {
+    min-height: 35px !important;
+    line-height: 40px;
+}

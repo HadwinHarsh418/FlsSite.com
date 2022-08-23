@@ -1,0 +1,372 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Categories</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Inventory Queue</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'Inventory Queue'"></app-users-with-permissions>
+
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" (change)="updateActionButtons()" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Inventory Queue are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-responsive calender-class">
+                    <div class="tabs">
+                        <ul>
+                            <li (click)="changeTab(1)" class="new-result" [class.active]="currentTab == 1">New Request</li>
+                            <li (click)="changeTab(2)" class="reviewed" [class.active]="currentTab == 2">Reviewed</li>
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt [columns]="cols" [value]="inventoryQueues" dataKey="id" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [loading]="loading" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true" 
+                                [globalFilterFields]="['itemNo','qty','oneTimeCont','custLoc','endUser','customer','comments']">
+                                <ng-template pTemplate="caption">
+                                    <div class="table-header">
+                                        <span class="p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input pInputText type="text" style="padding-left: 30px !important;"
+                                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                placeholder="Global Search" />
+                                        </span>
+                                        <span class="checkClass">
+                                            <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                            <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                                filters'}}</label>
+                                        </span>
+                                        <div class="d-flex" *ngIf="currentTab == 1">
+                                            <div class="justify-content-center">
+                                                <button *ngIf="actions.canAdd" type="button" class="btn btn-primary  btn-icon-text" style="margin-right: 5px;" (click)="openNew()">
+                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.col-desc]="col.field === 'description'" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                                {{col.header}}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <ng-container *ngFor="let col of columns">
+                                        <col *ngIf="!col.hidden">
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden">
+                                                <!-- {{rowData[col.field]}}
+    
+                                                <span *ngSwitchCase="'customer'" >
+                                                    <a *ngIf="rowData[col.field]" href="javascript:void(0);" (click)="viewProject(rowData)">{{ rowData[col.field] }}</a>
+                                                </span> -->
+                                                <div [ngSwitch]="col.field">
+                                                    <span *ngSwitchCase="'customer'">
+                                                        <a *ngIf="rowData[col.field]" href="javascript:void(0);" (click)="viewProject(rowData)">{{ rowData[col.field] }}</a>
+                                                    </span>
+                                                    <span *ngSwitchDefault>
+                                                        {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                            (rowData[col.field] | currency:'USD') :
+                                                            rowData[col.field] | decimalNumber : col.field }}
+                                                    </span>
+                                                </div>
+                                                <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(rowData)"></button>
+                                                <!-- <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button> -->
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center;">No records found.</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" header="Inventory Queue" [modal]="true" styleClass="p-fluid" class="set-height">
+
+    <div class="w-100  text-right">
+        <div class="justify-content-center">
+            <button *ngIf="actions.canAdd" type="button" class="btn btn-primary btn-icon-text btn-float" (click)="addnewCutomer()">
+         Add New Customer
+                </button>
+        </div>
+    </div>
+    <ng-template pTemplate="content">
+        <div class="row customer-row p-2 my-2" *ngFor="let editObj of editableObject">
+            <div class="col-lg-12 text-align">
+                <i class="fa fa-remove" aria-hidden="true" (click)="deleteCustomer(editObj)"></i>
+            </div>
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts">Customer</label>
+                    <input type="text" class="for-input" pInputText id="customer" [(ngModel)]="editObj.customer" required />
+                    <small class="p-invalid " *ngIf="submitted && !editObj.customer">Customer is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="p-field ">
+                    <label for="name" class="set-texts setPopuView"> Customer Location</label>
+                    <p-dropdown appendTo="body" class="for-input" [options]="locationOptions" [(ngModel)]="editObj.selcustLoc" placeholder="---Select Loc---" optionLabel="label" [showClear]="false"></p-dropdown>
+                    <!-- <input type="text" pInputText id="custLoc" [(ngModel)]="editObj.custLoc" required /> -->
+                    <small class="p-invalid" *ngIf="submitted && !editObj.selcustLoc.value">Customer Location is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts setPopuView">One Time/Cont. </label>
+                    <p-dropdown appendTo="body" class="for-input" [options]="statusOption" [(ngModel)]="editObj.seloneTimeCont" placeholder="---Select Status---" optionLabel="label" [showClear]="false"></p-dropdown>
+                    <!-- <input type="text" pInputText id="oneTimeCont" [(ngModel)]="editObj.oneTimeCont" required /> -->
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editObj.oneTimeCont">OneTimeCont is
+                        required.</small> -->
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts">User</label>
+                    <input type="text" class="for-input" pInputText id="endUser" [(ngModel)]="editObj.endUser" required />
+
+                </div>
+            </div>
+
+
+
+            <div class="w-100  text-right">
+                <div class="justify-content-center">
+                    <button *ngIf="actions.canAdd" type="button" class="btn btn-primary  btn-icon-text" style="margin-top: 10px;margin-bottom: -14px;margin-right: 6px;" (click)="addNewRow(editObj)">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> </button>
+                </div>
+            </div>
+            <div class="table-responsive calender-class mt-3">
+                <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                    <p-table #dt [columns]="cols1" [value]="editObj.items">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <th [class.comment-st]="col.field === 'comments'">
+                                        {{col.header}}
+                                    </th>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                            <ng-container *ngFor="let col of columns">
+                                <col *ngIf="!col.hidden">
+                            </ng-container>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                            <tr [pReorderableRow]="index">
+                                <ng-container *ngFor="let col of columns; let ls = last">
+                                    <td class="padded-td ui-resizable-column" *ngIf="!col.hidden">
+
+                                        <div [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'itemNo'">
+                                                <input type="text" (keyup.enter)="addNewRow(editObj)" pInputText class="styling-input"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'qty'">
+                                                <input type="text" (keyup.enter)="addNewRow(editObj)" inputDirective inptype="number" pInputText class="styling-input"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'comments'" class="w-100 d-flex align-items-center ">
+                                                <input type="text" (keyup.enter)="addNewRow(editObj)" pInputText class="styling-input"
+                                                   [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'feedback'" class="w-100 d-flex align-items-center ">
+                                                <input type="text" (keyup.enter)="addNewRow(editObj)" pInputText class="styling-input"
+                                                   [(ngModel)]="rowData[col.field]" />
+                                                <i class="fa fa-remove ml-2" (click)="deleteRow(editObj,rowData)"                        
+                                                    aria-hidden="true"></i>
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                    (rowData[col.field] | currency:'USD') :
+                                                    rowData[col.field] | decimalNumber : col.field }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3" style="text-align: center; background-color:#f3f3f3;">No records found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Submit" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openProject" [style]="{width: '800px'}" header="Customer Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+
+        <div class="row disp-only customer-row p-2 my-4" *ngFor="let items of itemQueue; let i = index">
+            <i class="droparrow fa fa-chevron-{{items.display ? 'up' : 'down'}}" aria-hidden="true" (click)="displayitems(items)"></i>
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts">Customer</label><br> {{items.customer}}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="p-field ">
+                    <label for="name" class="set-texts"> Customer Location</label><br> {{items.custLoc}}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts">One Time/Cont. </label><br> {{items.oneTimeCont}}
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="p-field">
+                    <label for="name" class="set-texts">User</label><br> {{items.endUser}}
+                </div>
+            </div>
+
+            <div class="table-responsive calender-class mt-3" *ngIf="items.display">
+                <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                    <p-table #dt [columns]="cols1" [value]="items.items">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <th [class.comment-st]="col.field === 'comments'">
+                                        {{col.header}}
+                                    </th>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="colgroup" let-columns>
+                            <ng-container *ngFor="let col of columns">
+                                <col *ngIf="!col.hidden">
+                            </ng-container>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                            <tr [pReorderableRow]="index">
+                                <ng-container *ngFor="let col of columns">
+                                    <td class="padded-td ui-resizable-column" *ngIf="!col.hidden">
+
+                                        <div [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'itemNo'">
+                                               
+                                                    {{rowData.itemNo}}
+                                            </span>
+                                            <span *ngSwitchCase="'qty'">                                       
+                                                    {{rowData.qty}}
+                                            </span>
+                                            <span *ngSwitchCase="'comments'" class="w-100 d-flex align-items-center ">                                              
+                                               {{rowData.comments}}
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                    (rowData[col.field] | currency:'USD') :
+                                                    rowData[col.field] | decimalNumber : col.field }}
+                                            </span>
+                                        </div>
+                                        <!-- <button pButton pRipple icon="pi pi-pencil"
+                                            *ngIf="actions.canEdit && col.field === 'Action' && actionBtn"
+                                            class="p-button-rounded p-button-success p-mr-2"
+                                            (click)="editProduct(rowData)"></button>
+                                        <button pButton pRipple icon="pi pi-trash"
+                                            *ngIf="actions.canDelete && col.field === 'Action' && actionBtn"
+                                            class="p-button-rounded p-button-warning"
+                                            (click)="deleteProduct(rowData)"></button> -->
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3" style="text-align: center; background-color:#f3f3f3;">No records found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+
+        </div>
+
+
+    </ng-template>
+</p-dialog>
+
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

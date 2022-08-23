@@ -1,0 +1,35 @@
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+    border-color: #dc3545 !important;
+}
+
+.upload-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 56px;
+    margin: auto;
+}
+
+.col-md-6.flx-center {
+    display: inline-flex;
+    align-items: center;
+}
+
+input[type="submit"]:disabled {
+    background: grey;
+    border-color: grey !important;
+}
+.settings.mtb15 .container-fluid {
+    background: #fff !important;
+    padding-left: 15px !important;
+    min-height: 100vh;
+}
+.settings.mtb15 .card-body {
+    color: #000 !important;
+}
+.settings.mtb15 .card {
+    background-color: #ffffffbf;
+}
+.mtb15 {
+    margin-bottom: 0;
+}

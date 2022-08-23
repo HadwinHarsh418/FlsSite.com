@@ -1,0 +1,205 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm ">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">CLP</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Sales Report Details
+                        </li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'Sales'"></app-users-with-permissions>
+                    </div>
+                </div>
+
+                <p-toolbar class="full-1 ">
+                    <ng-template pTemplate="left">
+                        <div class=" mr">
+                            <!-- <select matNativeControl class="txt sel search-text" name="" [(ngModel)]="selectFilter">
+                               
+                                <option value="" class="txt">Contains</option>
+                                <option value="or" class="txt">Or</option>
+                                <option value="and" class="txt">And</option>
+                            </select> -->
+                        </div>
+                        <p-multiSelect [options]="years" class="search-text mr" [style]="{'maxWidth':'130px','minWidth':'130px'}" [(ngModel)]="selectedYears" defaultLabel="---Select Year--" optionLabel="year"></p-multiSelect>
+                        <p-multiSelect [options]="months" class="search-text mr" [style]="{'maxWidth':'130px','minWidth':'130px'}" [(ngModel)]="selectedMonths" defaultLabel="---Select month ---" optionLabel="name">
+                        </p-multiSelect>
+                        <input type="text" pInputText class="search-text mr" placeholder="PO Number" [(ngModel)]="searchPoNo" (keyup.enter)="newSearch()" />
+                        <!-- <input type="text" pInputText class="search-text mr" placeholder="Order No" [(ngModel)]="searchOrder" (keyup.enter)="newSearch()" /> -->
+                        <input type="text" pInputText class="search-text mr" placeholder=" Customer" [(ngModel)]="searchCust" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder=" Cust Id" [(ngModel)]="searchCustNo" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder=" Item No" [(ngModel)]="searchItemNo" (keyup.enter)="newSearch()" />
+
+                        <button pButton type="button" label=" " class="p-button-success mr" (click)="newSearch()">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button pButton type="button" label=" " class="p-button-primary mr" (click)="clearNew()">
+                            <i class="fa fa-close" aria-hidden="true"></i>
+                        </button>
+                    </ng-template>
+
+
+                </p-toolbar>
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper ">
+                        <p-table #dt [value]="cpls" [columns]="selectedColumns" dataKey="id" [rowHover]="true" [autoLayout]="true" [showCurrentPageReport]="true" [reorderableColumns]="true" [rowsPerPageOptions]="[ 50, 100, 200, 500]" [resizableColumns]="true" responsiveLayout="scroll"
+                            columnResizeMode="expand" [totalRecords]="totalRecords" [scrollable]="true" [scrollHeight]="'calc(100vh - 404px)'" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" (onColReorder)="saveReorderedColumns($event)"
+                            [paginator]="false" [lazy]="true" (onLazyLoad)="newSearch($event)" [loading]="loading" [globalFilterFields]="['itemNo','po','vdCode','um','itemDesc','prd','shipId','notes','qty','gwCtn','gw','fty','etd','cntrNo','cbmCtn','cost','extCost','cbm']">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex table-header">
+                                    <div class="one-ooo">
+                                        <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text"style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                        <span class="p-input-icon-left defaltCol">
+                                        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" appendTo="body"
+                                            optionLabel="header" selectedItemsLabel="{0} col selected"
+                                            (onChange)="onChange($event)" placeholder="Choose Columns"></p-multiSelect>
+                                    </span>
+                                        <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide filters'}}</label>
+                                    </span>
+
+                                        <span class="checkClass">
+                                        <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                            (click)="openDefaultCol()">
+                                            <i class="fa fa-columns" aria-hidden="true"></i></button>
+                                    </span>
+                                    </div>
+                                    <app-export-buttons 
+                                (exportExcel)="getExcel('xlsx')"
+                                (exportCsv)="getExcel('csv')"
+                                (exportPdf)="getExcel('pdf')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                                [loadPdfFile]="loadPdfFile"
+                            ></app-export-buttons>
+                                
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <ng-container *ngFor="let col of columns">
+                                        <col *ngIf="col.isDisplay">
+                                    </ng-container>
+                                </colgroup>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th *ngIf="col.isDisplay" pResizableColumn pReorderableColumn [pSortableColumn]="col.field" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index" [ngClass]="rowData.isSplit ? 'blue' : ''">
+                                    <!-- <tr [pReorderableRow]="index" [ngClass]="rowData.isParent ? '' : 'blue'"> -->
+                                    <ng-container *ngFor="let col of columns">
+                                        <td *ngIf="col.isDisplay" class="ui-resizable-column" [class.col-textsale]="col.field === 'caseQty'"  [class.col-textsales]="col.field === 'year'">
+                                            <div [ngSwitch]="col.field">
+                                                <span *ngSwitchCase="'poLine'">
+                                                    <input type="text" pInputText class="split-class"
+                                                        [(ngModel)]="rowData[col.field]" />
+                                                </span>
+
+                                                <span *ngSwitchDefault>
+                                                    {{ col.data ? (rowData[col.field] | date : col.format)  :  rowData[col.field] }}
+                                                </span>
+                                            </div>
+                                            <!-- <ng-template #ngElse_noPhotoUrl>
+                                                {{ col.data ? (rowData[col.field] | date : col.format) : rowData[col.field] }}
+                                                {{rowData[col.field]}}
+                                            </ng-template> -->
+
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+
+
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="footer" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th>
+                                            <span *ngIf="col.field == 'extCost'"><b>{{totalAmount |
+                                                    currency:'USD'}}</b></span>
+                                            <span *ngIf="col.field == 'cbm'"><b>{{totalCbm | number : '1.2-2'}}</b></span>
+                                        </th>
+                                    </ng-container>
+
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center;">No items found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+                <app-pagination  [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+<p-dialog [(visible)]="defaultColumnsPop" [style]="{width: '1000px'}" header="Default Ordering" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div *ngFor="let cl of columnArr; let i = index" class="col-lg-3">
+                <div class="columnsHead">
+                    <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl.header}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDefaultDialog()" class="p-button-text" style=" color: #2196F3;"></button>
+        <button pButton pRipple label="Set default order" icon="pi pi-check" *ngIf="!loadingDefaultCol" (click)=" saveDefault()" class="p-button-text" style=" color: #2196F3;"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingDefaultCol" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

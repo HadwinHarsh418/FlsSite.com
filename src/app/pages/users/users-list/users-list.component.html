@@ -1,0 +1,309 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Users list</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Users</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'users'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit" style=" margin-top: 16px; ">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" class="custom-control-input" (change)="updateActionButtons()">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Users are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <!-- <br> -->
+                <div class="table-responsive calender-class user-table">
+
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                        <p-table #dt1 [columns]="cols" [value]="customers" dataKey="id" [rowHover]="true"  [showCurrentPageReport]="true" [scrollHeight]="'calc(100vh - 204px)'"  [loading]="loading" [paginator]="false" columnResizeMode="expand"
+                            [autoLayout]="true" [filterDelay]="500" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [resizableColumns]="true" responsiveLayout="scroll" [reorderableColumns]="true" [lazy]="true" [totalRecords]="totalRecords"
+                             (onLazyLoad)="getAllUsers($event)" [globalFilterFields]="['firstName','lastName','email','comment','company','phone']">
+
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide filters'}}</label>
+                                    </span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <ng-container *ngFor="let col of columns">
+                                    <col *ngIf="!col.hidden">
+                                </ng-container>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.emailCol]="col.field === 'email'" [class.twoFa]="col.field === 'isTwoFactAuth'" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && col.field != 'status' &&  hide " type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+
+                                            <p-columnFilter field="status" *ngIf="col.field == 'status' && hide" matchMode="equals" display="menu" class="p-ml-auto">
+                                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                    <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Any">
+                                                        <ng-template let-option pTemplate="item">
+                                                            <span [class]="'customer-badge status-' + option.value">{{option.label}}</span>
+                                                        </ng-template>
+                                                    </p-dropdown>
+                                                </ng-template>
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td class="ui-resizable-column" *ngIf="!col.hidden" [class.emailCol]="col.field === 'email'" [class.twoFa]="col.field === 'isTwoFactAuth'">
+                                            <div [ngSwitch]="col.field">
+                                                <span *ngSwitchCase="'status'">
+                                                    <span
+                                                        [class]="'customer-badge status-' + rowData.status">{{(rowData.status==1)?'Pending':(rowData.status==2)?'Approved':(rowData.status==3)?'Locked':'Terminated'}}</span>
+                                                </span>
+                                                <span *ngSwitchCase="'isTwoFactAuth'">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" id="GoogleAuth{{rowData.userId}}"
+                                                            [(ngModel)]="rowData[col.field]"
+                                                            class="custom-control-input"
+                                                            (change)="activate2Fa(rowData)">
+                                                        <label class="custom-control-label"
+                                                            for="GoogleAuth{{rowData.userId}}"></label>
+                                                    </div>
+                                                </span>
+                                                <span *ngSwitchDefault>
+                                                    {{ col.data ? (rowData[col.field] | date : col.format) :
+                                                    rowData[col.field] }}
+                                                </span>
+                                            </div>
+                                            <!-- <div *ngIf="col.field === 'status'; else ngElse_noPhotoUrl">
+                                                <span
+                                                    [class]="'customer-badge status-' + rowData.status">{{(rowData.status==1)?'Pending':(rowData.status==2)?'Approved':(rowData.status==3)?'Locked':'Terminated'}}</span>
+                                            </div> -->
+                                            <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && !rowData.isAdmin  && col.field === 'Action'" (click)="editProduct(rowData)" class="p-button-rounded p-button-success p-mr-2"></button>
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && !rowData.isAdmin && actionBtn && col.field === 'Action'" class="p-button-rounded p-button-danger" (click)="deleteProduct(rowData)"></button>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="9" style="text-align: center;">No Users found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" header="User Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">First Name</label>
+                    <input type="text" pInputText id="firstName" [(ngModel)]="editableObject.firstName" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.firstName">First name is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Last Name</label>
+                    <input type="text" pInputText id="lastName" [(ngModel)]="editableObject.lastName" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.lastName">Last name is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">E-mail</label>
+                    <input type="text" pInputText id="email" [disabled]="editableObject && editableObject.userId" [(ngModel)]="editableObject.email" required />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Phone</label>
+                    <input type="text" pInputText id="phone" [(ngModel)]="editableObject.phone" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Company</label>
+                    <input type="text" pInputText id="company" [(ngModel)]="editableObject.company" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Comment</label>
+                    <input type="text" pInputText id="comment" [(ngModel)]="editableObject.comment" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Status</label>
+                    <select pInputText id="color" [(ngModel)]="editableObject.status">
+                        <option [ngValue]="undefined" selected>---Select status---</option>
+                        <option *ngFor="let st of statuses" [ngValue]="st.value">
+                            {{st.label}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-6" *ngIf="actions.canAssgn">
+                <label for="name">Select Role</label>
+                <p-multiSelect appendTo="body" [options]="roles" [(ngModel)]="selectedRoles" defaultLabel="---Select roles---" optionLabel="roleName" display="chip"></p-multiSelect>
+            </div>
+            <!-- <div class="col-lg-6" *ngIf="actions.canAssgn">
+                <label for="name">Locations</label>
+                <select pInputText id="color" [(ngModel)]="editableObject.loc">
+                    <option [ngValue]="undefined" selected>---Select Location---</option>
+                    <option value="MW">MW</option>
+                    <option value="CA">CA</option>
+                </select>
+            </div> -->
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Locations</label>
+                    <select pInputText matNativeControl id="color" [disabled]="!canVew" name="" [(ngModel)]="editableObject.loc">
+                                                      
+                        <option  value="" selected class="txt">---Select Location---</option>
+                        <option value="MW" class="txt">MW</option>
+                        <option value="CA" class="txt">CA</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Department</label>
+                    <select pInputText id="color" [(ngModel)]="editableObject.department" [disabled]="!canVew" (change)="checkValue()">
+                        <option [ngValue]="undefined" selected>---Select Department---</option>
+                        <option *ngFor="let dt of deptList" [ngValue]="dt">
+                            {{dt.department}}</option>
+                    </select>
+                    <button *ngIf="canView" style="margin: -31px 0px 0px 454px" pButton pRipple icon="pi pi-plus" (click)="openDept()" class="p-button-rounded p-button-adding p-mr-2"></button>
+                </div>
+
+            </div>
+            <div class="col-lg-12">
+                <div>Permissions Assigned</div>
+                <div class="row">
+                    <div *ngFor="let pr of allPermission; let i = index" class="col-lg-3">
+                        <div class="columnsHead">
+                            <span style=" font-weight: 800; ">{{i+1}}.</span> {{pr}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Update" icon="pi pi-check" *ngIf="!itemLoading" (click)=" edit()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="deleteDialogue" [style]="{width: '500px'}" header="Delete confirmation" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="p-field">
+                <label for="name">Please enter <span style=" color: red; "><b>YES</b></span> to delete <span
+                        style=" color: #c9a168; "><b>{{items.firstName | titlecase}}</b></span> </label>
+                <input type="text" pInputText id="deleteText" maxlength="3" [(ngModel)]="deleteText" required />
+                <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.category">Type YES is
+                        required.</small> -->
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDeleteDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Delete" icon="pi pi-check" *ngIf="!itemLoading" (click)="finalDelete()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="addDepartment" [style]="{width: '500px'}" header="Department List" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="p-field" style="margin-top: 15px;">
+                    <label for="deptName"> Department</label>
+                    <input type="text" [(ngModel)]="deptName" name="deptName" required="true" />
+
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <button pButton label="Save" [disabled]="!deptName " (click)="addDept()" class="p-button-text action"></button>
+            </div>
+            <!-- <div class="col-lg-6">
+              
+                  <div class="columnsHead1" (click)="addDept()">
+                       {{actioName}} department
+                  </div>
+              </div> -->
+        </div>
+    </ng-template>
+    <p-table #dt2 [columns]="cols1" [value]="deptList" dataKey="id" [rowHover]="true" [rows]="4" [scrollable]="true" [scrollHeight]="'calc(100vh - 500px)'" [style]="{'margin':'5px'}" [showCurrentPageReport]="true" [loading]="loading" columnResizeMode="expand"
+        [autoLayout]="true" [filterDelay]="500" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" responsiveLayout="scroll" [totalRecords]="totalRecords" *ngIf="hideTable">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of cols1">
+                    {{col.header}}
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns1">
+            <tr style="height:30px">
+                <td *ngFor="let col of cols1">
+                    {{rowData[col.field]}}
+                </td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" (click)="editDept(rowData)" class="p-button-rounded p-button-succes p-mr-2"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteDept(rowData)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

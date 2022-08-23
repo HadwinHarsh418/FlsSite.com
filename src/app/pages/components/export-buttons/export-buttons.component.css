@@ -1,0 +1,9 @@
+::ng-deep app-export-buttons button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn {
+    color: #fff!important;
+    font-size: 18px!important;
+  }
+
+::ng-deep button.btn.clps-export {
+    height: 30px!important;
+    padding-top: 2px!important;
+}

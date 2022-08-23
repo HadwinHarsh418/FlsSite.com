@@ -1,0 +1,47 @@
+:host ::ng-deep .p-cell-editing {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+div#example2_wrapper {
+    display: block !important;
+}
+
+.chart-holder {
+    position: relative;
+    display: block;
+}
+
+.chart-holder.hide dx-chart {
+    position: absolute;
+    top: -100%;
+    visibility: hidden;
+    width: 100%;
+}
+
+.p-multiselect-label {
+    font-size: 10px!important;
+}
+
+.d-flex.right-side {
+    display: flex !important;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.p-toolbar-group-right {
+    width: 100%;
+}
+
+app-pivot .p-toolbar-group-right {
+    width: auto;
+}
+
+.d-flex.right-side button img {
+    max-width: 20px !important;
+}
+
+.d-flex.right-side button {
+    padding: 0 10px !important;
+    margin: 0 0 0 10px !important;
+}

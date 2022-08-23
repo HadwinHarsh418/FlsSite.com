@@ -1,0 +1,152 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">SHIPID TRACKER</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions
+                            *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')"
+                            [pageName]="'Price Inquiry'"></app-users-with-permissions>
+                    </div>
+                </div>
+                <div class="table-responsive calender-class">
+                    <div class="tabs">
+                        <ul>
+                            <li (click)="changeTab(1)" class="new-result" [class.active]="currentTab == 1">
+                                SHIPID-ALL
+                            </li>
+                            <li (click)="changeTab(2)" class="new-result" [class.active]="currentTab == 2">
+                                SHIPID
+                            </li>
+                            <li (click)="changeTab(3)" class="new-result" [class.active]="currentTab == 3">
+                                Booking
+                            </li>
+                            <li (click)="changeTab(4)" class="new-result" [class.active]="currentTab == 4">
+                                On The Water
+                            </li>
+                        </ul>
+                    </div>
+                    <div *ngIf="currentTab == 2">
+                        <ag-grid-angular
+                            class="ag-theme-alpine"
+                            [rowData]="dataSource"
+                            [columnDefs]="colDefTab2"
+                            (cellValueChanged)="checkStatus($event)"
+                        >
+                        </ag-grid-angular>
+                    </div>
+                    <div *ngIf="currentTab == 3">
+                        <ag-grid-angular
+                            class="ag-theme-alpine"
+                            [rowData]="dataSource"
+                            [columnDefs]="colDefTab3"
+                            (cellValueChanged)="checkStatus($event)"
+                        >
+                        </ag-grid-angular>
+                    </div>
+                    <div *ngIf="currentTab == 4">
+                        <ag-grid-angular
+                            class="ag-theme-alpine"
+                            [rowData]="dataSource"
+                            [columnDefs]="colDefTab4"
+                            (cellValueChanged)="checkStatus($event)"
+                        >
+                        </ag-grid-angular>
+                    </div>
+
+                    <div *ngIf="currentTab == 1">
+                      <ag-grid-angular
+                          class="ag-theme-alpine"
+                          [rowData]="dataSource"
+                          [columnDefs]="colDefTab1"
+                          (cellValueChanged)="checkStatus($event)"
+                      >
+                      </ag-grid-angular>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog #pdialog header="Generate New SHIPID" class="max-btn" [(visible)]="displayMaximizable" [modal]="true"
+    [style]="{ width: '65vw' }" [draggable]="true" [closable]="false" [resizable]="false" dismissableMask="false"
+    [maximizable]="false">
+
+    <div class="top-relative">
+        <p-button class="abs-bt" (click)="closeAndSave($event);"><span class="pi pi-times"
+                style="margin-left: 4px; margin-top: 4px;"></span></p-button>
+
+    </div>
+    <ng-template pTemplate="header">
+        <p-button class="ab" #maximize (click)="resetPosition()"><span class="pi pi-window-maximize"
+                style="margin-left: 4px;"></span></p-button>
+
+
+    </ng-template>
+
+    <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+        <p-table #dt [columns]="" [value]="">
+            <ng-template pTemplate="caption">
+                <div class="table-header">
+                </div>
+                <div class="p-d-flex table-header">
+                    <div class="one-ooo">
+                        <select matNativeControl class=" form-control" [(ngModel)]="selectLoc" (change)="changeDd()">
+                            <option value="" class="txt">Select LOC</option>
+                            <!-- <option value="Loc" class="txt">Loc</option> -->
+                            <option value="CA" class="txt">CA</option>
+                            <option value="NY" class="txt">NY</option>
+                            <option value="CAD" class="txt">CAD</option>
+                            <option value="NYD" class="txt">NYD</option>
+                            <option value="IT" class="txt">IT</option>
+                            <option value="CIT" class="txt">CIT</option>
+                        </select>
+                        <label for="name"
+                            style="color: #807f8d;font-size: 14px;margin-top: 15px !important;margin-left: 6px !important;">SHIPID</label>
+                        <input type="text" readonly id="shipId" placeholder="SHIPID" class="form-control"
+                            [(ngModel)]="shipId" />
+
+                    </div>
+                </div>
+            </ng-template>
+        </p-table>
+
+    </div>
+
+
+
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-check" label="Genrate SHIPID" styleClass="p-button-text" (click)="generateShipid()">
+        </p-button>
+    </ng-template>
+
+</p-dialog>
+
+<p-dialog [(visible)]="deleteDialogue" [style]="{width: '500px'}" header="Delete confirmation" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="p-field">
+                <label for="name">Please enter <span style=" color: red; "><b>YES</b></span> to delete <span
+                        style=" color: #c9a168; "> <b></b></span></label>
+                <input type="text" pInputText id="deleteText" maxlength="3" [(ngModel)]="deleteText" required />
+                <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.category">Type YES is
+                        required.</small> -->
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDeleteDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Delete" icon="pi pi-check" *ngIf="!itemLoading" (click)="finalDelete()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

@@ -1,0 +1,52 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="card">
+    <div class="card-body new-body">
+        <!-- <h5 class="card-title">Import data</h5> -->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Import data</li>
+        </ol>
+        <br>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="p-field p-col-12 p-md-3 ddimport">
+                    <label for="state">Select file for import</label>
+                    <p-dropdown inputId="state1" [options]="types" [(ngModel)]="selectedType" (onChange)="onChange($event)" placeholder="Select type" optionLabel="type"></p-dropdown>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-info" (click)="getExcel()" *ngIf="selectedType.type=='Item'" ngbTooltip="Please use file with .xlsx extension" placement="right">Download sample file for ITEMS
+                    <i class="fa fa-spinner fa-spin" *ngIf="loadExlFile" style=" color: white; margin-left: 5px; "
+                        aria-hidden="true"></i>
+                </button>
+                <button class="btn btn-info" (click)="downloadCsv()" *ngIf="selectedType.type=='CLP'" ngbTooltip="Please use file with .xlsx extension" placement="right">Download sample file CLP
+                    <!-- <i class="fa fa-spinner fa-spin" *ngIf="loadCLPExlFile" style=" color: white; margin-left: 5px; "
+                        aria-hidden="true"></i> -->
+                </button>
+                <button class="btn btn-info" (click)="downloadCsv()" *ngIf="selectedType.type=='FTY'" ngbTooltip="Please use file with .xlsx extension" placement="right">Download sample file FTY
+                    <!-- <i class="fa fa-spinner fa-spin" *ngIf="loadCLPExlFile" style=" color: white; margin-left: 5px; "
+                    aria-hidden="true"></i> -->
+                </button>
+                <button class="btn btn-info" (click)="downloadCsv()" *ngIf="selectedType.type=='Category'" ngbTooltip="Please use file with .xlsx extension" placement="right">Download sample file Category
+                    <!-- <i class="fa fa-spinner fa-spin" *ngIf="loadCLPExlFile" style=" color: white; margin-left: 5px; "
+                   aria-hidden="true"></i> -->
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div style="float: right;">
+                    <input type="file" id="fileUpload" accept=".xlsx" (change)="fileChange($event)" #file>
+                    <button class="btn btn-info" [disabled]="isLoading" (click)="uploadFile()">Upload
+                        <i class="fa fa-spinner fa-spin" *ngIf="isLoading" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-12" *ngIf="uploadStatus">
+                <div class="responseTxt">
+                    <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                    <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                    <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

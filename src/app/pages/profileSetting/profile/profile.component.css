@@ -1,0 +1,84 @@
+.card {
+    background: var(--surface-e);
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.cus-mb-profile label {
+    font-size: 16px;
+    margin: 0 0 5px 0;
+    font-weight: 500;
+}
+
+.cus-mb-profile {
+    margin: 0 0 15px 0;
+}
+
+.form-control.common-input-profile {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 10px;
+}
+
+.form-control.common-input-profile {
+    height: 50px;
+}
+
+.save-cancel {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.save-cancel li button {
+    padding: 0 20px;
+}
+
+.save-cancel li {
+    margin-left: 15px;
+}
+
+.invalid-feedback .green-color {
+    color: green;
+}
+
+.invalid-feedback.block i, .invalid-feedback.block p {
+    display: inline-block;
+}
+
+.invalid-feedback.block p {
+    margin-left: 5px;
+    font-family: "Roboto", sans-serif;
+    margin-bottom: 0;
+}
+
+.match-captcha .col-1 {
+    color: #cba269;
+    font-weight: 400;
+    line-height: 50px;
+    color: #cba269;
+}
+
+.password .common-fa {
+    position: absolute;
+    top: 44px !important;
+    right: 43px;
+}
+
+img.mr-3 {
+    width: max-content !important;
+    height: 91px;
+    border-radius: .357rem!important;
+}
+
+.loader_confirm {
+    background: #00000029;
+    width: 10%;
+    height: 29vh;
+    text-align: center;
+    position: absolute;
+}

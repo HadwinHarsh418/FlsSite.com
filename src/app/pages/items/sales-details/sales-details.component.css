@@ -1,0 +1,524 @@
+.d-flex.right-side {
+    display: flex !important;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.p-toolbar-group-right {
+    width: 100%;
+}
+
+.d-flex.right-side button img {
+    max-width: 17px !important;
+}
+
+.d-flex.right-side button {
+    padding: 0 7px !important;
+    margin: 5px 10px 5px 0px !important;
+    min-height: 30px;
+    line-height: 30px;
+}
+
+.under {
+    cursor: pointer !important;
+    text-decoration: underline !important;
+}
+
+.p-dialog {
+    display: block !important;
+}
+
+.p-dialog-header {
+    background: #210fe2e5 !important;
+    color: white !important;
+}
+
+.mr {
+    margin-left: 3px;
+}
+
+html body .calender-class .checkBoxlb {
+    font-size: 12px;
+}
+
+p-dropdown {
+    margin-right: 0.4rem;
+}
+
+.green {
+    background-color: #90ce90 !important;
+    color: #fff !important;
+}
+
+.red {
+    background-color: #cc7474 !important;
+    color: #fff !important;
+}
+
+.warning-cols {
+    color: #da4444;
+    font-weight: 500;
+}
+
+.columnsHead {
+    border: 1px solid grey;
+    border-radius: 13px;
+    padding: 5px;
+    font-weight: 500;
+    margin: 2px;
+}
+
+.checkClass {
+    margin-left: 0.1% !important;
+}
+
+span.checkClass {
+    margin-left: 5px !important;
+}
+
+@media screen and (max-width: 1024px) {
+    html body .p-d-flex.table-header .d-flex {
+        float: none !important;
+    }
+    span.p-input-icon-left.p-ml-auto,
+    span.p-input-icon-left.defaltCol,
+    span.checkClass {
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+    .p-d-flex.table-header {
+        display: block;
+    }
+    .p-d-flex.table-header {
+        display: block;
+    }
+}
+
+input.search-text {
+    width: 105px;
+}
+
+ng-tns-c141-3 p-inputtext p-component ng-star-inserted .search-text {
+    height: 32px;
+    width: 40px;
+}
+
+.confrimedViewdiv {
+    width: 70%;
+    float: left;
+    margin-left: 3%;
+}
+
+.clp-calender {
+    width: 24%;
+}
+
+.mr2 {
+    margin-left: 6px;
+}
+
+input#icon2 {
+    height: 32px !important;
+}
+
+.table th,
+.table td {
+    padding: 7px 30px;
+    line-height: 1.462;
+}
+
+.breadcrumb-item+.breadcrumb-item {
+    padding-left: 0.5rem;
+}
+
+.clearbtn {
+    width: -50px;
+    height: 30px;
+    padding: 0px 0px 427px -2px;
+    text-align: center;
+    justify-content: center;
+    margin-top: -1px;
+    margin-right: 6px;
+}
+
+.new-table-color table.p-datatable-scrollable-header-table thead tr th {
+    background: rgb(64, 63, 173) !important;
+}
+
+.txt {
+    color: #495057;
+    font-size: 15px;
+    padding-left: 2px;
+}
+
+.sel {
+    width: 88px;
+    height: 32px;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+}
+
+.mr3 {
+    margin-left: 10px;
+}
+
+.sel1 {
+    width: auto;
+    height: 32px;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+}
+
+:hover .sel {
+    border: 1px solid #ced4da;
+}
+
+.table thead th,
+.table thead td {
+    width: 100% !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    letter-spacing: .5px !important;
+    text-transform: capitalize !important;
+    border-bottom-width: 1px !important;
+    border-top-width: 0 !important;
+    padding: 7px 63px 8px 32px !important;
+    white-space: nowrap;
+}
+
+.p-datatable-wrapper table thead tr th {
+    background: rgb(64, 63, 173) !important;
+    color: white !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #403fad !important;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+    padding: 0 10px !important;
+}
+
+.pi-window-maximize:before {
+    content: "\e93b";
+    color: white !important;
+}
+
+.p-dialog-titlebar-icon {
+    width: 2rem;
+    height: 2rem;
+    color: #fff !important;
+    border: 0 none;
+    background: transparent;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    margin-right: 0.5rem;
+}
+
+.mr1 {
+    margin-left: 18px;
+}
+
+div#example_wrapper {
+    width: 99% !important;
+}
+
+.new-tb.table.table-bordered.table-striped tr th,
+.new-tb.table.table-bordered.table-striped tr td {
+    width: 33% !important;
+    max-width: 33% !important;
+}
+
+.new-tb1.table.table-bordered.table-striped tr th,
+.new-tb1.table.table-bordered.table-striped tr td {
+    width: 20% !important;
+    max-width: 20% !important;
+}
+
+.cal-inp-row .col {
+    padding: 0px 0px 0px 20px;
+}
+
+.cal-inp-row .col:last-child {
+    padding: 0px 15px 0px 0px;
+}
+
+button.p-button-rounded.p-button-warning.p-button.p-component.p-button-icon-only {
+    color: #ffffff;
+    background: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+
+.justify-content-center button.p-mr-2.p-button.p-component.p-button-icon-only {
+    margin: 3px;
+    height: 29px;
+    width: 9%;
+}
+
+img.student-photo {
+    height: 20px;
+    z-index: 10000;
+}
+
+.student-photo:hover {
+    transform: scale(8);
+    transform-origin: bottom;
+    z-index: 10000;
+}
+
+.student-photo:active {
+    transform: scale(8);
+    transform-origin: bottom;
+    z-index: 10000;
+}
+
+.ui-column-resizer {
+    display: block !important;
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    /* margin: 0; /
+    / width: .5em; */
+    width: 1px !important;
+    height: 100% !important;
+    padding: 1px !important;
+    cursor: col-resize !important;
+    border-left: 1px solid red !important;
+    border-right: 1px solid red !important;
+}
+
+.product-item .product-item-content {
+    border: 1px solid var(--surface-d);
+    border-radius: 3px;
+    margin: .3rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.product-item .product-image {
+    width: 50%;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+}
+
+.product-item-content img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.editImg {
+    object-fit: contain;
+    width: 150px;
+    height: auto;
+}
+
+.editableDiv li {
+    display: flex !important;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 0 10px 0;
+    padding: 1rem 1rem;
+}
+
+.editableDiv li button.p-button.p-component.p-button-icon-only {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+.close-me.overlay-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+th.p-sortable-column {
+    /* padding: 3px 3px !important; */
+    width: 154px;
+}
+
+.imgPopup {
+    font-weight: 600;
+    font-size: larger;
+    padding-top: 33px;
+    text-align: center;
+    width: 100%;
+    color: red;
+}
+
+.cus-width {
+    width: 20%;
+}
+
+.d-flex.new-fl {
+    float: none;
+}
+
+body.main-body.leftmenu.main-sidebar-hide .d-flex.new-fl {
+    float: right;
+}
+
+html body .calender-class .checkBoxlb {
+    font-size: 12px;
+}
+
+html body .table-header input.p-inputtext.p-component {
+    font-size: 12px !important;
+    padding-left: 28px;
+}
+
+html body input.p-inputtext.p-component {
+    max-width: 130px!important;
+}
+
+html body .calender-class .checkBoxlb {
+    font-size: 12px!important;
+}
+
+html body .p-multiselect-label {
+    font-size: 12px!important;
+}
+
+html body .p-multiselect.p-component {
+    min-width: auto !important;
+}
+
+html body .d-flex.new-fl {
+    float: right !important;
+}
+
+.p-d-flex.table-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.p-d-flex.table-header span.p-input-icon-left.p-ml-auto {
+    width: 125px !important;
+    margin-right: 15px !important;
+}
+
+.p-d-flex.table-header span.p-input-icon-left.p-ml-auto input.p-inputtext.p-component {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 0 0 0 25px;
+    height: 30px !important;
+}
+
+.p-d-flex.table-header span.p-input-icon-left.defaltCol {
+    width: 120px !important;
+}
+
+.p-d-flex.table-header span.p-input-icon-left.defaltCol p-multiselect.p-inputwrapper-filled,
+.p-d-flex.table-header span.p-input-icon-left.defaltCol .p-multiselect.p-component {
+    width: 100% !important;
+    min-width: auto !important;
+    font-size: 12px !important;
+}
+
+.p-d-flex.table-header span.checkClass label {
+    font-size: 12px !important;
+}
+
+.p-d-flex.table-header span.checkClass button.btn.btn-primary.my-2.btn-icon-text {
+    font-size: 12px !important;
+    padding: 0 10px;
+    height: 30px !important;
+    display: inline-block;
+    line-height: 28px !important;
+    min-height: auto;
+}
+
+html body .p-d-flex.table-header .p-multiselect.p-component {
+    min-width: unset !important;
+    width: 115px !important;
+    font-size: 12px;
+    padding: 3px 0;
+}
+
+.p-d-flex.table-header button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn img {
+    max-width: 15px;
+    position: relative;
+    bottom: 1px;
+}
+
+.p-d-flex.table-header button.btn.btn-primary.my-2.btn-icon-text {
+    min-height: auto !important;
+    height: 30px !important;
+    padding: 0 10px;
+}
+
+html body .p-d-flex.table-header .p-multiselect.p-component {
+    width: 115px;
+    font-size: 12px;
+    padding: 3px;
+}
+
+html body .p-d-flex.table-header .p-multiselect.p-component .p-multiselect-label {
+    padding: 0 0 0 5px;
+    height: 30px !important;
+    line-height: 30px !important;
+}
+
+.p-d-flex.table-header button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn {
+    padding: 0 10px;
+    height: 30px !important;
+    min-height: auto;
+    line-height: 30px !important;
+}
+
+.mr {
+    margin-left: 5px;
+}
+
+.p-component,
+.p-component * {
+    box-sizing: border-box;
+}
+
+.p-inputtext {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 15px;
+    color: #495057;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 3px;
+}
+
+.p-button {
+    color: #ffffff;
+    /* background: #2196F3;
+    border: 1px solid #2196F3; */
+    padding: 7px 1rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 3px;
+}
+
+.table-responsive.calender-class.new-table-color {
+    overflow-x: clip !important;
+}
+
+.res_table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+
+.restable {
+    overflow: auto;
+}
+
+@media(max-width:991px) {
+    .clp-calender {
+        width: 100%;
+    }
+}

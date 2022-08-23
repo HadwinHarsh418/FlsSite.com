@@ -1,0 +1,43 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="card">
+    <div class="card-body new-body">
+        <!-- <h5 class="card-title">Data-management</h5> -->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Import data</li>
+        </ol>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div style="float: right;">
+                    <button class="btn btn-info" [disabled]="isLoading" (click)="save()">Save
+                        <i class="fa fa-spinner fa-spin" *ngIf="isLoading" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="gettingMenus" style=" width: 100%; text-align: center; ">
+            <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+        </div>
+        <div *ngIf="movies.length>0 || watched.length>0">
+            <div cdkDropListGroup class="row">
+                <div class="col-md-6">
+                    <div class="example-container">
+                        <h3>All columns</h3>
+                        <div cdkDropList [cdkDropListData]="movies" class="example-list" (cdkDropListDropped)="drop($event)">
+                            <div class="example-box" *ngFor="let item of movies" cdkDrag>{{item}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="example-container">
+                        <h3>Selected columns</h3>
+                        <div cdkDropList [cdkDropListData]="watched" class="example-list" (cdkDropListDropped)="drop($event)">
+                            <div class="example-box" *ngFor="let item of watched" cdkDrag>{{item}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

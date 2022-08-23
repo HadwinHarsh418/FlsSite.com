@@ -1,0 +1,16 @@
+.responseTxt {
+    font-weight: 600;
+    font-size: medium;
+    padding-top: 33px;
+}
+.responseInserted {
+    color: #31d031;
+}
+
+.responseNot {
+    color: red;
+}
+
+.p-md-3 {
+    padding: 0 !important;
+}

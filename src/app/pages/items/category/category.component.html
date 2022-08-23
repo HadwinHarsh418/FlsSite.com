@@ -1,0 +1,243 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Categories</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Category</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'category'"></app-users-with-permissions>
+
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" (change)="updateActionButtons()" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="test-pp" *ngIf="actions.canUpload">{{hideUploadSec ? 'Hide' : 'Show'}} Upload section
+                        </p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canUpload">
+                            <input type="checkbox" id="GoogleAuth" [(ngModel)]="hideUploadSec" class="custom-control-input">
+                            <label class="custom-control-label" for="GoogleAuth"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Category are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <app-import-data *ngIf="hideUploadSec" [type]="'category'" (result)="handler($event)"></app-import-data>
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                        <!-- <p-table #dt [columns]="cols"
+                         [value]="categories"
+                          dataKey="id"
+                           [rowHover]="true" 
+                           [rows]="10"
+                            [showCurrentPageReport]="true"
+                            [loading]="loading" 
+                            [paginator]="true"
+                            [autoLayout]="true"
+                            [scrollable]="true"
+                            [scrollHeight]="'calc(100vh - 204px)'"
+                             [resizableColumns]="true" 
+                            styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers"
+                            [filterDelay]="500"
+
+                            [rowsPerPageOptions]="[10,25,50]" 
+                            [responsive]="true"
+                             [reorderableColumns]="true"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [globalFilterFields]="['category','sub_Category']"> -->
+
+                        <p-table #dt [columns]="cols" [value]="categories" dataKey="id" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [loading]="loading" [paginator]="true" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                            [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true" [rowsPerPageOptions]="[50,100,200,500]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [globalFilterFields]="['category','sub_Category']">
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                            filters'}}</label>
+                                    </span>
+                                    <div class="d-flex">
+                                        <div class="justify-content-center">
+                                            <button *ngIf="actions.canAdd" type="button" class="btn btn-primary  btn-icon-text" (click)="openNew()">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i> </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.col-desc]="col.field === 'description'" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <ng-container *ngFor="let col of columns">
+                                    <col *ngIf="!col.hidden">
+                                </ng-container>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td class="ui-resizable-column" *ngIf="!col.hidden">
+                                            {{rowData[col.field]}}
+                                            <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(rowData)"></button>
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <!-- <ng-template pTemplate="header">
+                                <tr>
+                                    <th pSortableColumn="category">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            <p-sortIcon field="catId"></p-sortIcon>
+                                            <p-columnFilter type="text" field="catId" *ngIf="hide" display="menu"
+                                                class="p-ml-auto">
+                                            </p-columnFilter>
+                                            Cat Id
+
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="category">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            <p-sortIcon field="category"></p-sortIcon>
+                                            <p-columnFilter type="text" field="category" *ngIf="hide" display="menu"
+                                                class="p-ml-auto">
+                                            </p-columnFilter>
+                                            Category
+
+                                        </div>
+                                    </th>
+                                 
+                                    <th *ngIf="actions.canEdit || actions.canDelete">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            Action
+                                        </div>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-cat>
+                                <tr class="p-selectable-row">
+
+                                    <td>
+                                        {{cat.catId}}
+                                    </td>
+                                    <td class="capitalize">
+                                        {{cat.category}}
+                                    </td>
+                                 
+                                    <td class="p-text-center" style=" display: flex; "
+                                        *ngIf="actions.canEdit || actions.canDelete">
+                                        <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && actionBtn"
+                                            (click)="editProduct(cat)"
+                                            class="p-button-rounded p-button-success p-mr-2"></button>
+                                        <button pButton pRipple icon="pi pi-trash"
+                                            *ngIf="actions.canDelete && actionBtn"
+                                            class="p-button-rounded p-button-danger"
+                                            (click)="deleteProduct(cat)"></button>
+                                    </td>
+                                </tr>
+                            </ng-template> -->
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="5" style="text-align: center;">No catgory found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- <app-pagination [totalPages]="paging.totalPages" [totalElements]="totalCat.length" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination> -->
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" header="Category Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Cat Id</label>
+                    <input type="text" pInputText id="catid" [(ngModel)]="editableObject.catId" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.catId">Cat Id is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Category</label>
+                    <input type="text" pInputText id="category" [(ngModel)]="editableObject.category" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.category">Category is
+                        required.</small>
+                </div>
+            </div>
+
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Sub category</label>
+                    <input type="text" pInputText id="sub_Category" [(ngModel)]="editableObject.sub_Category"
+                        required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.sub_Category">Sub category is
+                        required.</small>
+                </div>
+            </div> -->
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

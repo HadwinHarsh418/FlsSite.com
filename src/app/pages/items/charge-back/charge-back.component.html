@@ -1,0 +1,947 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">CLP</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Chargeback
+                        </li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'ClpInfo'"></app-users-with-permissions>
+                    </div>
+                </div>
+                <div class="table-responsive calender-class">
+                    <div class="tabs">
+                        <ul>
+                            <li (click)="changeTab(1)" *ngIf="actions.newTabActive" class="new-result tab-1" [class.active]="currentTab == 1">
+                                Pending <i pBadge value="{{pending}}"></i>
+                            </li>
+                            <li (click)="changeTab(2)" *ngIf="actions.chinaTabActive" class="new-result tab-2" [class.active]="currentTab == 2">
+                                Submitted <i pBadge value="{{submi}}"></i>
+                            </li>
+                            <li (click)="changeTab(3)" *ngIf="actions.finalTabActive" class="new-result tab-3" [class.active]="currentTab == 3">
+                                Pending Review <i pBadge value="{{pendingApp}}"></i>
+                            </li>
+                            <li (click)="changeTab(4)" *ngIf="actions.historyTabActive" class="new-result tab-4" [class.active]="currentTab == 4">
+                                Approved <i pBadge value="{{approved}}"></i>
+                            </li>
+                            <li (click)="changeTab(5)" *ngIf="actions.archiveTabActive" class="new-result tab-5" [class.active]="currentTab == 5">
+                                Archive <i pBadge value="{{archive}}"></i> 
+                           </li>
+                        </ul>
+                    </div>
+                    <p-toolbar class="full-1 " *ngIf="currentTab == 1 && actions.newTabActive">
+                        <ng-template pTemplate="left">
+                            <div class="mr">
+                                <p-calendar type="text" placeholder="Date Issued" [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="searchDateIssued">
+                                </p-calendar>
+                                <input type=" text " pInputText class="search-text mr " placeholder="SHIP ID " [(ngModel)]="searchShipID " (keyUp.enter)="loadCustomers()" />
+                                <input type="text" pInputText class="search-text mr" placeholder="RCP#" [(ngModel)]="searchRCPNo" (keyUp.enter)="loadCustomers()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="FTY " [(ngModel)]="searchFTYNo " (keyUp.enter)="loadCustomers()" />
+                                <button pButton type="button" label=" " class="actionBtn p-button-success" (click)="loadCustomers()">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button pButton type="button" label=" " class="actionBtn p-button-primary" (click)="clearNew(1)">
+                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="actionBtn addbtn btn btn-primary btn-icon-text" *ngIf="currentTab == 1 && actions.canAddPoup" style="margin-left: 4px" (click)="showMaximizableDialog()">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                            </div>
+
+                        </ng-template>
+
+
+                    </p-toolbar>
+
+                    <div class="table-responsive calender-class new-table-color">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt [columns]="cols" [value]="cpls" dataKey="id" [totalRecords]="totalRecords" [rowHover]="true"  [showCurrentPageReport]="true" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true"
+                                (onLazyLoad)="loadCustomers($event)" [lazy]="true" [loading]="loading" *ngIf="currentTab == 1 && actions.newTabActive" [globalFilterFields]="['itemNo','qty','oneTimeCont','custLoc','endUser','customer','comments' ]">
+                                <ng-template pTemplate="caption">
+                                    <div class="p-d-flex table-header">
+                                        <div class="one-ooo">
+                                            <span class="p-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <input pInputText type="text" style="padding-left: 30px !important"
+                                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Global Search" />
+                                            </span>
+                                            <span class="checkClass">
+                                                <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary">
+                                                </p-checkbox>
+                                                <label for="binary" class="checkBoxlb">{{!hide ? "Show filters": "Hide filters" }}</label>
+                                            </span>
+                                        </div>
+                                        <app-export-buttons
+                                            (exportExcel)="getExcel('xlsx')"
+                                            (exportCsv)="getExcel('csv')"
+                                            (exportPdf)="getExcel('pdf')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [loadPdfFile]="loadPdfFile"
+                                            [toShowButtons]="['xlsx','csv','pdf']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [pdfPermission]="actions.canImportPSD"
+                                        ></app-export-buttons>
+                                      
+
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <ng-container *ngFor="let col of columns">
+                                            <col *ngIf="!col.hidden" />
+                                        </ng-container>
+                                    </colgroup>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'" [class.locCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'"
+                                                [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'"
+                                                [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field">
+                                                </p-sortIcon>
+                                                {{ col.header }}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                                
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'" [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'"
+                                                [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.chinaNotesCol]="col.field === 'chinaNotes'"
+                                                [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <div *ngIf="col.field === 'chargebackId';else ngElse_noPhotoUrl" style="cursor: pointer; text-decoration: underline" (click)="showMaximizableDialog1(rowData)">
+                                                    <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+                                                    <!-- {{rowData[col.field]}} -->
+                                                </div>
+                                                <div [ngSwitch]="col.field">
+                                                    <ng-template #ngElse_noPhotoUrl>
+                                                        {{ col.data ? (rowData[col.field] | date: col.format) : rowData[col.field] }}
+                                                    </ng-template>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; width: 100% !important">
+                                            No records found.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <app-pagination *ngIf="currentTab == 1" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    <p-toolbar class="full-1 " *ngIf="currentTab == 2 && actions.chinaTabActive">
+                        <ng-template pTemplate="left">
+                            <div class="mr">
+                                <p-calendar type="text" placeholder="Date Issued" [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="searchDateIssued">
+                                </p-calendar>
+                                <input type=" text " pInputText class="search-text mr " placeholder="ShipID " [(ngModel)]="searchShipID " (keyUp.enter)="loadChinaCustomer()" />
+                                <input type="text" pInputText class="search-text mr" placeholder="RCP#" [(ngModel)]="searchRCPNo" (keyUp.enter)="loadChinaCustomer()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="FTY " [(ngModel)]="searchFTYNo " (keyUp.enter)="loadChinaCustomer()" />
+                                <button pButton type="button" label=" " class="actionBtn p-button-success mr" (click)="loadChinaCustomer()">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button pButton type="button" label=" " class="actionBtn p-button-primary mr" (click)="clearNew(2)">
+                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </ng-template>
+
+
+                    </p-toolbar>
+                    <div class="table-responsive calender-class new-table-color">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt1 [columns]="colss" [value]="cpls" dataKey="id" [rowHover]="true" [totalRecords]="totalRecords" [rows]="50" [showCurrentPageReport]="true" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true" 
+                                (onLazyLoad)="loadChinaCustomer($event)" [lazy]="true" [loading]="loading" *ngIf="currentTab == 2  && actions.chinaTabActive" [globalFilterFields]="['itemNo','qty','oneTimeCont','custLoc','endUser','customer','comments']">
+                                <ng-template pTemplate="caption">
+                                    <div class="p-d-flex table-header">
+                                        <div class="one-ooo">
+                                            <span class="p-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <input pInputText type="text" style="padding-left: 30px !important"
+                                                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Global Search" />
+                                            </span>
+                                            <span class="checkClass">
+                                                <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary">
+                                                </p-checkbox>
+                                                <label for="binary" class="checkBoxlb">{{!hide ? "Show filters": "Hide filters" }}</label>
+                                            </span>
+                                        </div>
+                                        <app-export-buttons
+                                            (exportExcel)="getExcelChina('xlsx')"
+                                            (exportCsv)="getExcelChina('csv')"
+                                            (exportPdf)="getExcelChina('pdf')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [loadPdfFile]="loadPdfFile"
+                                            [toShowButtons]="['xlsx','csv','pdf']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [pdfPermission]="actions.canImportPSD"
+                                        ></app-export-buttons>
+                                        
+
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <ng-container *ngFor="let col of columns">
+                                            <col *ngIf="!col.hidden" />
+                                        </ng-container>
+                                    </colgroup>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'"
+                                                [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'"
+                                                [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'"
+                                                [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field">
+                                                </p-sortIcon>
+                                                {{ col.header }}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                           
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'"
+                                                [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'"
+                                                [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+
+                                                <div *ngIf="col.field === 'chargebackId';else ngElse_noPhotoUrl" style="cursor: pointer; text-decoration: underline" (click)="showMaximizableDialog1(rowData)">
+                                                    <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+
+                                                </div>
+                                                <div [ngSwitch]="col.field">
+
+                                                    <ng-template #ngElse_noPhotoUrl>
+                                                        {{ col.data ? (rowData[col.field] | date: col.format) : rowData[col.field] }}
+                                                    </ng-template>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; width: 100% !important">
+                                            No records found.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <app-pagination *ngIf="currentTab == 2" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    <p-toolbar class="full-1 " *ngIf="currentTab == 3 && actions.finalTabActive">
+                        <ng-template pTemplate="left">
+                            <div class="mr">
+                                <p-calendar type="text" placeholder="Date Issued" [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="searchDateIssued">
+                                </p-calendar>
+                                <input type=" text " pInputText class="search-text mr " placeholder="ShipID " [(ngModel)]="searchShipID " (keyUp.enter)="loadFinalAproval()" />
+                                <input type="text" pInputText class="search-text mr" placeholder="RCP#" [(ngModel)]="searchRCPNo" (keyUp.enter)="loadFinalAproval()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="FTY " [(ngModel)]="searchFTYNo " (keyUp.enter)="loadFinalAproval()" />
+                                <button pButton type="button" label=" " class="actionBtn p-button-success mr" (click)="loadFinalAproval()">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button pButton type="button" label=" " class="actionBtn p-button-primary mr" (click)="clearNew(3)">
+                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </ng-template>
+
+
+                    </p-toolbar>
+                    <div class="table-responsive calender-class new-table-color">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt [columns]="colss" [value]="cpls" dataKey="id" [totalRecords]="totalRecords" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true"  
+                                (onLazyLoad)="loadFinalAproval($event)" [lazy]="true" [loading]="loading" *ngIf="currentTab == 3  && actions.finalTabActive" [globalFilterFields]="[
+                                                                                                                            'itemNo',
+                                                                                                                            'qty',
+                                                                                                                            'oneTimeCont',
+                                                                                                                            'custLoc',
+                                                                                                                            'endUser',
+                                                                                                                            'customer',
+                                                                                                                            'comments'
+                ]">
+                                <ng-template pTemplate="caption">
+                                    <div class="p-d-flex table-header">
+                                        <div class="one-ooo">
+                                            <span class="p-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <input pInputText type="text" style="padding-left: 30px !important"
+                                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Global Search" />
+                                            </span>
+                                            <span class="checkClass">
+                                                <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary">
+                                                </p-checkbox>
+                                                <label for="binary" class="checkBoxlb">{{!hide ? "Show filters": "Hide filters" }}</label>
+                                            </span>
+                                        </div>
+                                        <app-export-buttons
+                                            (exportExcel)="getExcelFinalApproval('xlsx')"
+                                            (exportCsv)="getExcelFinalApproval('csv')"
+                                            (exportPdf)="getExcelFinalApproval('pdf')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [loadPdfFile]="loadPdfFile"
+                                            [toShowButtons]="['xlsx','csv','pdf']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [pdfPermission]="actions.canImportPSD"
+                                        ></app-export-buttons>
+                                       
+
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <ng-container *ngFor="let col of columns">
+                                            <col *ngIf="!col.hidden" />
+                                        </ng-container>
+                                    </colgroup>
+                                </ng-template>
+
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'"
+                                                [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'"
+                                                [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'"
+                                                [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field">
+                                                </p-sortIcon>
+                                                {{ col.header }}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                                
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'"
+                                                [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'"
+                                                [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <div *ngIf="col.field === 'chargebackId';else ngElse_noPhotoUrl" style="cursor: pointer; text-decoration: underline" (click)="showMaximizableDialog1(rowData)">
+                                                    <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+
+                                                </div>
+                                                <div [ngSwitch]="col.field">
+                                                    <ng-template #ngElse_noPhotoUrl>
+                                                        {{ col.data ? (rowData[col.field] | date: col.format) : rowData[col.field] }}
+                                                    </ng-template>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; width: 100% !important">
+                                            No records found.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <app-pagination *ngIf="currentTab == 3" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    <p-toolbar class="full-1 " *ngIf="currentTab == 4 && actions.historyTabActive">
+                        <ng-template pTemplate="left">
+                            <div class="mr">
+                                <p-calendar type="text" placeholder="Date Issued" [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="searchDateIssued">
+                                </p-calendar>
+                                <input type=" text " pInputText class="search-text mr " placeholder="ShipID " [(ngModel)]="searchShipID " (keyUp.enter)="loadHistory()" />
+                                <input type="text" pInputText class="search-text mr" placeholder="RCP#" [(ngModel)]="searchRCPNo" (keyUp.enter)="loadHistory()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="FTY " [(ngModel)]="searchFTYNo " (keyUp.enter)="loadHistory()" />
+                                <button pButton type="button" label=" " class="actionBtn p-button-success mr" (click)="loadHistory()">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button pButton type="button" label=" " class="actionBtn p-button-primary mr" (click)="clearNew(4)">
+                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </ng-template>
+
+
+                    </p-toolbar>
+                    <div class="table-responsive calender-class new-table-color">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt [columns]="colss" [value]="cpls" dataKey="id" [rowHover]="true" [totalRecords]="totalRecords" [rows]="50" [showCurrentPageReport]="true" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true" 
+                                (onLazyLoad)="loadHistory($event)" [lazy]="true" [loading]="loading" *ngIf="currentTab == 4 && actions.historyTabActive" [globalFilterFields]="[
+                                                                            'itemNo',
+                                                                            'qty',
+                                                                            'oneTimeCont',
+                                                                            'custLoc',
+                                                                            'endUser',
+                                                                            'customer',
+                                                                            'comments'
+                                                                            ]">
+                                <ng-template pTemplate="caption">
+                                    <div class="p-d-flex table-header">
+                                        <div class="one-ooo">
+                                            <span class="p-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <input pInputText type="text" style="padding-left: 30px !important"
+                                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Global Search" />
+                                            </span>
+                                            <span class="checkClass">
+                                                <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary">
+                                                </p-checkbox>
+                                                <label for="binary" class="checkBoxlb">{{!hide ? "Show filters": "Hide filters" }}</label>
+                                            </span>
+                                        </div>
+                                        <app-export-buttons
+                                            (exportExcel)="getExcelHistory('xlsx')"
+                                            (exportCsv)="getExcelHistory('csv')"
+                                            (exportPdf)="getExcelHistory('pdf')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [loadPdfFile]="loadPdfFile"
+                                            [toShowButtons]="['xlsx','csv','pdf']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [pdfPermission]="actions.canImportPSD"
+                                        ></app-export-buttons>
+                                        
+
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <ng-container *ngFor="let col of columns">
+                                            <col *ngIf="!col.hidden" />
+                                        </ng-container>
+                                    </colgroup>
+                                </ng-template>
+
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'"
+                                                [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'"
+                                                [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'"
+                                                [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field">
+                                                </p-sortIcon>
+                                                {{ col.header }}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                             
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'"
+                                                [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'"
+                                                [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <div *ngIf="col.field === 'chargebackId'; else ngElse_noPhotoUrl" style="cursor: pointer; text-decoration: underline" (click)="showMaximizableDialog1(rowData)">
+                                                    <a href="javascript:void(0)">{{
+                                                        rowData[col.field]
+                                                        }}</a>
+
+                                                </div>
+                                                <div [ngSwitch]="col.field">
+                                                    <ng-template #ngElse_noPhotoUrl>
+                                                        {{ col.data ? (rowData[col.field] | date: col.format) : rowData[col.field] }}
+                                                    </ng-template>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; width: 100% !important">
+                                            No records found.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <app-pagination *ngIf="currentTab == 4" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    <p-toolbar class="full-1 " *ngIf="currentTab == 5 && actions.archiveTabActive">
+                        <ng-template pTemplate="left">
+                            <div class=" mr">    
+                                <p-calendar type="text" placeholder="Date Issued" [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="searchDateIssued">
+                                </p-calendar>
+                                <input type=" text " pInputText class="search-text mr " placeholder="ShipID " [(ngModel)]="searchShipID " (keyUp.enter)="loadArchieve()" />
+                                <input type="text" pInputText class="search-text mr" placeholder="RCP#" [(ngModel)]="searchRCPNo" (keyUp.enter)="loadArchieve()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="FTY " [(ngModel)]="searchFTYNo " (keyUp.enter)="loadArchieve()" />
+                                <input type=" text " pInputText class="search-text mr " placeholder="Item# " [(ngModel)]="searchITEMNO " (keyUp.enter)="loadArchieve()" />
+                                <button pButton type="button" label=" " class="actionBtn p-button-success mr" (click)="loadArchieve()">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button pButton type="button" label=" " class="actionBtn p-button-primary mr" (click)="clearNew(5)">
+                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                </button>
+                            </div>    
+
+                        </ng-template>
+
+
+                    </p-toolbar>
+                    <div class="table-responsive calender-class new-table-color">
+                        <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                            <p-table #dt1 [columns]="colss" [value]="cpls" dataKey="id" [rowHover]="true" [totalRecords]="totalRecords" [rows]="50" [showCurrentPageReport]="true" [paginator]="false" [autoLayout]="true" columnResizeMode="expand" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"
+                                [resizableColumns]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" [reorderableColumns]="true" 
+                                (onLazyLoad)="loadArchieve($event)" [lazy]="true" [loading]="loading" *ngIf="currentTab == 5  && actions.archiveTabActive" [globalFilterFields]="['itemNo','qty','oneTimeCont','custLoc','endUser','customer','comments']">
+                                <ng-template pTemplate="caption">
+                                    <div class="p-d-flex table-header">
+                                        <div class="one-ooo">
+                                            <span class="p-input-icon-left">
+                                                <i class="pi pi-search"></i>
+                                                <input pInputText type="text" style="padding-left: 30px !important"
+                                                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="Global Search" />
+                                            </span>
+                                            <span class="checkClass">
+                                                <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary">
+                                                </p-checkbox>
+                                                <label for="binary" class="checkBoxlb">{{!hide ? "Show filters": "Hide filters" }}</label>
+                                            </span>
+                                        </div>
+                                        <app-export-buttons
+                                            (exportExcel)="getExcelArchive('xlsx')"
+                                            (exportCsv)="getExcelArchive('csv')"
+                                            (exportPdf)="getExcelArchive('pdf')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [loadPdfFile]="loadPdfFile"
+                                            [toShowButtons]="['xlsx','csv','pdf']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [pdfPermission]="actions.canImportPSD"
+                                        ></app-export-buttons>
+                                        
+
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="colgroup" let-columns>
+                                    <colgroup>
+                                        <ng-container *ngFor="let col of columns">
+                                            <col *ngIf="!col.hidden" />
+                                        </ng-container>
+                                    </colgroup>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <ng-container *ngFor="let col of columns">
+                                            <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'"
+                                                [class.rcpCol]="col.field === 'rcp'" [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'"
+                                                [class.chargebackNotesCol]="col.field === 'chargebackNotes'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'"
+                                                [class.additionalNotesCol]="col.field === 'additionalNotes'">
+                                                <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                                </p-columnFilter>
+                                                <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field">
+                                                </p-sortIcon>
+                                                {{ col.header }}
+                                            </th>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+                           
+                                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+
+                                    <tr [pReorderableRow]="index">
+                                        <ng-container *ngFor="let col of columns">
+                                            <td class="ui-resizable-column" *ngIf="!col.hidden" [class.loCol]="col.field === 'loc'" [class.chargebackIdCol]="col.field === 'chargebackId'" [class.shipIdCol]="col.field === 'shipId'" [class.dateIssuedCol]="col.field === 'dateIssued'" [class.rcpCol]="col.field === 'rcp'"
+                                                [class.containerNoCol]="col.field === 'containerNo'" [class.vendorNoCol]="col.field === 'vendorNo'" [class.ftyNoCol]="col.field === 'fty'" [class.deductFromCol]="col.field === 'deductFrom'" [class.chargebackNotesCol]="col.field === 'chargebackNotes'"
+                                                [class.chinaNotesCol]="col.field === 'chinaNotes'" [class.apNotesCol]="col.field === 'apNotes'" [class.additionalNotesCol]="col.field === 'additionalNotes'">
+
+                                                <div *ngIf="col.field === 'chargebackId';else ngElse_noPhotoUrl" style="cursor: pointer; text-decoration: underline" (click)="showMaximizableDialog1(rowData)">
+                                                    <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+
+                                                </div>
+                                                <div [ngSwitch]="col.field">
+
+                                                    <ng-template #ngElse_noPhotoUrl>
+                                                        {{ col.data ? (rowData[col.field] | date: col.format) : rowData[col.field] }}
+                                                    </ng-template>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; width: 100% !important">
+                                            No records found.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <app-pagination *ngIf="currentTab == 5" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <p-button (click)="showMaximizableDialog()" icon="pi pi-external-link" label="Show"></p-button> -->
+<p-dialog #pdialog header="Chargeback" class="max-btn" [(visible)]="displayMaximizable" [modal]="true" [style]="{ width: '75vw' }" [draggable]="true" [closable]="false" [resizable]="false" dismissableMask="false" [maximizable]="false">
+
+    <div class="top-relative">
+        <p-button class="abs-bt" (click)="closeAndSave($event);" *ngIf="isDelete "><span class="pi pi-times" style="margin-left: 4px; margin-top: 4px;"></span></p-button>
+        <p-button class="abs-bt" (click)="closeSave();" *ngIf="isDeleteApi"><span class="pi pi-times" style="margin-left: 4px; margin-top: 4px;"></span></p-button>
+
+    </div>
+    <ng-template pTemplate="header">
+        <p-button class="ab" #maximize (click)="resetPosition()"><span class="pi pi-window-maximize" style="margin-left: 4px;"></span></p-button>
+
+
+    </ng-template>
+
+    <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+        <p-table #dt [columns]="" [value]="">
+            <ng-template pTemplate="caption">
+                <div class="table-header">
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-md-6">
+                            <span> Chargeback ID :</span>
+                            <span style="padding-left: 10px" *ngIf="shipId && fty">{{
+                                shipId + "-CB-" + fty
+                                }}</span>
+                        </div>
+                        <div class="col-md-6" style="margin-bottom: 19px">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" id="" style="margin:2px 5px 0px 0px"  [disabled]="isEdit" [(ngModel)]="check" (change)="click()" />
+                                FEE WAIVED
+                            </div>
+                            <div class="custom-control custom-switch " style="margin-left: 70px">
+                                <input type="checkbox" id="" style="margin:2px 5px 0px 0px"  [disabled]="isEdit" [(ngModel)]="overRideCheck" (change)="overrRideClick()" />
+                                OVERRIDE
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <span> Date Issued :</span>
+                        <span style="padding-left: 10px">{{
+                                date | date: "MM/dd/yy"
+                                }}</span>
+                    </div>
+                    <!-- <div class="col-md-6" *ngIf="!isShowBtn"></div> -->
+                    <div class="col-md-6" style="margin-bottom: 19px" *ngIf="isShowBtn">
+
+                        <!-- <div class="custom-control custom-switch ">
+                            MANAGER APPROVAL
+                            <input type="checkbox" id="GoogleAuth" class="custom-control-input" [disabled]="isEdit" [(ngModel)]="isCheck" />
+                            <label class="custom-control-label" for="GoogleAuth" style="margin: -16px 0px 4px 47px"></label>
+                        </div> -->
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper restable">
+        <table class="table new-tb1 table-bordered table-striped res_table">
+            <thead>
+                <tr>
+                    <th>RCP#</th>
+                    <th>SHIP ID</th>
+                    <th>CONTAINER#</th>
+                    <th>LOC</th>
+                    <th>FTY</th>
+                    <th>VENDOR#</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="rcp" [disabled]="isEdit" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !rcp">* required</div>
+                    </td>
+
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="shipId" [disabled]="isedit" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !shipId">* required</div>
+                    </td>
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="containerNo" [disabled]="isEdit" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !containerNo">* required</div>
+                    </td>
+                    <td>
+                        <div class="">
+                            <p-dropdown [styleClass]="'chrgbck-drp'" [options]="locs" [filter]="true"   [(ngModel)]="loc" (onFocus)="disableClose(rcp)" [disabled]="isEdit"
+                                placeholder="Select LOC" optionValue="loc" optionLabel="loc" ></p-dropdown>
+                        </div>
+                        <!-- <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="loc" [disabled]="isEdit" class="form-control" /> -->
+
+                        <div class="erro-class" *ngIf="submit && !loc">* required</div>
+                    </td>
+                    <td>
+                        <div class="" >
+                            <p-dropdown  [styleClass]="'chrgbck-drp'" [filter]="true" placeholder="Select FTY" [options]="ftydpw" [(ngModel)]="fty" (onChange)="fillVendor()"  (onFocus)="disableClose(rcp)" [disabled]="isedit"
+                                optionValue="fty" optionLabel="fty"></p-dropdown>
+                        </div>
+                        <!-- <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="fty" [disabled]="isedit" class="form-control" /> -->
+
+                        <div class="erro-class" *ngIf="submit && !fty">* required</div>
+                    </td>
+
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText style="width: 100%;" (focus)="disableClose(rcp)" [(ngModel)]="vendorNo" [disabled]="true" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !vendorNo">* required</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="p-d-flex table-header">
+        <div class="one-ooo">
+
+        </div>
+                        <app-export-buttons
+                                (exportExcel)="getExcelPop2('xlsx')"
+                                (exportCsv)="getExcelPop2('csv')"
+                                (exportPdf)="getExcelPop2('pdf')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                                [loadPdfFile]="loadPdfFile"
+                                        ></app-export-buttons>
+        
+
+    </div>
+
+
+    <div id="example_wrapper1" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper restable">
+
+        <table class="table new-tb2 table-bordered table-striped res_table">
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th>PO#</th>
+                    <th>QTY</th>
+                    <th>PROBLEM DESC</th>
+                    <th>$ PER CS</th>
+                    <th>GOODS VALUE </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of row; let i = index" class="cursor-moveable">
+                    <td>
+                        <input #inputt type="text" inputDirective
+                        [upperCase]="true" pInputText (keyUp.enter)="addTable()" (focus)="disableClose(rcp)" style="width: 100%" [disabled]="isEdit" [(ngModel)]="data.itemNo" class="form-control movehere" />
+
+                        <div class="erro-class" *ngIf="submit && !data.itemNo">* required</div>
+                    </td>
+
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText (keyUp.enter)="addTable()" (focus)="disableClose(rcp)" style="width: 100%" [disabled]="isEdit" [(ngModel)]="data.poNo" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !data.poNo">* required</div>
+                    </td>
+                    <td class="dollarSin">
+                        <i class="fa fa-dollar set-icon" *ngIf=""></i>
+                        <input type="text" onlyNumber  (keyUp.enter)="addTable()" (focus)="disableClose(rcp);" placeholder="$0.00" (keypress)="decimalFilter1($event)" [disabled]="isEdit" style="width: 100%" placeholder="$0.00" [(ngModel)]="data.qty" (blur)="transformAmount(data)" (keyup)="changed(data, 'numonly', 'qty')" class="form-control"
+                        />
+
+                        <div class="erro-class" *ngIf="submit && !data.qty">* required</div>
+                    </td>
+                    <!-- <td>
+                        <input type="number" onlyNumber (keyUp.enter)="addTable()" (focus)="disableClose(rcp)" style="width: 100%" min="0" [disabled]="isEdit" [(ngModel)]="data.qty" (keyup)="changed(data)" class="form-control" />
+
+                        <div class="erro-class" *ngIf="submit && !data.qty">* required</div>
+                    </td> -->
+                    <td>
+
+                        <div class=" mr">
+                            <select name="dropdownOption" id="dropdownOption" matNativeControl class="txt sel search-text" (change)="disableClose(rcp)" [disabled]="isEdit" [(ngModel)]="data.problemDesc" required>
+                           
+                                <option value="SHORTAGE" selected class="txt">SHORTAGE</option>
+                                <option value="OVERAGE" class="txt">OVERAGE</option>
+
+                            </select>
+                        </div>
+                        <div class="erro-class" *ngIf="submit && !data.problemDesc">* required</div>
+                    </td>
+
+                    <td class="dollarSin">
+                        <i class="set-icon" *ngIf="data.pricePerUnit">$</i>
+                        <input type="text" onlyNumber  pInputText (keyUp.enter)="addTable()" (focus)="disableClose(rcp);" placeholder="$0.00" (keypress)="decimalFilter1($event)" [disabled]="isEdit" style="width: 100%" placeholder="$0.00" [(ngModel)]="data.pricePerUnit" (blur)="transformAmount(data)" (keyup)="changed(data, 'numonly', 'pricePerUnit')" class="form-control"
+                        />
+
+                        <div class="erro-class" *ngIf="submit && !data.pricePerUnit">* required</div>
+                    </td>
+                    <td>
+                        <input type="text" inputDirective
+                        [upperCase]="true" pInputText (keyUp.enter)="addTable()" style="width: 100%" disabled placeholder="$0.00" [ngModel]="data.itemCost | currency " class="form-control" />
+                    </td>
+
+                    <td>
+                        <i class="fa fa-remove ml-2" (click)="deleteRow(i)" aria-hidden="true" *ngIf="isDelete"></i>
+                        <i class="fa fa-remove ml-2" (click)="deleteUpdatePopUpRow(data)" aria-hidden="true" *ngIf="isDeleteApi && actions.canEditPop &&  !hidedata"></i>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700; width: 100%;">Subtotal</td>
+                    <td></td>
+                    <td style="font-weight: 700; width: 100%;">{{ qtytotal }}</td>
+
+                    <td disabled style="font-weight: 700; width: 100%;">
+                        <div style="display: flex;
+                                align-items: center;
+                                justify-content: space-between;">
+                            <label>Labor Cost: </label>
+                            <input style="width: 80px; height: 30px;" type="number" onlyNumber inputDirective inpType="number" onlyNumber decimals="2" pInputText  [(ngModel)]="lctotal" [disabled]="isEdit" class="form-control" (input)="updateTotal()" />
+                        </div>
+                    </td>
+                    <td style=" width: 100%;"></td>
+                    <td style="font-weight: 700; width: 100%;">
+                        {{ ItemCosttotal | currency: "USD":"symbol":"1.2-2" }}
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-8"></div>
+        <div class="col-4" style="padding-left: 85px; font-weight: 700; padding-top: 19px">Grand Total:
+            <span style="padding-left: 12px;">{{ claimstotal | currency: "USD":"symbol":"1.2-2" }}</span>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 10px; font-weight: 700">
+        <div class="col-8"></div>
+        <div class="col-4" style="padding-left: 50px">
+            DEDUCT FROM:
+            <input class="dctFrom" pInputText type="text" style="width: 50%" 
+            inputDirective [upperCase]="true" inptype="alphanumSingle"
+             (focus)="disableClose(rcp)" [disabled]="hidedata" [(ngModel)]="deductFrom" />
+
+        </div>
+    </div>
+    <div class="row" style="margin-top:-20px">
+        <!-- <div class="col-6">
+            <label for="Additional Notes">Additional Notes:</label>
+            <textarea style="width: 100%" pInputTextarea [disabled]="(currentTab==2 && isEdit) || (currentTab==3 && isEdit) || (currentTab==4)" placeholder="Additional Notes..." (focus)="disableClose(rcp)" [(ngModel)]="aditionalComments"></textarea>
+        </div> -->
+        <div class="col-12">
+            <label for="Comments">COMMENTS:</label>
+            <!-- [disabled]="(currentTab==2 && isEdit) || (currentTab!=3 && isEdit) || (currentTab==4)" -->
+            <textarea style="width: 100%" pInputTextarea  placeholder="COMMENTS..." (focus)="disableClose(rcp)" [(ngModel)]="approvalComments"></textarea>
+            <div class="erro-class3" *ngIf="submit && !approvalComments">* required</div>
+        </div>
+        <!-- <div class="col-6">
+            <label for="CNO Notes">CNO Notes:</label>
+            <textarea style="width: 100%;" pInputTextarea [disabled]="(currentTab!=2 && isEdit) || (currentTab==3 && isEdit) || (currentTab==4)" placeholder="CNO Notes..." (focus)="disableClose(rcp)" [(ngModel)]="chinaComments"></textarea>
+            <div class="erro-class3" *ngIf="currentTab ==3 && submit && !chinaComments">* required</div>
+        </div> -->
+        <!-- <div class="col-6">
+            <label for="Chargeback Notes">Chargeback Notes:</label>
+            <textarea style="width: 100%" pInputTextarea [disabled]="(currentTab==2 && isEdit) || (currentTab==3 && isEdit) ||(currentTab==4)" placeholder="Chargeback Notes..." (focus)="disableClose(rcp)" [(ngModel)]="chargebackcomments"></textarea>
+        </div> -->
+    </div>
+    <div class="row" style="margin-top:10px">
+        <div class="col-12">
+            <div class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper restable">
+                    <table class="table table-bordered table-striped res_table charge-logs">
+                        <thead class="allUpp-th">
+                            <tr>
+                                <th style="word-break: break-all;">COMMENTS</th>
+                                <th>ENTERED BY</th>
+                                <th>ENTERED ON</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <ng-container *ngIf="logSectionData?.length">
+                                <tr *ngFor="let item of logSectionData">
+                                    <td style="word-break: break-all;">{{item.apNotes}}</td>
+                                    <td>{{item.updatedBy}}</td>
+                                    <td>{{item.updatedOn | date: 'MM/dd/yyyy HH:mm:ss'}}</td>
+                                </tr>
+                            </ng-container>
+                            <tr *ngIf="!logSectionData?.length">
+                                <td colspan="3" class="text-center">
+                                  <span> No records found.</span> 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+
+        <p-button icon="pi pi-check" label="Edit" styleClass="p-button-text" (click)="editPop()" *ngIf="isBtn && actions.canEditPop && !hideBt"></p-button>
+        <p-button icon="pi pi-check" label="Save and Close" styleClass="p-button-text" *ngIf="!hideBt  " (click)="AddclaimPop()"></p-button>
+        <p-button icon="pi pi-times" label="Delete" styleClass="p-button-text" *ngIf="hideBtt && actions.canDelete" (click)="deleteUpdatePopUp()"></p-button>
+        <p-button icon="pi pi-check" label="Archive" styleClass="p-button-text" *ngIf="currentTab == 4 && actions.canArchive" (click)="archiveButton()"></p-button>
+        <p-button icon="pi pi-check" label="Submit" styleClass="p-button-text" *ngIf="btnhide && !Appbtnhide && !BtnTrue " (click)="SubmitPoup()"></p-button>
+        <p-button icon="pi pi-check" label="Confirm" styleClass="p-button-text" *ngIf="Appbtnhide && !btnhide && !BtnTrue" (click)="ConformPop()"></p-button>
+        <p-button icon="pi pi-check" label="Approve" styleClass="p-button-text" *ngIf="BtnTrue && !Appbtnhide && !btnhide " (click)="approvalPop()"></p-button>
+        <p-button icon="pi pi-check" label="Resubmit" styleClass="p-button-text" *ngIf="currentTab == 3 && BtnTrue && !Appbtnhide && !btnhide " (click)="resubmit()"></p-button>
+    </ng-template>
+
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

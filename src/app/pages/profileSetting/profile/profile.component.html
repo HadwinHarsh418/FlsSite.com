@@ -1,0 +1,248 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="card">
+    <div class="card-body new-body">
+        <h5 class="card-title">My profile</h5>
+        <div class="row" *ngIf="editableObject">
+            <div class="col-md-12">
+                <div class="loader_confirm" *ngIf="isLoading">
+                    <i class="fa fa-spinner fa-spin" style="font-weight: 900; color: white; margin-top: 34px;" aria-hidden="true"></i>
+                </div>
+                <img class="mr-3" style="cursor:pointer;" src="{{imagePath}}" (click)="file.click()">
+                <form style="margin: 0px auto;width: 98%;padding: 7px;display: none;">
+                    <input type="file" (change)="fileChange($event)" id="profile_cover" style="cursor:pointer; " #file />
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>First Name</label>
+                    <input type="text" class="form-control common-input-profile" id="firstName" [(ngModel)]="editableObject.firstName" required>
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.firstName">First name is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Last Name</label>
+                    <input type="text" class="form-control common-input-profile" id="lastName" [(ngModel)]="editableObject.lastName" required>
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.lastName">Last name is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Company</label>
+                    <input type="text" class="form-control common-input-profile" id="company" [(ngModel)]="editableObject.company">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Comment</label>
+                    <input type="text" class="form-control common-input-profile" id="comment" [(ngModel)]="editableObject.comment">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Email</label>
+                    <input type="email" class="form-control common-input-profile" id="email" [disabled]="true" [(ngModel)]="editableObject.email" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Phone</label>
+                    <input type="email" class="form-control common-input-profile" id="phone" [(ngModel)]="editableObject.phone" (keypress)="validateDec($event)" required>
+                </div>
+            </div>
+            <!--    <div class="col-md-6">
+            <div class="cus-mb-profile">
+                <label>Password</label>
+                <input type="password" class="form-control common-input-profile">
+            </div>
+        </div> 
+            <div class="col-md-6">
+                <div class="cus-mb-profile">
+                    <label>Upload</label>
+                    <input type="file" class="form-control common-input-profile">
+                </div>
+            </div>
+            <div class="col-md-6">
+            <div class="cus-mb-profile">
+                <label>Select</label>
+                <select class="form-control common-input-profile">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+            </div>
+        </div> -->
+            <div class="col-md-12">
+                <div class="cus-mb-profile">
+                    <ul class="save-cancel">
+                        <!-- <li><button class="BT login-bt profile-bt">Save</button></li> -->
+                        <li><button class="BT login-bt profile-bt" [disabled]='itemLoading' (click)="saveProduct()">Update
+                                <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="font-weight: 900"
+                                    aria-hidden="true"></i>
+                            </button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Password update</h5>
+        <form [formGroup]="psdUpdateForm" (ngSubmit)="register(psdUpdateForm.value)">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="cus-mb-profile">
+                        <label>Current password</label>
+                        <input type="password" class="form-control common-input-profile" placeholder="Current Password" formControlName="current" [ngClass]="{ 'is-invalid': psdSubmitted && f.current.errors }" maxlength="40" trim>
+
+                        <div *ngIf="psdSubmitted && f.current.errors" class="invalid-feedback">
+                            <span class="for-sub-name" *ngIf="f.current.errors.required">Current password
+                                required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="cus-mb-profile password">
+                        <label>New password</label>
+                        <input [type]="show ? 'text' : 'password'" class="form-control common-input-profile" placeholder="Password" formControlName="password" [ngClass]="{ 'is-invalid': psdSubmitted && f.password.errors }" maxlength="20" trim>
+
+                        <i [className]="show ? 'fa fa-eye common-fa' : 'fa fa-eye-slash common-fa'" class="eyconic" (click)="password()"></i>
+                        <div class="invalid-feedback block">
+                            <span *ngIf="psdSubmitted && f.password.hasError('required')">
+                                Password is required
+                            </span>
+                            <span>
+                                <ng-container *ngIf="!f.password.hasError('required')">
+
+                                    <i class="fa" [class.fa-times-circle]="f.password.hasError('minlength')"
+                                        [class.green-color]="!f.password.hasError('minlength')"
+                                        [class.fa-check-circle]="!f.password.hasError('minlength')">
+                                        <p>
+                                            Must be at least 8 characters!
+                                        </p>
+                                    </i> <br>
+                                    <i class="fa" [class.fa-times-circle]="f.password.hasError('hasCapitalCase')"
+                                        [class.green-color]="!f.password.hasError('hasCapitalCase')"
+                                        [class.fa-check-circle]="!f.password.hasError('hasCapitalCase')">
+                                        <p>
+                                            Must contain at least 1 in Capital Case!
+                                        </p>
+                                    </i> <br>
+                                    <i class="fa" [class.fa-times-circle]="f.password.hasError('hasSmallCase')"
+                                        [class.green-color]="!f.password.hasError('hasSmallCase')"
+                                        [class.fa-check-circle]="!f.password.hasError('hasSmallCase')">
+                                        <p>
+                                            Must contain at least 1 Letter in Small Case!
+                                        </p>
+                                    </i> <br>
+                                    <i class="fa" [class.fa-times-circle]="f.password.hasError('hasNumber')"
+                                        [class.green-color]="!f.password.hasError('hasNumber')"
+                                        [class.fa-check-circle]="!f.password.hasError('hasNumber')">
+                                        <p>
+                                            Must contain at least 1 number!
+                                        </p>
+                                    </i> <br>
+                                    <i class="fa" [class.fa-times-circle]="f.password.hasError('hasSpecialCharacters')"
+                                        [class.green-color]="!f.password.hasError('hasSpecialCharacters')"
+                                        [class.fa-check-circle]="!f.password.hasError('hasSpecialCharacters')">
+                                        <p>
+                                            Must contain at least 1 Special Character!
+
+                                        </p>
+                                    </i> <br>
+                                </ng-container>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="cus-mb-profile">
+                        <label>Confirm password</label>
+                        <input type="password" class="form-control common-input-profile" placeholder="Confirm Password" formControlName="passwordConfirm" [ngClass]="{ 'is-invalid': psdSubmitted && f.passwordConfirm.errors }" maxlength="20" trim>
+                        <div *ngIf="psdSubmitted && f.passwordConfirm.errors" class="invalid-feedback">
+                            <span class="for-sub-name" *ngIf="f.passwordConfirm.errors.required">
+                                Confirm Password is required
+                            </span>
+                            <span class="for-sub-name" *ngIf="!f.passwordConfirm.errors.required && f.passwordConfirm.errors.matchOther">
+                                Confirm Password Must Match
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="cus-mb-profile">
+                        <ul class="save-cancel">
+                            <li><button class="BT login-bt profile-bt" [disabled]="isBtnDisabled" type="submit">Update
+                                    <i class="fa fa-spinner fa-spin" *ngIf="isBtnDisabled" style="font-weight: 900"
+                                        aria-hidden="true"></i>
+                                </button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- <div class="card">
+    <div class="card-body">
+        <h5 class="card-title"> Two Factor authentication</h5>
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="settings-notification">
+                    <ul>
+                        <li>
+                            <div class="notification-info">
+                                <p> Two Factor Authentication</p>
+                               
+                                <span>
+                                    <span  ></span> two factor authentication service
+                                </span>
+                            </div>
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" id="GoogleAuth" class="custom-control-input" (click)="open(mymodal)">
+                                <label class="custom-control-label" for="GoogleAuth"></label>
+                            </div>
+
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div> -->
+
+
+
+
+<!-- <ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Verify QR Code</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+    </div>
+    <div class="modal-body" style="padding:10px; height: 250px;width: 80%;">
+
+        <img [src]="twoFAdata?.authBarcodeImage" alt="" style="width: 180px; height: 170px;margin-left: 140px;">
+        <div class="row">
+            <div class="col-12">
+                <input #input [(ngModel)]="pin" type="text" style="width: 100%;margin-left: 70px; margin-top: 10px;" >
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+ 
+        <button type="button" class="btn btn-success" (click)="sendVerification()">User Verify</button>
+    </div>
+
+</ng-template> -->

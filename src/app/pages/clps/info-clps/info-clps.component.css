@@ -1,0 +1,114 @@
+::-webkit-scrollbar {
+    height: 10px!important;
+    overflow: visible !important;
+    width: 10px!important;
+}
+
+input.search-text.p-inputtext {
+    height: 31px!important;
+    font-size: 13px!important;
+}
+
+button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn img {
+    max-width: 19px!important;
+}
+
+.mt-2, .my-2 {
+    margin-top: 0rem !important;
+}
+
+.mb-2, .my-2 {
+    margin-bottom: 0rem !important;
+}
+
+.refresBtn1 {
+    color: #ffffff;
+    background-color: #689F38;
+    border-color: #7ce71f;
+    color: #fff;
+    outline: none;
+    border: 0px solid;
+    border-radius: 4px;
+    height: 38px;
+    width: 37px;
+    margin-right: 3%;
+}
+
+ 
+
+
+.div-cl {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;    
+}
+.clp-calender.sml .p-calendar.p-calendar-w-btn{
+    height: 31px!important;
+}
+
+.div-cl input {
+    margin: 1px !important;
+    width: 110px;
+}
+input#icon2 {
+    margin: 0px !important;
+}
+input#icon3 {
+    margin: 0 !important;
+    margin-left: 5px !important;
+}
+.div-cl button {
+    margin: 0 0 0 0px  !important;
+    height: 33px !important;
+}
+.div-cl button.refresBtn1 {
+    margin-left: 5px !important;
+}
+.div-cl button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn.ng-star-inserted {
+    margin-left: 5px !important;
+    height: 33px !important;
+    min-height: auto;
+}
+p-calendar.ng-tns-c149-6.ng-untouched.ng-pristine.ng-valid {
+    height: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+span.ng-tns-c149-6.p-calendar.p-calendar-w-btn {
+    margin: 9px 0 0 0 !important;
+}
+.mr {
+    margin-left: 3px;
+}
+.sel1 {
+    width: auto;
+    height: 32px;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+}
+.txt {
+    color: #495057;
+    font-size: 15px;
+    padding-left: 2px;
+}
+::ng-deep button.p-column-filter-menu-button.p-link span.pi.pi-filter-icon.pi-filter{
+    font-size: 12px;
+}
+::ng-deep .p-column-filter p-column-filter-menu.p-column-filter-clear-button, .p-column-filter-menu-button{
+    align-items: center;
+    height: auto !important;
+    width: auto;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+}
+::ng-deep button.p-column-filter-menu-button.p-link{
+    width: auto;
+    height: auto;
+}
+::ng-deep i.p-sortable-column-icon.pi.pi-fw.pi-sort-alt{
+    font-size:13px
+}

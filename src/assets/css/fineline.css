@@ -1,0 +1,365 @@
+.common-form.login {
+    background: url("../images/Serveware-login.jpg");
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 30px 0;
+}
+.inner-form {
+    /* background: url(../images/log.png); */
+    /* background: rgb(93 128 182 / 88%); */
+    background-size: cover;
+    padding: 90px 80px;
+    max-width: 450px;
+    margin: auto;
+}
+.login-logo {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.common-input-css {
+    height: 50px;
+    font-size: 16px;
+    /* text-transform: uppercase;
+    font-family: roboto; */
+    font-weight: 400;
+    line-height: 50px;
+    color: #cba269;
+    border: none;
+    border-radius: 6px;
+}
+.common-input-css:focus {
+    box-shadow: 0 0 0 0.2rem #cba269;
+    outline: none;
+}
+.common-input-css::placeholder {
+    color: #cba269;
+    opacity: 1;
+}
+.common-input-css:-ms-input-placeholder {
+    color: #cba269;
+}
+.common-input-css::-ms-input-placeholder {
+    color: #cba269;
+}
+.login-bt {
+    background: #cba269;
+    border: none;
+    font-size: 16px;
+    text-transform: uppercase;
+    height: 50px;
+    line-height: 50px;
+    font-weight: 400;
+    font-family: "Roboto";
+    color: #fff;
+    width: 100%;
+    border-radius: 6px;
+    max-width: 150px;
+    margin: auto;
+    display: block;
+}
+.form-a {
+    color: #cba269;
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    font-weight: 400;
+    font-family: "Roboto";
+    text-decoration: none;
+}
+.common-input-css:hover {
+    box-shadow: 0 0 0 0.2rem #cba269;
+    outline: none;
+}
+.BT {
+    transition: transform 0.5s;
+    -webkit-transition: transform 0.5s;
+    -moz-transition: transform 0.5s;
+    -ms-transition: transform 0.5s;
+    -o-transition: transform 0.5s;
+}
+.BT:hover {
+    transform: scale(1.1);
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    -o-transform: scale(1.1);
+}
+.form-a:hover {
+    text-decoration: underline;
+    color: #cba269;
+}
+
+.das-pp p {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.das-pp,
+.das-pp-1 {
+    margin: 30px 0 15px 0;
+}
+
+.das-pp-1 p {
+    font-size: 18px;
+    margin: 0;
+    text-align: right;
+}
+
+.white-shade {
+    box-shadow: 0 10px 30px 0 rgb(24 28 33 / 5%);
+    background: #fff;
+    border-radius: 30px;
+    margin: 0 0 15px 0;
+}
+
+.wel-bk {
+    background-color: #f0f0ff;
+    padding: 40px 30px 50px 30px;
+    border-radius: 30px 30px 0px 0px;
+}
+
+p.welcome-bk-p {
+    font-size: 20px;
+    margin: 0 0 0 0;
+    color: #6259ca;
+    font-weight: 600;
+}
+
+p.welcome-bk-p-1 {
+    font-size: 17px;
+    margin: 0 0 0 0;
+    color: #6259ca;
+}
+
+img.lef-img {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50px;
+    background-position: center;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+p.lef-p {
+    font-size: 18px;
+    margin: 0;
+    text-align: left;
+}
+
+.pro-l {
+    text-align: center;
+    margin: -30px 0 0 0;
+    padding: 0px 0px 30px 30px;
+}
+
+p.per-pro {
+    font-size: 18px;
+    margin: 0;
+}
+
+p.per-pro span {
+    display: block;
+}
+
+.flex-sc {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pro-2 {
+    padding: 30px;
+}
+
+button.view-pr {
+    color: #fff;
+    background-color: #6259ca;
+    border-color: #6259ca;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    position: relative;
+}
+
+.profile-1 {
+    position: relative;
+    left: 0%;
+    transform: translateX(-50%);
+    transition: all 0.3s ease-in-out;
+    opacity: 1;
+    white-space: nowrap;
+}
+.profile-2 {
+    position: absolute !important;
+    left: -100%;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    transform: translateY(-50%);
+    opacity: 0;
+}
+.view-pr:hover .profile-1 {
+    position: relative;
+    left: 100%;
+    transform: none;
+    opacity: 0;
+}
+.view-pr:hover .profile-2 {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+}
+.white-pad {
+    padding: 30px;
+}
+
+p.month-sal {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+}
+p.this-p1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 0px 0;
+}
+
+p.this-p {
+    color: #495057;
+    margin: 0 0 10px 0;
+}
+
+p.this-p2 {
+    color: #495057;
+    margin: 0 0;
+}
+
+p {
+}
+
+.digital-p p {
+    color: #495057;
+    margin: 15px 0 0 0;
+}
+.grid-cm {
+    box-shadow: 0 10px 30px 0 rgb(24 28 33 / 5%);
+    background: #fff;
+    border-radius: 30px;
+    margin: 0 0 15px 0;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+p.grid-cm-p {
+    margin: 0;
+}
+
+.circle-wd {
+    background: #6259ca;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    line-height: 50px;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+}
+
+p.grid-cm-p span {
+    font-size: 18px;
+    margin: 0;
+    display: block;
+}
+
+.table-des {
+    box-shadow: 0 10px 30px 0 rgb(24 28 33 / 5%);
+    background: #fff;
+    border-radius: 30px;
+    margin: 0 0 15px 0;
+}
+
+.table-des table tr th,
+.table-des table tr td {
+    font-size: 14px;
+    padding: 15px 15px !important;
+    border-bottom: 2px solid #f6f8f9;
+}
+
+button.red-bt-last {
+    background-color: #6259ca;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 10px;
+}
+
+button.red-bt {
+    background-color: green;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 10px;
+}
+
+button.green-bt {
+    background-color: green;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 10px;
+}
+
+button.red-bt {
+    background-color: red;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 10px;
+}
+.table-des table tr:last-child td {
+    border: none;
+}
+
+.table-des table tr:last-child td:first-child {
+    border-bottom-left-radius: 30px;
+}
+.table-des table tr:last-child td:last-child {
+    border-bottom-right-radius: 30px;
+}
+.table-des {
+    overflow: auto;
+}
+
+.table-des table {
+    min-width: 900px;
+}
+p.latestitem {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    padding: 30px 15px;
+}
+
+@media (max-width: 767px) {
+    .inner-form {
+        padding: 70px 30px;
+    }
+}
+
+@media (max-width: 991px) {
+    .das-pp-1 p {
+        text-align: left;
+    }
+}

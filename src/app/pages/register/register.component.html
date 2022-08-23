@@ -1,0 +1,221 @@
+<p-toast class="custom-toast"></p-toast>
+
+<section class="common-form login">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-form">
+                    <div class="row">
+                        <form [formGroup]="registerForm" (ngSubmit)="register(registerForm.value)">
+
+                            <div class="col-lg-12 ">
+                                <img class=" login-logo" src="assets/images/logog.png">
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="First name" formControlName="firstName" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" maxlength="40" trim>
+
+                                    <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.firstName.errors.required">First name is
+                                            required</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="Last name" formControlName="lastName" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" maxlength="40" trim>
+
+                                    <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.lastName.errors.required">Last name is
+                                            required</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="Email" formControlName="email" (keyup)="email_verify($event)" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" maxlength="40" trim>
+
+                                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.email.errors.required">Email is
+                                            required</span>
+                                        <span class="for-sub-name" *ngIf="f.email.errors.email">Email must be a valid
+                                            email
+                                            address</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12  form-group">
+                                <div class="mb-3 cus-mb password">
+                                    <input [type]="show ? 'text' : 'password'" class="form-control common-input-css " placeholder="Password" formControlName="password" name="password" value="" autocomplete="new-password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" maxlength="20"
+                                        trim>
+
+                                    <i [className]="show ? 'fa fa-eye common-fa' : 'fa fa-eye-slash common-fa'" class="eyconic" (click)="password()"></i>
+                                    <div class="invalid-feedback block">
+                                        <span *ngIf="submitted && f.password.hasError('required')">
+                                            Password is required
+                                        </span>
+                                        <span>
+                                            <ng-container *ngIf="!f.password.hasError('required')">
+
+                                                <i class="fa" [class.fa-times-circle]="f.password.hasError('minlength')"
+                                                    [class.green-color]="!f.password.hasError('minlength')"
+                                                    [class.fa-check-circle]="!f.password.hasError('minlength')">
+                                                    <p>
+                                                        Must be at least 8 characters!
+                                                    </p>
+                                                </i> <br>
+                                                <i class="fa"
+                                                    [class.fa-times-circle]="f.password.hasError('hasCapitalCase')"
+                                                    [class.green-color]="!f.password.hasError('hasCapitalCase')"
+                                                    [class.fa-check-circle]="!f.password.hasError('hasCapitalCase')">
+                                                    <p>
+                                                        Must contain at least 1 in Capital Case!
+                                                    </p>
+                                                </i> <br>
+                                                <i class="fa"
+                                                    [class.fa-times-circle]="f.password.hasError('hasSmallCase')"
+                                                    [class.green-color]="!f.password.hasError('hasSmallCase')"
+                                                    [class.fa-check-circle]="!f.password.hasError('hasSmallCase')">
+                                                    <p>
+                                                        Must contain at least 1 Letter in Small Case!
+                                                    </p>
+                                                </i> <br>
+                                                <i class="fa" [class.fa-times-circle]="f.password.hasError('hasNumber')"
+                                                    [class.green-color]="!f.password.hasError('hasNumber')"
+                                                    [class.fa-check-circle]="!f.password.hasError('hasNumber')">
+                                                    <p>
+                                                        Must contain at least 1 number!
+                                                    </p>
+                                                </i> <br>
+                                                <i class="fa"
+                                                    [class.fa-times-circle]="f.password.hasError('hasSpecialCharacters')"
+                                                    [class.green-color]="!f.password.hasError('hasSpecialCharacters')"
+                                                    [class.fa-check-circle]="!f.password.hasError('hasSpecialCharacters')">
+                                                    <p>
+                                                        Must contain at least 1 Special Character!
+
+                                                    </p>
+                                                </i> <br>
+                                            </ng-container>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12  form-group">
+                                <div class="mb-3 cus-mb password">
+                                    <input type="password" class="form-control common-input-css" placeholder="Confirm password" formControlName="passwordConfirm" [ngClass]="{ 'is-invalid': submitted && f.passwordConfirm.errors }" maxlength="20" trim>
+                                    <div *ngIf="submitted && f.passwordConfirm.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.passwordConfirm.errors.required">
+                                            Confirm Password is required
+                                        </span>
+                                        <span class="for-sub-name" *ngIf="!f.passwordConfirm.errors.required && f.passwordConfirm.errors.matchOther">
+                                            Confirm Password Must Match
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="Phone" formControlName="phone" [ngClass]="{ 'is-invalid': submitted && f.phone.errors }" maxlength="15" (keypress)="validateDec($event)" trim>
+
+                                    <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.phone.errors.required">Phone is
+                                            required</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="Company" formControlName="company" [ngClass]="{ 'is-invalid': submitted && f.company.errors }" maxlength="40" trim>
+
+                                    <div *ngIf="submitted && f.company.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.company.errors.required">Company is
+                                            required</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <textarea type="text" class="form-control common-input-css" placeholder="Comment" formControlName="comment" maxlength="80" trim>
+                               </textarea>
+
+
+                                </div>
+                            </div>
+
+                            <!-- <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input formControlName="dob" class="form-control common-input-css" name="dob"
+                                        placeholder="Date of birth" max={{currentDate}} type="text"
+                                        onkeydown="return false" onfocus="(this.type='date')" id="date" />
+                                    <div *ngIf="submitted && f.dob.errors" class="colred">
+                                        <div *ngIf="f.dob.errors.required"> Date of birth is required
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <!-- CheckSum -->
+                                    <ng-container>
+                                        <!-- <div class="row match-captcha no-margin" data-aos="fade-down"
+                                            data-aos-duration="2500">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label>Please Resolve Captcha</label>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                        <!-- <div class="row match-captcha form-group">
+                                            <div class="num-captcha">
+                                                <div class="col-1"><span><strong>{{mathCaptcha.matchCapNum1}}</strong></span></div>
+                                                <div class="col-1">+</div>
+                                                <div class="col-1"><span><strong>{{mathCaptcha.matchCapNum2}}</strong></span></div>
+                                                <div class="col-1">=</div>
+                                                <div class="col">
+                                                </div>
+
+                                                <div>
+                                                    <input type="text" placeholder="Resolve Captcha" class="form-control common-input-css" trim (keyup)="mathCaptcha.mathCapInputError=''" [(ngModel)]="mathCaptcha.mathCapInput" [ngModelOptions]="{standalone: true}">
+                                                </div>
+                                            </div>
+                                        </div> -->
+
+
+                                    </ng-container>
+                                    <!-- endCheckSum -->
+
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <div class="form-group captcha g-recaptcha">
+                                        <re-captcha (resolved)="resolved($event)" siteKey="6Lcy7N4ZAAAAAHpYHlxEitgnmnAWUJaCCe5cNUzk"></re-captcha>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-3 cus-mb">
+                                    <button class="BT login-bt" [disabled]="isBtnDisabled" type="submit">Register
+                                        <i class="fa fa-spinner fa-spin" *ngIf="isBtnDisabled" aria-hidden="true"></i>
+
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="col-lg-12">
+                            <div class="mb-3 cus-mb">
+                                <a class="form-a" href="javascript:void(0)" [routerLink]="['/login']">Click here to
+                                    login</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

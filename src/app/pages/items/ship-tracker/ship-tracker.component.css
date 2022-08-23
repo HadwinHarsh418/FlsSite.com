@@ -1,0 +1,113 @@
+.d-flex-1 {
+    justify-content: flex-end;
+    display: flex;
+}
+
+.complete-tabs ul {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 0px 0 0 0;
+    border-bottom: 2px solid rgb(64, 63, 173);
+}
+
+.complete-tabs ul li.active {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid rgb(64, 63, 173);
+    border-bottom: transparent;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-bottom: 0px;
+}
+
+.complete-tabs ul li {
+    padding: 7px 10px;
+    border: 1px solid transparent;
+    margin: 0 0px;
+    color: #495057;
+    font-weight: 500;
+    border-radius: 0px;
+    min-width: 125px;
+    border-bottom: 1px solid transparent;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 0px;
+}
+
+.complete-tabs-content .p-datatable.p-datatable-gridlines .p-datatable-header {
+    border-top: none !important;
+}
+
+
+.tabs ul {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 10px 0 0 0;
+    border-bottom: 1px solid rgb(64, 63, 173);
+}
+
+.tabs ul li {
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    margin: 0 0px;
+    color: #495057;
+    font-weight: 500;
+    border-radius: 0px;
+    min-width: 125px;
+    border-bottom: 1px solid transparent;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+
+.tabs ul li.active {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid rgb(64, 63, 173);
+    border-bottom: transparent;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.tab-content .p-datatable.p-datatable-gridlines .p-datatable-header {
+    border-top: none !important;
+}
+
+.tab-content {
+    border: 1px solid rgb(64, 63, 173);
+    border-top: none;
+}
+
+.one-ooo {
+    margin-top: 11px;
+}
+
+::ng-deep tr.dx-header-row>td.dx-datagrid-action {
+    text-align: left !important;
+}
+
+::ng-deep .dx-item.dx-treeview-item.dx-column-chooser-item.dx-datagrid-drag-action {
+    margin-top: 10px;
+}
+
+::ng-deep .dx-item.dx-treeview-item.dx-column-chooser-item {
+    margin-top: 10px;
+}
+
+::ng-deep ag-grid-angular.ag-theme-alpine {
+    width: 100% !important;
+    height: 500px !important;
+}
+
+::ng-deep ag-grid-angular .ag-header-cell {
+    background: #403fad !important;
+    color: #fff !important;
+}
+
+::ng-deep ag-grid-angular .ag-header-cell .ag-icon {
+    color: #fff !important;
+}

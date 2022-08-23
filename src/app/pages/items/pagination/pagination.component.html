@@ -1,0 +1,22 @@
+<div class="flex">
+    <div>
+        <ul class="pagination" *ngIf="numberOfPages > 1" style="color: #a5a2a2;">
+            <li class="page-item" [class.active]="activePgSize ==25" (click)="changePageSize(25)"><a class="page-link" style="cursor: pointer" >25</a></li>
+            <li class="page-item" [class.active]="activePgSize ==50" (click)="changePageSize(50)"><a class="page-link" style="cursor: pointer">50</a></li>
+            <li class="page-item"  [class.active]="activePgSize ==100" (click)="changePageSize(100)"><a class="page-link" style="cursor: pointer">100</a></li>
+            <li class="page-item"  [class.active]="activePgSize ==200" (click)="changePageSize(200)"><a class="page-link" style="cursor: pointer">200</a></li>
+            <li class="page-item"  [class.active]="activePgSize ==500" (click)="changePageSize(500)"><a class="page-link" style="cursor: pointer">500</a></li>
+        </ul>
+    </div>
+    <div style="display: flex; align-items: center;color: #a5a2a2;font-size: 12px;">
+        <p *ngIf="numberOfPages > 1">Page of {{activePg}} of {{totalElemnt}}({{totalNumber}} items)</p>&nbsp;
+        <ul class="pagination" *ngIf="numberOfPages > 1">
+            <li class="page-item" [class.disabled]="activePg <= 1"><a class="page-link" style="cursor: pointer" (click)="changePage(1)">«</a></li>
+            <li class="page-item" [class.disabled]=""><a class="page-link" style="cursor: pointer" (click)="changepageDec()"><</a></li>
+            <li class="page-item" [class.active]="activePg == page" *ngFor="let page of pagesNumbers"><a class="page-link" style="cursor: pointer" (click)="changePage(page)">{{page}}</a></li>
+            <li class="page-item" [class.disabled]=""><a class="page-link" style="cursor: pointer" (click)="changepageInc()">></a></li>
+            <li class="page-item" [class.disabled]="activePg >= pagesArray.length"><a class="page-link" style="cursor: pointer" (click)="changePage(pagesArray.length)">»</a></li>
+        </ul>
+    </div>
+
+</div>

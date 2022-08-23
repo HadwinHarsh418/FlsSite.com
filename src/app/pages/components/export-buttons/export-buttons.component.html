@@ -1,0 +1,23 @@
+<div class="d-flex-1" style="margin-top: 3px">
+    <button *ngIf="excelPermission && toShowButtons?.includes('xlsx')" type="button" class="{{btnClass}} btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+        style="background: green;" (click)="emitExcel()">
+        <!-- <img src="assets/images/xl.png" alt="" /> -->
+        <i class="fa fa-file-excel"></i>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadExlFile"
+            style="color: white; margin-left: 5px" aria-hidden="true"></i>
+    </button>
+    <button *ngIf="csvPermission && toShowButtons?.includes('csv')" type="button" class="{{btnClass}} btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+        style="background: #2196f3;position: relative;" (click)="emitCSV()">
+        <!-- <img src="assets/images/csv.png" alt="" /> -->
+        <i class="fa fa-file-csv"></i>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadCsvFile" aria-hidden="true"
+            style="color: white; margin-left: 5px"></i>
+    </button>
+    <button *ngIf="pdfPermission && toShowButtons?.includes('pdf')" type="button" class="{{btnClass}} btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+        style="background: red;position: relative;" (click)="emitPDF()">
+        <!-- <img src="assets/images/pdf.png" alt="" /> -->
+        <i class="fa fa-file-pdf"></i>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadPdfFile" aria-hidden="true"
+            style="color: white; margin-left: 5px"></i>
+    </button>
+</div>

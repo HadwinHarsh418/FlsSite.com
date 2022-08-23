@@ -1,0 +1,240 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Fty table</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">FTY</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'fty'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" (change)="updateActionButtons()" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+
+
+                        <p class="test-pp" *ngIf="actions.canUpload">{{hideUploadSec ? 'Hide' : 'Show'}} Upload section
+                        </p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canUpload">
+                            <input type="checkbox" id="GoogleAuth" [(ngModel)]="hideUploadSec" class="custom-control-input">
+                            <label class="custom-control-label" for="GoogleAuth"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="FTY are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                 <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                 <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i></button>
+                        </p>
+                    </div>
+                </div>
+                <app-import-data *ngIf="hideUploadSec" [type]="'fty'" (result)="handler($event)"></app-import-data>
+                  <div class=" mr">
+                      <input type="text" pInputText class="search-text mr" placeholder="Fty" [(ngModel)]="FtyCode" (keyUp.enter)="getAllFTYs()" />
+                      <input type=" text " pInputText class="search-text mr " placeholder="Fty Group " [(ngModel)]="FtyGroup " (keyUp.enter)="getAllFTYs()" />
+                      <!-- <input type=" text " pInputText class="search-text mr " placeholder="Search Status " [(ngModel)]="searchStatus " (keyUp.enter)="getAllFTYs()" /> -->
+                      <p-dropdown class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-right': '4px'}"
+                                                    [options]="ftySearchStatuses" [(ngModel)]="searchStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-dropdown>
+                      <button pButton type="button" label=" " class="p-button-success mr" (click)="getAllFTYs()" style="margin-right: 5px;">
+                          <i class="fa fa-search" aria-hidden="true"></i>
+                      </button>
+                      <button pButton type="button" label=" " class="p-button-primary mr" (click)="clearNew()">
+                          <i class="fa fa-close" aria-hidden="true"></i>
+                      </button>
+                  </div>
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                        <p-table #dt [value]="ftys" [columns]="selectedColumns" dataKey="id" (onColReorder)="saveReorderedColumns($event)" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [loading]="loading" [paginator]="false" [autoLayout]="true" columnResizeMode="expand"
+                            [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'" [filterDelay]="500" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [lazy]="true" [totalRecords]="totalRecords" [reorderableColumns]="true"
+                            [resizableColumns]="true"  (onLazyLoad)="getAllFTYs($event)" [globalFilterFields]="['ftyGroup','fty','ftyDesc','vendId','lclSurcharge','nyTerm','caTerm','termNotes','portOfLoading','telexReleaseTerm']">
+                            <ng-template pTemplate="left">
+                          </ng-template>
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="p-input-icon-left">
+                                        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" appendTo="body"
+                                            optionLabel="header" (onChange)="onChange($event)"
+                                            selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}"
+                                            placeholder="Choose Columns"></p-multiSelect>
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                            filters'}}</label>
+                                    </span>
+                                    <div class="d-flex">
+                                        <div class="justify-content-center">
+                                            <button *ngIf="actions.canAdd" type="button" style="min-height: auto !important;margin-right: 5px;height: 34px !important; " class="btn btn-primary my-2 btn-icon-text" (click)="openNew()">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <col *ngFor="let col of columns">
+                                </colgroup>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.fty-desc]="col.field === 'ftyDesc'" [class.lclSurcharge]="col.field === 'lclSurcharge'" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td [class.fty-desc]="col.field === 'ftyDesc'" [class.lclSurcharge]="col.field === 'lclSurcharge'">
+                                            <ng-container *ngIf="col.field != 'ftyStatus'">{{rowData[col.field]}}</ng-container>
+                                            <ng-container *ngIf="col.field == 'ftyStatus'">{{rowData[col.field] == true ? 'ACTIVE' : rowData[col.field] == false ? 'INACTIVE' : '' }}</ng-container>
+                                            <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(rowData)"></button>
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center;">No fty found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" header="FTY Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row mb-3">
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">VENDID</label>
+                    <input type="text" pInputText id="vendId" [(ngModel)]="editableObject.vendId" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.vendId">*required</small>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">FTY</label>
+                    <input type="text" pInputText id="fty" [(ngModel)]="editableObject.fty" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.fty">*required</small>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Fty Group</label>
+                    <input type="text" pInputText id="ftyGroup" [(ngModel)]="editableObject.ftyGroup" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Description</label>
+                    <input type="text" pInputText id="ftyDesc" [(ngModel)]="editableObject.ftyDesc" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Lcl Surcharge</label>
+                    <input type="text" pInputText id="lclSurcharge" [(ngModel)]="editableObject.lclSurcharge" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Port of Loading</label>
+                    <input type="text" pInputText id="portOfLoading" [(ngModel)]="editableObject.portOfLoading" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Telex Release Term</label>
+                    <input type="text" pInputText id="telexReleaseTerm" [(ngModel)]="editableObject.telexReleaseTerm" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">NY Terms</label>
+                    <input type="number" pInputText id="nyTerms" [(ngModel)]="editableObject.nyTerms" onKeyPress="if(this.value.length==3) return false;" />
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.nyTerms">NY Terms is
+                        required.</small>  -->
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CA Terms</label>
+                    <input type="number" pInputText id="caTerms" [(ngModel)]="editableObject.caTerms" onKeyPress="if(this.value.length==3) return false;" />
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.caTerms">CA Terms is
+                        required.</small>  -->
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Term Notes</label>
+                    <input type="text" pInputText id="termNotes" [(ngModel)]="editableObject.termNotes" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Fty Status</label>
+                    <p-dropdown [options]="ftyStatuses" [(ngModel)]="selectedFtyStatus" optionLabel="name"></p-dropdown>
+
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

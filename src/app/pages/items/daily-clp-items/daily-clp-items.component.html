@@ -1,0 +1,197 @@
+<p-toast class="custom-toast"></p-toast>
+
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Clp Daily POS</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">CLP Daily POS</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'clpDailyItems'"></app-users-with-permissions>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Daily CLP's are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()"> 
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i></button>
+                        </p>
+                    </div>
+                </div>
+
+                <p-toolbar>
+                    <input type="text" pInputText class="search-text" placeholder="Search Item No." [(ngModel)]="searchItemNo" (keyup)="search('itemNo')" />
+                    <input type="text" pInputText class="search-text" placeholder="Search PO" style=" margin-left: 1%; " [(ngModel)]="searchPo" (keyup)="search('po')" />
+                    <div class="clp-calender set-icon">
+                        <p-calendar [(ngModel)]="startDate" placeholder="Start Date" [showIcon]="true" inputId="icon2" appendTo="body">
+                        </p-calendar>
+                    </div>
+                    <div class="clp-calender set-icon">
+                        <p-calendar [(ngModel)]="endDate" placeholder="End Date" [showIcon]="true" inputId="icon3" appendTo="body">
+                        </p-calendar>
+                    </div>
+                    <p-checkbox [(ngModel)]="value" (onChange)="handleData($event)" label="View confirmed Items" [binary]="true">
+                    </p-checkbox>
+                    <button pButton type="button" label="Clear Filters" class="p-button-info" (click)="vanishFilter()"></button>
+                    <button pButton type="button" label="Submit" class="p-button-info" [disabled]="!selectedItems || !selectedItems.length" (click)="check()"></button>
+                </p-toolbar>
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                        <p-table #dt [value]="dailyClp" [columns]="cols" dataKey="uniKey" [reorderableColumns]="true" [rowHover]="true" [showCurrentPageReport]="true" [(selection)]="selectedItems" [resizableColumns]="true" columnResizeMode="expand" [autoLayout]="true" [rowsPerPageOptions]="[50,100,200,500]"
+                            [loading]="loading" [paginator]="false" [totalRecords]="totalRecords" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" (onLazyLoad)="getAllDailyItems($event)"
+                            [lazy]="true"   [filterDelay]="0" [globalFilterFields]="['itemNo','po','prd','vdCode','um','itemDesc','shipId','notes','qty','gwCtn','gw','fty','etd','cntrNo','cbmCtn','cost','extCost','cbm']">
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                            filters'}}</label>
+                                    </span>
+
+                                    <span class="checkClass" *ngIf="duplicateRcd && duplicateRcd.length">
+                                        <button type="button" class="btn btn-warning my-2 btn-icon-text"
+                                            (click)="openDuplicaterc()">
+                                            <i class="fa fa-clone" aria-hidden="true"></i> Duplicate CLP's
+                                        </button>
+                                    </span>
+
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <col *ngFor="let col of columns">
+                                </colgroup>
+
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th style="width: 44px">
+                                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    </th>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.col-desc]="col.field === 'itemDesc'" *ngIf="!col.hidden" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && col.field != 'isVisible' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action' && col.field != 'isVisible'" [field]="col.field"></p-sortIcon>
+                                            {{ col.header}}
+
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index" [ngClass]="rowData.userOperation == 'Approved' ? 'green' : rowData.userOperation == 'Rejected' ? 'red' : ''">
+                                    <td>
+                                        <p-tableCheckbox [value]="rowData" *ngIf="!rowData.isVisible">
+                                        </p-tableCheckbox>
+                                    </td>
+                                    <ng-container *ngFor="let col of columns">
+                                        <td *ngIf="!col.hidden" [class.col-desc]="col.field === 'itemDesc'">
+                                            {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ? (rowData[col.field] | currency:'USD') : rowData[col.field] | decimalNumber : col.field }}
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center;">No Item found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="clpsDialogue" [style]="{width: '500px'}" header="Select operation for selected items" [modal]="true" styleClass="p-fluid" (onHide)="hideDialog()">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <p-dropdown appendTo="body" [options]="operations" [(ngModel)]="selectedOp" placeholder="Select operation" optionLabel="op" [showClear]="true">
+                </p-dropdown>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="{{btnText}}" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="duplicatePopUo" [style]="{width: '500px'}" header="Duplicate Records" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Item No.</th>
+                        <th>PO</th>
+                        <th>PO Line</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let dp of duplicateRcd">
+                        <td>{{dp.itemNo}}</td>
+                        <td>{{dp.po}}</td>
+                        <td>{{dp.poLine}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <div>
+                <div>Total duplicate records : <b>{{duplicateRcd.length}}</b></div>
+                <div>Total count of repetition records : <b> {{duplicateRcdNo}} </b></div>
+
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDefaultDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Columns Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols">Columns below are not mapped and will not be saved</div>
+            </div>
+            <div *ngFor="let cl of extraCols; let i = index" class="col-lg-4">
+                <div class="columnsHead">
+                    <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

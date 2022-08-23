@@ -1,0 +1,420 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Items</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Items</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'items'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" class="custom-control-input" (change)="updateActionButtons()">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="test-pp" *ngIf="actions.canUpload">{{hideUploadSec ? 'Hide' : 'Show'}} Upload section
+                        </p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canUpload">
+                            <input type="checkbox" id="GoogleAuth" [(ngModel)]="hideUploadSec" class="custom-control-input">
+                            <label class="custom-control-label" for="GoogleAuth"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Items are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+
+                <app-import-data *ngIf="hideUploadSec" [type]="'item'" (result)="handler($event)"></app-import-data>
+                <div class="res_field">
+                    <div>
+                        <input type="text" pInputText class="search-text m-0" style="width:96px" placeholder="ITEM NO." [(ngModel)]="itemNo"
+                            (keyup.enter)="loadCustomers()" />
+                    </div>
+                    <div>
+                        <input type="text" pInputText class="fty-text m-0" style="width:96px" placeholder="FTY CODE" [(ngModel)]="ftyCode"
+                            (keyup.enter)="loadCustomers()" />
+                    </div>
+                    <div>
+                        <input type="text" pInputText class="fty-text m-0" style="width:96px" placeholder="CATEGORY" [(ngModel)]="category"
+                            (keyup.enter)="loadCustomers()" />
+                    </div>
+
+                    
+                    
+                        <div>
+                            <button pButton type="button" label=" " class="n-btn p-button-success mr" (click)="loadCustomers()">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div>
+                            <button pButton type="button" label=" " class="n-btn p-button-primary mr"
+                                style="margin-left: 3px;" (click)="clearNew()">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    
+                </div> 
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer  p-datatable-wrapper">
+                        <p-table [columns]="selectedColumns" #dt1 [value]="customers" [rowHover]="true" [reorderableColumns]="true" dataKey="id" [rows]="50" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'" [showCurrentPageReport]="true" [resizableColumns]="true" columnResizeMode="expand"
+                            styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" (onColReorder)="saveReorderedColumns($event)"  [totalRecords]="totalRecords" [paginator]="false" [lazy]="true"
+                            (onLazyLoad)="loadCustomers($event)" [loading]="loading" [filterDelay]="500" >
+                            
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex table-header">
+                                    <div class="one-ooo">
+                                        <span class="p-input-icon-left p-ml-auto">
+                                            <i class="pi pi-search"></i>
+                                            <input pInputText type="text" style="padding-left: 30px !important;"
+                                                (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                                placeholder="Search keyword" />
+                                        </span>
+                                        <span class="p-input-icon-left defaltCol">
+                                            <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns"
+                                                appendTo="body" optionLabel="header" (onChange)="onChange($event)"
+                                                selectedItemsLabel="{0} col selected" placeholder="Choose Columns">
+                                            </p-multiSelect>
+                                        </span>
+                                        <span class="checkClass">
+                                            <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                            <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide filters'}}</label>
+                                        </span>
+                                        <span class="checkClass">
+                                            <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                                (click)="openDefaultCol()">
+                                                <i class="fa fa-columns" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex-1" style="margin-top: 3px">
+                                        <div class="justify-content-center">
+                                            <button type="button" class="btn btn-white btn-icon-text my-2 mr-2 filesBtn bg-warning" (click)="openBulkUpload()">
+                                                <i class="ti ti-upload text-white" *ngIf="!bulkUploading"></i>
+                                            </button>
+                                            <app-export-buttons [style]="'display: -webkit-inline-box;'"
+                                                (exportExcel)="getExcel('Excel')"
+                                                (exportCsv)="getExcel('CSV')"
+                                                (exportPdf)="getExcel('PDF')"
+                                                [loadExlFile]="loadExlFile"
+                                                [loadCsvFile]="loadCsvFile"
+                                                [loadPdfFile]="loadPdfFile"
+                                                [excelPermission]="actions.canImportExl"
+                                                [csvPermission]="actions.canImportCsv"
+                                                [pdfPermission]="actions.canImportPSD"
+                                                
+                                        ></app-export-buttons>
+                                            <button *ngIf="actions.canAdd" type="button" class="btn btn-primary my-2 btn-icon-text" (click)="openNew()" style="margin-right: 5px;">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <col *ngFor="let col of columns">
+                                </colgroup>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.col-desc]="col.field === 'description'" [pSortableColumnDisabled]="col.field === 'Action'">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td class="ui-resizable-column" [class.col-desc]="col.field === 'description'">
+                                            <div *ngIf="col.field === 'itemNo'; else ngElse_noPhotoUrl" style=" cursor: pointer; " (click)="openGallery(rowData)">
+                                                <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+                                                <!-- {{rowData[col.field]}} -->
+                                            </div>
+                                            <ng-template #ngElse_noPhotoUrl>
+                                                    {{ col.currency || col.field === 'cost' ? (rowData[col.field] | currency:'USD') : rowData[col.field]}}
+                                            </ng-template>
+                                            <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(rowData)"></button>
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+                                            <button pButton pRipple icon="pi pi-print" *ngIf=" col.field === 'Action'" class="p-button-rounded p-button-secondary" (click)="printProduct(rowData)"></button>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center;"> No items found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12" style="display: none;">
+        <div id="pdfTable" #pdfTable>
+            <!-- <ngx-barcode [bc-value]="value" [bc-display-value]="true"></ngx-barcode> -->
+            <table style="background: #fff;width: 100%;max-width: 900px;margin: auto;padding: 75px 20px">
+                <tr>
+                    <td style="vertical-align: baseline;">
+                        <div>
+                            <p style="font-size: 18px;color: #FFF;font-weight: 600;background: #000;width: 100%;padding: 0px 20px;margin: 0 0 0 0;max-width: 250px;">
+                                ITEM NO.</p>
+                        </div>
+                        <p style="font-size: 65px;color: #000;font-weight: 700;padding: 0;margin: 0px;">
+                            {{printData.itemNo}}</p>
+                    </td>
+                    <td style="vertical-align: baseline;">
+                        <p style="font-size: 18px;color: #FFF;font-weight: 600;background: #000;width: 100%;padding: 0px 20px;margin: 0 0 0 0;max-width: 250px;">
+                            PACKING</p>
+                        <p style="font-size: 20px;font-weight: 700;padding: 25px 0 0 5px;color: #000;margin: 0;">
+                            {{printData.packing}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div style="width: 100%;margin: 20px 0 30px 0;border-top: dotted;border-bottom: dotted;">
+                            <h2 style="font-size: 50px;color: #000;font-weight: 700;margin: 0;"> CLEAR </h2>
+                            <h3 style="font-size: 18px;color: #FFF;font-weight: 600;background: #000;width: 100%;padding: 2px 5px;margin: 0 0 0 0;max-width: 450px;">
+                                DESCRIPTION </h3>
+                            <p style="font-size: 38px;color: #000;margin: 0;">{{printData.description}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="baarcode">
+                            <ngx-barcode [bc-value]="printData.csUpc" [bc-display-value]="true"></ngx-barcode>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fineline">
+                            <img style="width: 100%;max-width: 250px;margin: auto;display: block;" src="assets/images/fineline.jpg">
+                            <p style="font-size: 13px;color: #000;text-align: center;"> www.finelinesettings.com </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="toBulkUpload" [style]="{width: '1000px'}" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="header">
+        <div style="color: red; ">
+            <b>Bulk image upload</b> (upload .zip file only)
+        </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col">
+                <p-fileUpload name="bulkFileUp[]" accept=".zip" [disabled]="bulkUploading" customUpload="true" (uploadHandler)="myUploader($event)" styleClass="have-drop">
+                    <ng-template pTemplate="content">
+                        <div class="drag-drop">
+                            <p>
+                                <i class="fa fa-spinner fa-spin" *ngIf="bulkUploading"></i>
+                                <i class="ti ti-upload" *ngIf="!bulkUploading"></i>
+                                <br>Drag your files here.
+                                <br> <span class="text-danger">Please use underscore after item no as file name e.g. BK250-45_1.jpg
+                                    </span>
+                            </p>
+                        </div>
+                    </ng-template>
+                </p-fileUpload>
+            </div>
+        </div>
+    </ng-template>
+
+</p-dialog>
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="header">
+        <div>
+            <b>Item Details</b> Enter Unique FTY and Item No
+        </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+        <div class="row">
+            <!-- demo -->
+            <div class="col-lg-6" *ngFor="let myField of _selectedColumns">
+                <div class="p-field" *ngIf="myField.header!='FTY CODE' && myField.header!='CATEGORY' && myField.header!='Action' && myField.header!='ID'">
+                    <label for="{{myField.header}}">{{myField.header}}</label>
+                    <input type="{{myField.header=='COST' ? 'number' : 'text'}}"  pInputText id="{{myField.header}}" [disabled]="editableObject && editableObject.id && myField.field == 'itemNo'" [(ngModel)]="editableObject[myField.field]" />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject[myField.field] && requiredF.includes(myField.field)">* required.</small>
+                </div>
+
+                <div class="p-field" *ngIf="myField.header =='FTY CODE'">
+                    <label for="name">Select FTY</label>
+                    <p-dropdown appendTo="body" [options]="ftys" [disabled]="editableObject && editableObject.id" [(ngModel)]="selectedFtys" placeholder="Select FTY" optionLabel="fty" [showClear]="true">
+                    </p-dropdown>
+                    <small class="p-invalid" *ngIf="submitted && !selectedFtys">* required.</small>
+                </div>
+                <div class="p-field" *ngIf="myField.header =='CATEGORY'">
+                    <label for="name">Select Category</label>
+                    <p-dropdown appendTo="body" [options]="categories" [(ngModel)]="selectedCategory" placeholder="Select category" optionLabel="category" [showClear]="true"></p-dropdown>
+                    <small class="p-invalid" *ngIf="submitted && !selectedCategory">* required.</small>
+                </div>
+
+
+            </div>
+            <div class="col-lg-12">
+                <div class="p-field">
+                    <p-fileUpload #fileInput name="files" [showUploadButton]="false" multiple="multiple" customUpload="true" accept="image/*" maxFileSize="1000000" styleClass="have-drop">
+                        <ng-template pTemplate="content">
+                            <div class="drag-drop">
+                                <p><i class="ti ti-upload"></i> <br>Drag your files here.</p>
+                            </div>
+                            <ul *ngIf="uploadedFiles.length">
+                                <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                            </ul>
+                            <ul class="editableDiv" *ngIf="editableObject.imagesData && editableObject.imagesData.length">
+                                <li *ngFor="let fl of editableObject.imagesData">
+                                    <div class="item-imgList">
+                                        <img class="editImg" src="{{fl.image}}" alt="">
+                                    </div>
+                                    <!-- <div>{{fl.name}} </div> -->
+                                    <div><button (click)="deleteImg(fl)" type="button" icon="pi pi-times" pbutton="" class="p-button p-component p-button-icon-only"><span
+                                                class="p-button-icon pi pi-times" aria-hidden="true"></span><span
+                                                aria-hidden="true" class="p-button-label">&amp;nbsp;</span></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </ng-template>
+                    </p-fileUpload>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+
+
+<p-dialog [(visible)]="deleteDialogue" [style]="{width: '500px'}" header="Delete confirmation" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="p-field">
+                <label for="name">Please enter <span style=" color: red; "><b>YES</b></span> to delete <span
+                        style=" color: #c9a168; "> <b>{{items.itemNo}}</b></span></label>
+                <input type="text" pInputText id="deleteText" maxlength="3" [(ngModel)]="deleteText" required />
+                <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.category">Type YES is
+                        required.</small> -->
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDeleteDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Delete" icon="pi pi-check" *ngIf="!itemLoading" (click)="finalDelete()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="defaultColumnsPop" [style]="{width: '1000px'}" header="Default Ordering" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div *ngFor="let cl of columnArr; let i = index" class="col-lg-3">
+                <div class="columnsHead">
+                    <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl.selectedCName}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDefaultDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Set default order" icon="pi pi-check" *ngIf="!loadingDefaultCol" (click)=" saveDefault()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingDefaultCol" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<div class="modal " id="myModal" backdrop="static" role="dialog" tabindex="-1" style="display: block; background-color: rgba(0, 0, 0, 0.32); z-index: 111111;" [style.display]="galleryDialogue ? 'block' : 'none'" *ngIf="galleryDialogue" aria-hidden="true">
+    <div class="close-me overlay-modal" (click)="closeImgModal()"></div>
+    <div class="modal-dialog">
+        <div class="modal-content" style="margin-top: 170px;">
+            <div class="row row-0">
+                <div class="col-lg-8">
+                    <div class="single-item galleryPopup">
+
+                        <div class="box" *ngFor='let im of editableObject.imagesData; let i = index'>
+                            <img src="{{im.image}}" [alt]="im.name">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="graybx">
+                        <h2>Item Description</h2>
+                        <div><b>ITEM NO</b> : {{editableObject.itemNo}}</div>
+                        <div><b>FTY Code</b> : {{editableObject.ftyCode}}</div>
+                        <div> <b>DESCRIPTION</b> :{{editableObject.description}}</div>
+                        <div><b>MATERIAL</b> : {{editableObject.material}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div><i class="fa fa-times close-icon" (click)="closeImgModal()" aria-hidden="true"></i></div>
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+<!-- No Image found -->
+
+<p-dialog [(visible)]="noImg" [style]="{width: '500px'}" header="No Image Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="imgPopup">
+                <div>No images found for this item</div>
+
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideNoImgDialogue()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

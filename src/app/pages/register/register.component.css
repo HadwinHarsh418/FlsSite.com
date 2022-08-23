@@ -1,0 +1,40 @@
+.navbar-brand {
+    color: white;
+}
+
+input.form-control.common-input-css.is-invalid {
+    border: 2px solid #ad1616;
+}
+
+.password .common-fa {
+    position: absolute;
+    top: 19px !important;
+    right: 43px;
+}
+
+.invalid-feedback .green-color {
+    color: green;
+}
+
+.invalid-feedback.block i, .invalid-feedback.block p {
+    display: inline-block;
+}
+
+.invalid-feedback.block p {
+    margin-left: 5px;
+    font-family: "Roboto", sans-serif;
+    margin-bottom: 0;
+}
+
+.match-captcha .col-1 {
+    font-weight: 400;
+    line-height: 50px;
+    color: #cba269;
+    font-size: 19px;
+}
+
+.num-captcha {
+    display: flex;
+    background: #000000bd;
+    border-radius: 9px;
+}

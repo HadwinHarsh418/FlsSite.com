@@ -1,0 +1,38 @@
+{
+ 
+   "DataColumns":
+   
+   {
+      "Items": 
+      
+     
+         [
+         
+         {"id":"0","Caption":"Modify","DataField":[],"isVisible":true,"width":[],"children":false,"subCaption":[]},
+         {"id":"1","Caption":"Id","DataField":["id"],"isVisible":true,"width":["120"],"children":false,"subCaption":[]},
+         {"id":"2","Caption":"FTY","DataField":["fty"],"isVisible":true,"width":["120"],"children":false,"subCaption":[]},
+         {"id":"3","Caption":"ITEM#","DataField":["itemNo"],"isVisible":true,"width":["170"],"children":false,"subCaption":[]},
+         {"id":"4","Caption":"DESCRIPTION","DataField":["description"],"isVisible":true,"width":["320"],"children":false,"subCaption":[]},
+         {"id":"5","Caption":"COLLECTION","DataField":["collection"],"isVisible":true,"width":["170"],"children":false,"subCaption":[]},
+         {"id":"6","Caption":"FDA CODE","DataField":["fdaCode"],"isVisible":true,"width":["320"],"children":false,"subCaption":[]},
+         {"id":"7","Caption":"WEIGHT(g)","DataField":["weight"],"isVisible":true,"width":["170"],"children":false,"subCaption":[]},
+         {"id":"8","Caption":"PACKING","DataField":["pcsPerPck","pksPerInner","innsPerMc","pcsPerMc"],"isVisible":true,"width":["120","120","120","140"],"children":true,"subCaption":["PCS/PK","PKS/IN","IN/MC","PCS/MC"]},
+         {"id":"9","Caption":"PACKING INSTRUCTION","DataField":["packgInstruction"],"isVisible":true,"width":["240"],"children":false,"subCaption":[]},
+         {"id":"10","Caption":"UNT PK BARCODE","DataField":["unitPckBc"],"isVisible":true,"width":["220"],"children":false,"subCaption":[]},
+         {"id":"11","Caption":"INNER CTN BARCODE","DataField":["innrCtnBc"],"isVisible":true,"width":["220"],"children":false,"subCaption":[]},
+         {"id":"12","Caption":"MASTER CTN BARCODE","DataField":["masterCtnBc"],"isVisible":true,"width":["240"],"children":false,"subCaption":[]},
+         {"id":"13","Caption":"INNER CTN SIZE","DataField":["innerCtnLM","innerCtnWM","innerCtnHM","innerCtnCbm","innerCtnCbft"],"isVisible":true,"width":["120","120","120","120","120"],"children":true,"subCaption":["L","W","H","CBM","CBFT"]},
+         {"id":"14","Caption":"Master CTN SIZE","DataField":["masterCtnLM","masterCtnWM","masterCtnHM","masterCtnCbm","masterCtnCbft","plt"],"isVisible":true,"width":["120","120","120","120","120","120"],"children":true,"subCaption":["L","W","H","CBM","CBFT","PLT"]},
+         {"id":"15","Caption":"IN G.W","DataField":["innerCtnWtKg"],"isVisible":true,"width":["140"],"children":false,"subCaption":[]},
+         {"id":"16","Caption":"MC G.W","DataField":["masterCtnWtKg"],"isVisible":true,"width":["140"],"children":false,"subCaption":[]},
+         {"id":"17","Caption":"DAILY OUTPUT","DataField":["cycle","cavityNo","dailyOutputBox","toolingFee"],"isVisible":true,"width":["120","170","170","170"],"children":true,"subCaption":["CYCLE","CAVITY NO","DAILY OUTPUT","TOOLING FEE"]},
+         {"id":"18","Caption":"SALES","DataField":["salesPricePerCtn","salesDate"],"isVisible":true,"width":["120","120"],"children":true,"subCaption":["$/MC","DATE"]},
+         {"id":"19","Caption":"VALID PRICE","DataField":["vpUnitPrice","vpPricePerBox","vpPricePerKg","vpOfferDate","vpMoldCavity","vpMoldCost","vpDailyOutput"],"isVisible":true,"width":["170,170,170,170,200,170,170"],"children":true,"subCaption":["UNIT PRICE","PRICE/BOX","PRICE/KG","OFFER DATE","MOLD CAVITY","MOLD COST","DAILY OUTPUT"]},
+         {"id":"20","Caption":"NOTES","DataField":["notes"],"isVisible":true,"width":["320"],"children":false}
+        
+     
+        ]
+    
+   } 
+       
+}

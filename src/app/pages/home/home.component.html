@@ -1,0 +1,226 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="card">
+    <div class="card-body new-body">
+        <h5 class="card-title">Welcome to dashboard</h5>
+        <!--   <img src="assets/images/dashboard.jpg" alt=""> -->
+        <app-users-with-permissions [pageName]="'dashboard'"></app-users-with-permissions>
+
+        <div class="new-des">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body shortMenus">
+                            <div class="flex-11">
+                                <h3 class="card-title"> User's Shortcut </h3>
+                                <ul class="page-breadcrumb menu-ul">
+                                    <li *ngFor="let sh  of shortCuts">
+                                        <i class="{{sh.icon}}" style=" color: gray; padding: 0 4px; "></i>
+                                        <a href="javascript:void(0);" routerLink="{{sh.url}}">{{sh.shortcutName}}</a>
+                                        <i class="fa fa-remove" (click)="deleteRow(sh)" *ngIf="hideDelBtn" aria-hidden="true"></i>
+                                    </li>
+                                </ul>
+                                <div class="no-shortcut" *ngIf='shortCuts && shortCuts.length==0 && !loading'>No Shortcuts Found
+                                </div>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loading" style=" text-align: center; width: 100%; font-size: 29px; margin-top: 17px; " aria-hidden="true"></i>
+
+                            </div>
+                            <div class="flex-22">
+                                <div class="custom-control custom-switch">
+                                    <label for="">{{hideDelBtn ? 'Disable' : 'Enable'}} delete</label>
+                                    <input type="checkbox" id="GoogleAuth" [(ngModel)]="hideDelBtn" class="custom-control-input">
+                                    <label class="custom-control-label" for="GoogleAuth"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <br>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <!-- <div class="col-lg-6">
+                    <div class="das-pp">
+                        <p>Dashboard</p>
+                    </div>
+                </div> -->
+                <!-- <div class="col-lg-6">
+                    <div class="das-pp-1">
+                        <p>Welcome to Dashboard</p>
+                    </div>
+                </div> -->
+            </div>
+            <!-- <div class="row">
+                <div class="col-lg-4">
+                    <div class="left-sec">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="white-shade">
+                                    <div class="wel-bk">
+                                        <p class="welcome-bk-p">Welcome Back !</p>
+                                        <p class="welcome-bk-p-1">Skote Dashboard</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="pro-l">
+                                                <img class="lef-img" src="assets\images\user.jpg" alt="">
+                                                <p class="lef-p" *ngIf="user">{{user.firstName}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <div class="pro-2">
+                                                <div class="flex-sc">
+                                                    <p class="per-pro">
+                                                        <span>125</span>
+                                                        <span>Items</span>
+                                                    </p>
+                                                    <p class="per-pro">
+                                                        <span>125</span>
+                                                        <span>User's</span>
+                                                    </p>
+                                                </div>
+                                                <button class="view-pr" [routerLink]="['/setting/profile']">
+                                                    <span class="profile-1">View Profile</span>
+                                                    <span class="profile-2">View Profile</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="white-shade white-pad">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <p class="month-sal">Monthly Item</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="month-left">
+                                                <p class="this-p">This Month</p>
+                                                <p class="this-p1">$34'252</p>
+                                                <p class="this-p2"><span>12%</span> From</p>
+                                                <p class="this-p3">Previous Periods</p>
+                                                <button class="view-pr">
+                                                    <span class="profile-1">View Profile</span>
+                                                    <span class="profile-2">View Profile</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="month-right">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="digital-p">
+                                                <p>We credit digital, graphic and dimensions </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="right-sec">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="grid-cm">
+                                            <p class="grid-cm-p">
+                                                <span>Items</span>
+                                                <span>1234</span>
+                                            </p>
+                                            <div class="circle-wd">
+                                                <i class="fa fa-clone" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="grid-cm">
+                                            <p class="grid-cm-p">
+                                                <span>Items</span>
+                                                <span>1234</span>
+                                            </p>
+                                            <div class="circle-wd">
+                                                <i class="fa fa-user" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="grid-cm">
+                                            <p class="grid-cm-p">
+                                                <span>Items</span>
+                                                <span>1234</span>
+                                            </p>
+                                            <div class="circle-wd">
+                                                <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="graph-custom">
+                                <div id="chartdiv" style="width: 100%; height: 500px"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-des">
+                        <p class="latestitem">Latest Item</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" /></th>
+                                    <th>Item Number</th>
+                                    <th>FTY Code</th>
+                                    <th>Date Added</th>
+                                    <th>Cost</th>
+                                    <th>Status</th>
+                                    <th>UAPC</th>
+                                    <th>View Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" /></td>
+                                    <td>#w23232</td>
+                                    <td>test</td>
+                                    <td>test</td>
+                                    <td>test</td>
+                                    <td><button class="red-bt">test</button></td>
+                                    <td>test</td>
+                                    <td><button class="red-bt-last">test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" /></td>
+                                    <td>#w23232</td>
+                                    <td>test</td>
+                                    <td>test</td>
+                                    <td>test</td>
+                                    <td><button class="green-bt">test</button></td>
+                                    <td>test</td>
+                                    <td><button class="red-bt-last">test</button></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+    </div>
+</div>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

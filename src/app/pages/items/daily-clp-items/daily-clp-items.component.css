@@ -1,0 +1,46 @@
+p-dropdown {
+    margin-right: 0.4rem;
+}
+
+.green {
+    background-color: #90ce90 !important;
+    color: #fff !important;
+}
+
+.red {
+    background-color: #cc7474 !important;
+    color: #fff !important;
+}
+
+.warning-cols {
+    color: #da4444;
+    font-weight: 500;
+}
+
+.columnsHead {
+    border: 1px solid grey;
+    border-radius: 13px;
+    padding: 5px;
+    font-weight: 500;
+    margin: 2px;
+}
+
+input.search-text {
+    height: 30px !important;
+    width: 16%;
+}
+
+.confrimedViewdiv {
+    width: 70%;
+    float: left;
+    margin-left: 3%;
+}
+
+.clp-calender {
+    width: 16%;
+}
+
+.p-button {
+    margin-left: 5px;
+    padding: 2px 11px !important;
+}

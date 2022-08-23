@@ -1,0 +1,431 @@
+.d-flex-1 {
+  justify-content: flex-end;
+  display: flex;
+}
+
+.complete-tabs ul {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0px 0 0 0;
+  border-bottom: 2px solid rgb(64, 63, 173);
+}
+
+.complete-tabs ul li.active {
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid rgb(64, 63, 173);
+  border-bottom: transparent;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  margin-bottom: 0px;
+}
+
+.complete-tabs ul li {
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  margin: 0 0px;
+  color: #495057;
+  font-weight: 500;
+  border-radius: 0px;
+  min-width: 125px;
+  border-bottom: 1px solid transparent;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 0px;
+}
+
+.complete-tabs-content .p-datatable.p-datatable-gridlines .p-datatable-header {
+  border-top: none !important;
+}
+@media(max-width:991px) {
+  .clp-calender {
+      width: 100%;
+  }
+  .tabs ul{
+  display: flex;
+  width: 100%;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 10px 0 0 0;
+  border-bottom: 1px solid rgb(64, 63, 173);
+  flex-direction: column;
+  flex-wrap: nowrap;
+  }
+}
+@media screen and (max-width:600px){
+  .tabs ul {
+      display: block !important;
+  }
+}
+
+
+
+.tabs ul {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 10px 0 0 0;
+  border-bottom: 1px solid rgb(64, 63, 173);
+}
+
+.tabs ul li {
+  padding: 10px 4px;
+  border: 1px solid transparent;
+  color: #495057;
+  border-radius: 4px !important;
+  width: 150px;
+  border-bottom: 1px solid transparent;
+  text-align: center;
+  margin: 0 2px 0 2px !important;
+  height: 45px;
+  cursor: pointer;
+}
+
+.tabs ul li.active {
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid rgb(64, 63, 173);
+  border-bottom: transparent;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.tab-content .p-datatable.p-datatable-gridlines .p-datatable-header {
+  border-top: none !important;
+}
+
+.tab-content {
+  border: 1px solid rgb(64, 63, 173);
+  border-top: none;
+}
+
+.one-ooo {
+  margin-top: 11px;
+}
+
+::ng-deep tr.dx-header-row>td.dx-datagrid-action {
+  text-align: left !important;
+}
+
+::ng-deep .dx-item.dx-treeview-item.dx-column-chooser-item.dx-datagrid-drag-action {
+  margin-top: 10px;
+}
+
+::ng-deep .dx-item.dx-treeview-item.dx-column-chooser-item {
+  margin-top: 10px;
+}
+
+input.search-text {
+  height: 33px;
+  border: 1px solid #808080c7;
+  border-radius: 3px;
+  outline: none;
+  margin-right: 4px;
+  padding-left: 7px;
+  color: #000;
+}
+::ng-deep .p-multiselect .p-multiselect-label{
+  color: black !important;
+}
+.search-text {
+  height: 33px !important;
+  border: 1px solid #808080c7;
+  border-radius: 3px;
+  outline: none;
+  margin-right: 4px;
+  color: #000;
+  padding-left: 7px;
+}
+
+.ship-filters .ship-dtDd {
+  height: 32px;
+  border: 1px solid #d9d0d0;
+  border-radius: 2px;
+  color: gray;
+  outline: none;
+  margin-right: 3px;
+}
+
+.treetableDate .ui-widget-content {
+  width: 80%;
+}
+
+.tab-1 {
+  background-color: #347bb7;
+  color: #fff !important;
+}
+
+.tab-2 {
+  background-color: #95a5a6;
+  color: #fff !important;
+
+}
+
+.tab-3 {
+  background-color: #cba269;
+  color: #fff !important;
+
+}
+
+.tab-4 {
+  background-color: #1cbc9b;
+  color: #fff !important;
+
+}
+
+.tab-5 {
+  background-color: #8e45ad;
+  color: #fff !important;
+}
+
+.tab-6 {
+  background-color: #e09b3b;
+  color: #fff !important;
+}
+.tab-7 {
+  background-color: rgb(223, 49, 49);
+  color: #fff !important;
+}
+
+::ng-deep .tab-1.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.tab-2.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.tab-3.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+
+}
+
+.tab-4.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+
+}
+
+.tab-5.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.tab-6.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+.tab-7.active {
+  background-color: #fff !important;
+  color: black !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+::ng-deep .p-overlay-badge {
+  position: unset;
+}
+
+::ng-deep .p-overlay-badge span {
+  position: unset !important;
+  transform: unset !important;
+  background: #fefefe !important;
+  color: #000 !important;
+}
+
+::ng-deep .p-badge {
+  display: inline-block;
+  border-radius: 30px;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+::ng-deep .dx-datagrid-pager.dx-pager {
+  display: none;
+}
+
+::ng-deep app-ship-id-tracker .dx-widget {
+  display: block;
+  padding: 0;
+  outline: 0;
+  color-adjust: exact;
+  color: #333;
+  text-align: left;
+  font-weight: normal;
+  font-size: 14px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.35715;
+}
+
+::ng-deep .dx-datagrid .dx-row>td {
+  padding: 2px;
+}
+
+@media(max-width:991px) {
+  .tabs ul {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    /* margin: 0; */
+    padding: 10px 0 0 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid rgb(64, 63, 173);
+  }
+  .tabs ul li {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width:600px) {
+  .tabs ul {
+    display: block !important;
+  }
+  .tabs ul li {
+    width: 99%;
+  }
+
+  .search-text {
+    margin: 10 0 15px 0;
+  }
+
+  .p-multiselect {
+    margin: 0 0 5px 0;
+  }
+
+  .ng-tns-c187-7.p-multiselect.p-component.p-multiselect-chip {
+    margin: 0 0 5px 0;
+    width: auto;
+  }
+
+  .ng-tns-c187-8.p-multiselect.p-component.p-multiselect-chip {
+    margin: 0 0 5px 0;
+  }
+
+  /* button.p-button-success.mr.p-button.p-component.ng-star-inserted {
+    margin-left: 0px;
+  } */
+}
+::ng-deep .table-responsive.calender-class.new-table-color {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 0px 0;
+}
+::ng-deep button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn img {
+  max-width: 18px;
+}
+/* .p-multiselect-panel .p-multiselect-header .p-multiselect-close {
+  margin-left: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  color: #403fad;
+  border: 0 none;
+  background: #403fad !important;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+} */
+::ng-deep tr.dx-row.dx-data-row.dx-column-lines td{
+  text-align: left !important;
+}
+::ng-deep .p-datepicker{
+  position: absolute;
+  width: min-content !important;
+  margin: 0% !important;
+  padding: 0% !important;
+}
+.exportset{
+  position: relative;
+}
+.exportsetforRes{
+  position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);
+}
+.fields{
+  height: 47px;
+  width: 100%;
+}
+
+::ng-deep .generate-dialog .p-dialog-header-icon.p-dialog-header-close {
+  visibility: hidden;
+}
+
+::ng-deep a.dx-link.dx-icon-trash.dx-link-icon {
+  color: red!important;
+}
+::ng-deep app-ship-id-tracker tbody .dx-row.dx-data-row{
+  height: 22px!important;
+}
+ ::ng-deep tr.dx-row.dx-column-lines.dx-header-row {
+    font-weight: 500;
+} 
+::ng-deep app-ship-id-tracker .dx-datagrid-table tbody tr {
+  color: #000!important;
+}
+@media only screen and (max-width: 600px) {
+  .fields{
+    height: auto !important;
+    width: 100% !important;
+  }
+  table-responsive.calender-class.new-table-color {
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 0px 0;
+}
+.p-toolbar-group-left, html body .p-toolbar-group-right {
+  display: contents !important;
+  justify-content: center;
+  margin: 0px 41px 2px 0px !important;
+}
+.exportsetforRes{
+    position: unset !important;
+    display: block !important;
+    width: calc(100% - 0px) !important;
+}
+.fields {height: auto !important;}
+
+.fields .p-toolbar-group-left.ng-star-inserted {display: flex !important;flex-wrap: wrap;}
+
+.fields .table-responsive.calender-class.new-table-color.exportsetforRes {position: static !important;}
+
+.fields .ng-star-inserted {margin-right: 142px;}
+
+.fields .p-toolbar-group-left.ng-star-inserted select {width: 100%;}
+
+.fields .ng-star-inserted input {width: 100% !important;}
+}
+@media only screen and (min-width :991px) and (max-width :1024px){
+}
+@media only screen and (min-width :767px) and (max-width :991px){
+}
+
+::ng-deep app-ship-id-tracker .p-inputtext {
+  color: #000!important;
+  font-size: 15px;
+}
+
+::ng-deep app-ship-id-tracker .dx-datagrid-table td.text-center {
+  text-align: center!important;
+}
+
+::ng-deep app-ship-id-tracker button.btn.btn-white.btn-icon-text.my-2.mr-2.filesBtn {
+  color: #fff!important;
+  font-size: 18px!important;
+}

@@ -1,0 +1,185 @@
+<p-toast class="custom-toast" class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Roles list</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Roles</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'roles'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Roles are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                    <!-- <button (click)="popup()">popUp</button> -->
+                </div>
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+
+                        <p-table #dt [value]="roles" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [rowsPerPageOptions]="[50,100,200]" [loading]="loading" [paginator]="true" [filterDelay]="500" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [globalFilterFields]="['roleName','roleDesc']">
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide filters'}}</label>
+                                    </span>
+                                    <div class="d-flex">
+                                        <div class="justify-content-center">
+                                            <button *ngIf="actions.canAdd" type="button" class="btn btn-primary my-2 btn-icon-text" (click)="openNew()">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th pSortableColumn="roleName">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            <p-sortIcon field="roleName"></p-sortIcon>
+                                            <p-columnFilter *ngIf="hide" type="text" field="roleName" display="menu" class="p-ml-auto">
+                                            </p-columnFilter>
+                                            Role Name
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="roleDesc">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            <p-sortIcon field="roleDesc"></p-sortIcon>
+                                            <p-columnFilter *ngIf="hide" type="text" field="roleDesc" display="menu" class="p-ml-auto">
+                                            </p-columnFilter>
+                                            Role Description
+                                        </div>
+                                    </th>
+                                    <th *ngIf="(actions.canEdit || actions.canDelete)  && actionBtn">
+                                        <div class="p-d-flex p-jc-between p-ai-center">
+                                            Action
+                                        </div>
+                                    </th>
+                                    <!-- <th style="width: 8rem"></th> -->
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-role>
+                                <tr class="p-selectable-row">
+                                    <td class="capitalize">
+                                        {{role.roleName}}
+                                    </td>
+                                    <td>
+                                        {{role.roleDesc}}
+                                    </td>
+
+                                    <td class="p-text-center" style=" display: flex; " *ngIf="(actions.canEdit || actions.canDelete) && actionBtn  ">
+                                        <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && actionBtn" (click)="editProduct(role)" class="p-button-rounded p-button-success p-mr-2"></button>
+                                        <button pButton pRipple icon="pi pi-trash" *ngIf="role.roleName !='Admin' && actions.canDelete && actionBtn" class="p-button-rounded p-button-danger" (click)="deleteProduct(role)"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="5" style="text-align: center;">No Roles found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<p-dialog [(visible)]="productDialog" header="Role Details" styleClass="myStyle" [modal]="true">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Role Name</label>
+                    <input type="text" pInputText id="roleName" [(ngModel)]="editableObject.roleName" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.roleName">Role name is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Role Description</label>
+                    <input type="text" pInputText id="roleDesc" [(ngModel)]="editableObject.roleDesc" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.roleDesc">Role description is
+                        required.</small>
+                </div>
+            </div>
+
+            <div class="col-lg-6" *ngIf="actions.canAssgn">
+                <label for="name">Select Permissions</label>
+            </div>
+            <div class="col-lg-12 permit_table">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>View</th>
+                            <th>Add</th>
+                            <th>Edit</th>
+                            <th>View ALl</th>
+                            <th>Delete</th>
+                            <th>Export csv</th>
+                            <th>Export xlxs</th>
+                            <th>Export pdf</th>
+                            <th>Assign roles</th>
+                            <th>Assign permissions to roles</th>
+                            <th>Import data</th>
+                            <th>Save all</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let np of newPermissions">
+                            <tr >
+                                <td>{{np.pageName}}</td>
+                                <td *ngFor="let pp of np.alpm">
+                                    <input type="checkbox" [(ngModel)]="pp.value" *ngIf="pp.havethis">
+                                </td>
+                               
+                            </tr>
+                            <tr *ngIf="np.hasOwnProperty('tabPerms')" >
+                                <td>{{np.pageName}} {{np.pageName == 'Price Inquiry' ? 'Misc' : 'Tabs'}}</td>
+                                <td  *ngFor="let tp of np.tabPerms"><div class="tabs-perms" *ngIf="tp.havethis"><input type="checkbox" [(ngModel)]="tp.value"><span>{{tp.name}}</span></div></td>
+                                <!-- <td><div class="tabs-perms"><input type="checkbox" [(ngModel)]="np.tabPerms.chinaReview.value"><span>China</span></div></td>
+                                <td><div class="tabs-perms"><input type="checkbox" [(ngModel)]="np.tabPerms.finalAprove.value" ><span>Final</span></div></td>
+                                <td><div class="tabs-perms"><input type="checkbox" [(ngModel)]="np.tabPerms.history.value"><span>History</span></div></td> -->
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

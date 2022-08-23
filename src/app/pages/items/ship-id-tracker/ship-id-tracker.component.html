@@ -1,0 +1,1426 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">SHIPID TRACKER OLD</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions
+                            *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')"
+                            [pageName]="'SHIPID TRACKER'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}}
+                            Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page"
+                            ngbTooltip="SHIPID TRACKER OLD {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts"
+                            placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}"
+                                [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <div class="table-responsive calender-class">
+                    <div class="tabs">
+                        <ul>
+                            <li (click)="changeTab(1)" class="tab-1" [class.active]="currentTab == 1">
+                                SHIPID <i pBadge value="{{shipcount}}"></i>
+                            </li>
+                            <li (click)="changeTab(2)" class="tab-2" [class.active]="currentTab == 2">
+                                BOOKING <i pBadge value="{{Booking}}"></i>
+                            </li>
+                            <li (click)="changeTab(3)" class="tab-3" [class.active]="currentTab == 3">
+                                IN TRANSIT <i pBadge value="{{otw}}"></i>
+                            </li>
+                            <li (click)="changeTab(5)" class="tab-5" [class.active]="currentTab == 5">
+                                INBOUND <i pBadge value="{{inBound}}"></i>
+                            </li>
+                            <li (click)="changeTab(4)" class="tab-4" [class.active]="currentTab == 4">
+                                FTY PAYMENT <i pBadge value="{{ftyPayment}}"></i>
+                            </li>
+                            <li (click)="changeTab(6)" class="tab-6" [class.active]="currentTab == 6">
+                                SHIPID-ALL <i pBadge value="{{shipIdAll}}"></i>
+                            </li>
+                            <li (click)="changeTab(7)" class="tab-7" [class.active]="currentTab == 7">
+                                HISTORY 
+                            </li>
+                        </ul>
+                    </div>
+                    <div *ngIf="currentTab == 1" class="exportset" >
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button *ngIf="actions.canAdd" type="button" class="btn btn-primary btn-icon-text"
+                                                    style="margin-left: 5px" (click)="openNew()">
+                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" >
+                            <div class="table-header"  >
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab1" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltab1('xlsx')"
+                                (exportCsv)="getExceltab1('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer" [dataSource]="dataSource" [showBorders]="true"
+                            [repaintChangesOnly]="true" keyExpr="id"  [rowAlternationEnabled] ="true" [scrolling]="true"
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" [columnResizingMode]="'columnResizingMode'" [columnMinWidth]="100" [columnAutoWidth]="true">
+                            <dxo-column-fixing [enabled]="true"></dxo-column-fixing>
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges" 
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+                            <dxi-column dataField="shipId" caption="SHIP ID" *ngIf="count.includes('shipId')"[allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')"  [allowEditing]="actions.canEdit" [width]="150"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                            </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" *ngIf="count.includes('bookingStatus')" caption="STATUS"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" dataType="date" *ngIf="count.includes('rrd')" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date"
+                                format="MM/dd/yyyy">
+                            </dxi-column>
+                            <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                    <div *ngIf="currentTab == 2" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header">
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab2" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltab2('xlsx')"
+                                (exportCsv)="getExceltab2('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+
+                        <dx-data-grid #shipIDGrid id="gridContainer" [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true" 
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" column="Amount">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+
+                            <dxi-column dataField="shipId" [allowHiding]="false" *ngIf="count.includes('shipId')" caption="SHIP ID"
+                                [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')"  [allowEditing]="actions.canEdit" [width]="150"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                          </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" *ngIf="count.includes('bookingStatus')" caption="STATUS"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" *ngIf="count.includes('rrd')" dataType="date" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="etd" caption="ETD" *ngIf="count.includes('etd')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" pickerType="rollers" caption="ETA" *ngIf="count.includes('eta')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="forwarder" caption="FORWARDER" *ngIf="count.includes('forwarder')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="containerNo" *ngIf="count.includes('containerNo')" caption="CONT#" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="shipVia" *ngIf="count.includes('shipVia')" caption="SHIP VIA" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="lcl" dataType="number" format="$ #,##0.##" *ngIf="count.includes('lcl')" caption="LCL" [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="uscDate" *ngIf="count.includes('uscDate')" caption="USC DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="uscRelease" caption="USC RELEASE" *ngIf="count.includes('uscRelease')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="frtRelease" *ngIf="count.includes('frtRelease')" caption="FRT RELEASE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="pol" *ngIf="count.includes('pol')" caption="POL" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="mbl" *ngIf="count.includes('mbl')" caption="MBL" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="freightCost" caption="FREIGHT COST" *ngIf="count.includes('freightCost')" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                            <dxi-column dataField="extCube" *ngIf="count.includes('extCube')"caption="EXT CUBE" [allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+
+                    <div *ngIf="currentTab == 3" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>   
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header">
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab3" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltabGeneral('xlsx')"
+                                (exportCsv)="getExceltabGeneral('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer" [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true" 
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+                            <dxi-column dataField="shipId" caption="SHIP ID" *ngIf="count.includes('shipId')" [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('containerNo')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')" [allowEditing]="actions.canEdit" [width]="150"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                            </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" *ngIf="count.includes('bookingStatus')" caption="STATUS"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="etd" dataType="date" *ngIf="count.includes('etd')" caption="ETD" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" caption="ETA" *ngIf="count.includes('eta')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="bookingNo" caption="BOOK#" *ngIf="count.includes('bookingNo')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="freightCost" caption="FREIGHT COST" *ngIf="count.includes('freightCost')" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="extCube" caption="EXT CUBE" *ngIf="count.includes('extCube')"[allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="shipVia" caption="SHIP VIA" *ngIf="count.includes('shipVia')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="uscDate" caption="USC DATE" *ngIf="count.includes('uscDate')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="containerNo" caption="CONT#" *ngIf="count.includes('containerNo')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="arrivalNotice" caption="ARRIVAL NOTICE" *ngIf="count.includes('arrivalNotice')"
+                                [allowEditing]="actions.canEdit" dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="do" caption="D/O" *ngIf="count.includes('do')"  dataType="date" format="MM/dd/yyyy" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="terminal" *ngIf="count.includes('terminal')" caption="TERMINAL" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="forwarder" caption="FORWARDER" *ngIf="count.includes('forwarder')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <!-- <dxi-column dataField="ftyPayment" *ngIf="count.includes('ftyPayment')" caption="FTY PAYMENT"></dxi-column> -->
+                            <dxi-column dataField="dueDate" *ngIf="count.includes('dueDate')" caption="DUE DATE" [allowEditing]="actions.canEdit" dataType="date"
+                                format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="extCost" dataType="number" format="$ #,##0.##" *ngIf="count.includes('extCost')" caption="EXT COST" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="lcl" dataType="number" format="$ #,##0.##" caption="LCL" *ngIf="count.includes('lcl')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="pol" caption="POL" *ngIf="count.includes('pol')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="mbl" caption="MBL" *ngIf="count.includes('mbl')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="uscRelease" caption="USC RELEASE" *ngIf="count.includes('uscRelease')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="frtRelease" *ngIf="count.includes('frtRelease')" caption="FRT RELEASE" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                    [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                    <div *ngIf="currentTab == 4" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header" >
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab4" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltabGeneral('xlsx')"
+                                (exportCsv)="getExceltabGeneral('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer" [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true" 
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" column="Amount">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+
+                            <dxi-column dataField="shipId" [allowHiding]="false" *ngIf="count.includes('shipId')" caption="SHIP ID"
+                                [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')"  [allowEditing]="actions.canEdit"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                          </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" *ngIf="count.includes('bookingStatus')" caption="STATUS"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" *ngIf="count.includes('rrd')" dataType="date" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="etd" caption="ETD" *ngIf="count.includes('etd')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" caption="ETA" *ngIf="count.includes('eta')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="forwarder" caption="FORWARDER" *ngIf="count.includes('forwarder')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="containerNo" *ngIf="count.includes('containerNo')" caption="CONT#" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="shipVia" *ngIf="count.includes('shipVia')" caption="SHIP VIA" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="freightCost" caption="FREIGHT COST" *ngIf="count.includes('freightCost')" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                                <dxi-column dataField="extCost" dataType="number" format="$ #,##0.##" *ngIf="count.includes('extCost')" caption="EXT COST" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="extCube" *ngIf="count.includes('extCube')"caption="EXT CUBE" [allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="lcl" *ngIf="count.includes('lcl')" caption="LCL" [allowEditing]="false"
+                            dataType="number" format="$ #,##0.##" >
+                            </dxi-column>
+                            <dxi-column dataField="pyDueDate" *ngIf="count.includes('pyDueDate')" caption="PY DUE DATE" dataType="date" [allowEditing]="false" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="dueDate" *ngIf="count.includes('dueDate')"  caption="DUE DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="pyRef" *ngIf="count.includes('pyRef')" caption="PY REF" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="includeFreight" cssClass="text-center" *ngIf="count.includes('includeFreight')" caption="INCLUDE FREIGHT" [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="freightCost" displayExpr="name" valueExpr="id">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="total" *ngIf="count.includes('total')" caption="TOTAL" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                            <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 format="MM/dd/yyyy hh:mm a" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                    <div *ngIf="currentTab == 5" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header" >
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab5" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltabGeneral('xlsx')"
+                                (exportCsv)="getExceltabGeneral('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer" [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true" 
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" column="Amount">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+
+                            <dxi-column dataField="shipId" [allowHiding]="false" *ngIf="count.includes('shipId')" caption="SHIP ID"
+                                [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')"  [allowEditing]="true"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                          </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column dataField="forwarder" caption="FORWARDER" *ngIf="count.includes('forwarder')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" *ngIf="count.includes('bookingStatus')" caption="STATUS"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" *ngIf="count.includes('rrd')" dataType="date" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="etd" caption="ETD" *ngIf="count.includes('etd')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" caption="ETA" *ngIf="count.includes('eta')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="bk" caption="BK#" *ngIf="count.includes('bk')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="containerNo" *ngIf="count.includes('containerNo')" caption="CONT#" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="shipVia" *ngIf="count.includes('shipVia')" caption="SHIP VIA" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <!-- <dxi-column dataField="ftyPayment" *ngIf="count.includes('ftyPayment')" caption="FTY PAYMENT"></dxi-column> -->
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="freightCost" caption="FREIGHT COST" *ngIf="count.includes('freightCost')" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                            <dxi-column dataField="extCube" *ngIf="count.includes('extCube')"caption="EXT CUBE" [allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="arrivalNotice" caption="ARRIVAL NOTICE" *ngIf="count.includes('arrivalNotice')"
+                            [allowEditing]="actions.canEdit" dataType="date" format="MM/dd/yyyy"></dxi-column>
+                        <dxi-column dataField="do" caption="D/O" [allowEditing]="actions.canEdit" dataType="date" *ngIf="count.includes('do')"
+                            format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="terminal" caption="TERMINAL" *ngIf="count.includes('terminal')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="lfd" *ngIf="count.includes('lfd')" caption="LFD" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="pol" *ngIf="count.includes('pol')" caption="POL" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="mbl" *ngIf="count.includes('mbl')" caption="MBL" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="frtRelease" *ngIf="count.includes('frtRelease')" caption="FRT RELEASE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="uscDate" *ngIf="count.includes('uscDate')" caption="USC DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="uscRelease" caption="USC RELEASE" *ngIf="count.includes('uscRelease')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="puAppt" caption="PU APPT" *ngIf="count.includes('puAppt')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="dlvDate" caption="DLV DATE" *ngIf="count.includes('dlvDate')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="emptied" caption="EMPTIED" *ngIf="count.includes('emptied')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="returned" caption="RETURNED" *ngIf="count.includes('returned')" [allowEditing]="actions.canEdit"
+                                    dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="rcp" caption="RCP" *ngIf="count.includes('rcp')"[allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                    <div *ngIf="currentTab == 6" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header">
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab6" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltab6('xlsx')"
+                                (exportCsv)="getExceltab6('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer" [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true"  [scrolling]="true"
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" column="Amount">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="ftydpw" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+
+                            <dxi-column dataField="shipId" [allowHiding]="false" caption="SHIP ID" *ngIf="count.includes('shipId')"
+                                [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="rcp" caption="RCP#" *ngIf="count.includes('rcp')"[allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')" [allowEditing]="actions.canEdit" [width]="200"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                        </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" caption="STATUS" *ngIf="count.includes('bookingStatus')"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="status" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="includeFreight" cssClass="text-center" *ngIf="count.includes('includeFreight')" caption="INCLUDE FREIGHT" [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="freightCost" displayExpr="name" valueExpr="id">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" dataType="date" *ngIf="count.includes('rrd')" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="etd" caption="ETD" *ngIf="count.includes('etd')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" caption="ETA" *ngIf="count.includes('eta')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="contDlvd" caption="CONT DLVD" *ngIf="count.includes('contDlvd')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="contEmpty" caption="CONT EMPTY" *ngIf="count.includes('contEmpty')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="contReturn" caption="CONT RETURN" *ngIf="count.includes('contReturn')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="bk" caption="BK#" *ngIf="count.includes('bk')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="shipVia" caption="SHIP VIA" *ngIf="count.includes('shipVia')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="extCube" caption="EXT CUBE" *ngIf="count.includes('extCube')" [allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="arrivalNotice" caption="ARRIVAL NOTICE" *ngIf="count.includes('arrivalNotice')"
+                                [allowEditing]="actions.canEdit" dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="do" caption="D/O" [allowEditing]="actions.canEdit" dataType="date" *ngIf="count.includes('do')"
+                                format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="terminal" caption="TERMINAL" *ngIf="count.includes('terminal')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <!-- <dxi-column dataField="bookingNo" caption="BOOKING NO" *ngIf="count.includes('bookingNo')" [allowEditing]="actions.canEdit">
+                            </dxi-column> -->
+                            <dxi-column dataField="containerNo" caption="CONTAINER NO" *ngIf="count.includes('containerNo')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="uscDate" *ngIf="count.includes('uscDate')" caption="USC DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <!-- <dxi-column dataField="ftyPayment" *ngIf="count.includes('ftyPayment')" caption="FTY PAYMENT"></dxi-column> -->
+                            <dxi-column dataField="dueDate" *ngIf="count.includes('dueDate')"  caption="DUE DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="totalEstCost" *ngIf="count.includes('totalEstCost')" caption="TOTAL EST COST"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                                <dxi-column dataField="rcpDate" *ngIf="count.includes('rcpDate')" caption="RCP DATE" [allowEditing]="actions.canEdit" dataType="date"
+                                format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="invNumber" *ngIf="count.includes('invNumber')" caption="INV NUMBER"></dxi-column>
+                                <dxi-column dataField="source"  *ngIf="count.includes('source')"caption="Source"></dxi-column>
+                                <dxi-column dataField="uscRelease" caption="USC RELEASE" *ngIf="count.includes('uscRelease')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="lcl" dataType="number" format="$ #,##0.##" *ngIf="count.includes('lcl')" caption="LCL" [allowEditing]="false">
+                                </dxi-column>
+                                <dxi-column dataField="pyDueDate" *ngIf="count.includes('pyDueDate')" caption="PY DUE DATE" [allowEditing]="false" dataType="date">
+                                </dxi-column>
+                                <dxi-column dataField="pyRef" *ngIf="count.includes('pyRef')" caption="PY REF" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="lfd" *ngIf="count.includes('lfd')" caption="LFD" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="pol" *ngIf="count.includes('pol')" caption="POL" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="mbl" *ngIf="count.includes('mbl')" caption="MBL" [allowEditing]="actions.canEdit"></dxi-column>
+                                <dxi-column dataField="freightCost" *ngIf="count.includes('freightCost')" caption="FREIGHT COST" [allowEditing]="false"
+                                    dataType="number" format="$ #,##0.##"></dxi-column>
+                                <dxi-column dataField="total" *ngIf="count.includes('total')" caption="TOTAL COST" [allowEditing]="actions.canEdit" 
+                                    dataType="number"></dxi-column>
+                                <dxi-column dataField="forwarder" caption="FORWARDER" *ngIf="count.includes('forwarder')" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="totalEstCost" *ngIf="count.includes('totalEstCost')" caption="EXT COST" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="puAppt" caption="PU APPT" *ngIf="count.includes('puAppt')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="dlvDate" caption="DLV DATE" *ngIf="count.includes('dlvDate')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="emptied" caption="EMPTIED" *ngIf="count.includes('emptied')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="returned" caption="RETURNED" *ngIf="count.includes('returned')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <!-- <dxi-column dataField="rcp" caption="RCP" *ngIf="count.includes('rcp')"[allowEditing]="actions.canEdit"></dxi-column>     -->
+                                <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                    <div *ngIf="currentTab == 7" class="exportset">
+                        <div class="fields">
+                            <p-toolbar class="full-1">
+                                <ng-template pTemplate="left">
+                                    <!-- <div class="res_field"> -->
+                                        <div>
+                                            <input type="text" class="search-text" style="width:96px" placeholder="Ship id" [(ngModel)]="seachStr"
+                                                (keyup)="search()" />
+                                        </div>
+
+                                        <!-- for fyts -->
+                                        <div>
+                                            <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'120px', 'width': '145px','margin-right': '4px'}"
+                                                [options]="ftydpw" [(ngModel)]="selectedFtys" defaultLabel="--Select Fty--"
+                                                optionLabel="fty" display="chip"></p-multiSelect>
+                                        </div>
+                                            <div>
+                                                <select [style]="{'minWidth':'120px', 'width': '140px','margin-right': '3px','height':'31px'}" matNativeControl class="search-text" placeholder="select" name=""
+                                                [(ngModel)]="selectedDateType">
+                                                    <option value="" class="txt">--Select date--</option>
+                                                    <option value="RRD" class="RRD" style="color:#495057; margin-right:2px">RRD</option>
+                                                    <option value="ERD" class="ERD" style="color:#495057; margin-right:2px">ERD</option>
+                                                </select>
+                                            </div>
+                                        <div class="clp-calender"
+                                        *ngIf="selectedDateType!=''">
+                                            <div class="row cal-inp-row">
+                                                <div class="col-6" style="padding-right: 0px; align-items: center;">
+                                                    <p-calendar class="calender_res"  [(ngModel)]="startDate"
+                                                        placeholder="Start date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                    
+                                                </div>
+                                                <div class="col-6" style="padding-left: 2px;align-items: center;" >
+                                                    <p-calendar class="treetableDate"  [(ngModel)]="endDate"
+                                                    placeholder="End date" [showIcon]="true" inputId="icon2" appendTo="body">
+                                                    </p-calendar>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clp-calender mr-3">
+                                            <div class="row cal-inp-row">
+                                                <div class="col col-4">
+                                        
+                                                    <p-multiSelect class="pmulti-fty" [style]="{'minWidth':'150px', 'width': '200px','margin-left': '4px'}"
+                                                    [options]="status" [(ngModel)]="selectedStatus" defaultLabel="---Select status---"
+                                                    optionLabel="name" display="chip"></p-multiSelect>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="flex_mob"> -->
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-success mr ml-2" (click)="search()">
+                                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button pButton type="button" label=" " class="p-button-primary mr"
+                                                    style="margin-left: 3px;" (click)="clearNew()">
+                                                    <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        <!-- </div> -->
+                                    <!-- </div>     -->
+                                </ng-template>
+                            </p-toolbar>
+                        </div>
+                        <div class="table-responsive calender-class new-table-color exportsetforRes" style="position: absolute;top: 45px; z-index: 1;width: calc(100% - 90px);" >
+                            <div class="table-header">
+                                <span class="p-input-icon-left">
+                                    <p-multiSelect [options]="colDefTab7" [(ngModel)]="selectedColumns" appendTo="body"
+                                        optionLabel="headerName" (onChange)="onChange($event)"
+                                        selectedItemsLabel="{0}columns selected" [style]="{minWidth: '200px'}"
+                                        placeholder="Choose Columns"></p-multiSelect>
+                                </span>
+                                <span class="checkClass">
+                                    <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                        (click)="openDefaultCol()">
+                                        <i class="fa fa-columns" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-export-buttons 
+                                (exportExcel)="getExceltab6('xlsx')"
+                                (exportCsv)="getExceltab6('csv')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                            ></app-export-buttons>
+                        </div>
+                        <dx-data-grid #shipIDGrid id="gridContainer"  [columnResizingMode]="'widget'" [columnMinWidth]="100" [dataSource]="dataSource" [showBorders]="true"
+                            [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="id" [rowAlternationEnabled] ="true" [scrolling]="true"  [scrolling]="true"
+                            [allowColumnReordering]="true" [allowColumnResizing]="true" (onSaving)="onSaving($event)"
+                            [columnAutoWidth]="true" style="overflow-x: auto;" column="Amount">
+                            <dxo-paging [pageSize]="paging.pageSize"> </dxo-paging>
+                            <dxo-editing mode="batch" [allowUpdating]="actions.canEdit" [(changes)]="shipIdchanges"
+                                [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                            </dxo-editing>
+                            <div *dxTemplate="let cellInfo of 'ftyEditor'">
+                                <dx-tag-box [dataSource]="" [value]="cellInfo.value" displayExpr="fty"
+                                    valueExpr="fty" [searchEnabled]="true" [showSelectionControls]="true"
+                                    [maxDisplayedTags]="3" [showMultiTagOnly]="false" applyValueMode="useButtons"
+                                    (onValueChanged)="cellInfo.setValue($event.value)"
+                                    (onSelectionChanged)="cellInfo.component.updateDimensions()">
+                                </dx-tag-box>
+                            </div>
+
+                            <dxi-column dataField="shipId" [allowHiding]="false" caption="SHIP ID" *ngIf="count.includes('shipId')"
+                                [allowEditing]="false">
+                            </dxi-column>
+                            <dxi-column dataField="rcp" caption="RCP#" *ngIf="count.includes('rcp')"[allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="loc" caption="LOC" *ngIf="count.includes('loc')" [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="fty" caption="FTY" *ngIf="count.includes('fty')" [allowEditing]="actions.canEdit" [width]="200"
+                                editCellTemplate="ftyEditor">
+                                <!-- <dxo-lookup [dataSource]="ftydpw" displayExpr="fty" valueExpr="fty" >
+                        </dxo-lookup> -->
+                            </dxi-column>
+                            <dxi-column  dataField="bookingStatus" caption="STATUS" *ngIf="count.includes('bookingStatus')"
+                                [allowEditing]="actions.canEdit">
+                                <dxo-lookup [dataSource]="" displayExpr="name" valueExpr="name">
+                                </dxo-lookup>
+                            </dxi-column>
+                            <dxi-column dataField="rrd" dataType="date" *ngIf="count.includes('rrd')" caption="RRD" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="erd" caption="ERD" *ngIf="count.includes('erd')" [allowEditing]="actions.canEdit" dataType="date">
+                            </dxi-column>
+                            <dxi-column dataField="etd" caption="ETD" *ngIf="count.includes('etd')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="eta" caption="ETA" *ngIf="count.includes('eta')" dataType="date" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="contDlvd" caption="CONT DLVD" *ngIf="count.includes('contDlvd')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="contEmpty" caption="CONT EMPTY" *ngIf="count.includes('contEmpty')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="contReturn" caption="CONT RETURN" *ngIf="count.includes('contReturn')" dataType="date" format="MM/dd/yyyy"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="bk" caption="BK#" *ngIf="count.includes('bk')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="shipVia" caption="SHIP VIA" *ngIf="count.includes('shipVia')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="qty" caption="QTY" *ngIf="count.includes('qty')" [allowEditing]="false" dataType="number"
+                                valueFormat="number"></dxi-column>
+                            <dxi-column dataField="extCube" caption="EXT CUBE" *ngIf="count.includes('extCube')" [allowEditing]="false"
+                                dataType="number"></dxi-column>
+                            <dxi-column dataField="arrivalNotice" caption="ARRIVAL NOTICE" *ngIf="count.includes('arrivalNotice')"
+                                [allowEditing]="actions.canEdit" dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="do" caption="D/O" [allowEditing]="actions.canEdit" dataType="date" *ngIf="count.includes('do')"
+                                format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="freightCost" caption="FREIGHT COST" *ngIf="count.includes('freightCost')" [allowEditing]="false"
+                                dataType="number" format="$ #,##0.##"></dxi-column>
+                            <dxi-column dataField="terminal" caption="TERMINAL" *ngIf="count.includes('terminal')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="notes" caption="NOTES" *ngIf="count.includes('notes')" [allowEditing]="actions.canEdit"></dxi-column>
+                            <!-- <dxi-column dataField="bookingNo" caption="BOOKING NO" *ngIf="count.includes('bookingNo')" [allowEditing]="actions.canEdit">
+                            </dxi-column> -->
+                            <dxi-column dataField="containerNo" caption="CONTAINER NO" *ngIf="count.includes('containerNo')" [allowEditing]="actions.canEdit">
+                            </dxi-column>
+                            <dxi-column dataField="uscDate" *ngIf="count.includes('uscDate')" caption="USC DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <!-- <dxi-column dataField="ftyPayment" *ngIf="count.includes('ftyPayment')" caption="FTY PAYMENT"></dxi-column> -->
+                            <dxi-column dataField="dueDate" *ngIf="count.includes('dueDate')"  caption="DUE DATE" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="totalEstCost" *ngIf="count.includes('totalEstCost')" caption="TOTAL EST COST"
+                                [allowEditing]="actions.canEdit"></dxi-column>
+                                <dxi-column dataField="rcpDate" *ngIf="count.includes('rcpDate')" caption="RCP DATE" [allowEditing]="actions.canEdit" dataType="date"
+                                format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="invNumber" *ngIf="count.includes('invNumber')" caption="INV NUMBER"></dxi-column>
+                                <dxi-column dataField="source"  *ngIf="count.includes('source')"caption="Source"></dxi-column>
+                                <dxi-column dataField="uscRelease" caption="USC RELEASE" *ngIf="count.includes('uscRelease')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="lcl" dataType="number" format="$ #,##0.##" *ngIf="count.includes('lcl')" caption="LCL" [allowEditing]="false">
+                                </dxi-column>
+                                <dxi-column dataField="pyDueDate" *ngIf="count.includes('pyDueDate')" caption="PY DUE DATE" [allowEditing]="false" dataType="date">
+                                </dxi-column>
+                                <dxi-column dataField="pyRef" *ngIf="count.includes('pyRef')" caption="PY REF" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="lfd" *ngIf="count.includes('lfd')" caption="LFD" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                            <dxi-column dataField="pol" *ngIf="count.includes('pol')" caption="POL" [allowEditing]="actions.canEdit"></dxi-column>
+                            <dxi-column dataField="mbl" *ngIf="count.includes('mbl')" caption="MBL" [allowEditing]="actions.canEdit"></dxi-column>
+                                <dxi-column dataField="freightCost" *ngIf="count.includes('freightCost')" caption="FREIGHT COST" [allowEditing]="false"
+                                    dataType="number" format="$ #,##0.##"></dxi-column>
+                                <dxi-column dataField="total" *ngIf="count.includes('total')" caption="TOTAL COST" [allowEditing]="actions.canEdit"
+                                    dataType="number"></dxi-column>
+                                <dxi-column dataField="totalEstCost" *ngIf="count.includes('totalEstCost')" caption="EXT COST" [allowEditing]="actions.canEdit">
+                                </dxi-column>
+                                <dxi-column dataField="puAppt" caption="PU APPT" *ngIf="count.includes('puAppt')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="dlvDate" caption="DLV DATE" *ngIf="count.includes('dlvDate')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="emptied" caption="EMPTIED" *ngIf="count.includes('emptied')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <dxi-column dataField="returned" caption="RETURNED" *ngIf="count.includes('returned')" [allowEditing]="actions.canEdit"
+                                dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                <!-- <dxi-column dataField="rcp" caption="RCP" *ngIf="count.includes('rcp')"[allowEditing]="actions.canEdit"></dxi-column>     -->
+                                <dxi-column dataField="generatedBy" caption="CREATED BY" *ngIf="count.includes('generatedBy')" [visible]="true"
+                                [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="generatedOn" caption="CREATED ON" *ngIf="count.includes('generatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a'"></dxi-column>
+                            <dxi-column dataField="lastUpdatedBy" caption="LAST UPDATED BY" *ngIf="count.includes('lastUpdatedBy')" [visible]="true"
+                                 [allowEditing]="false"></dxi-column>
+                            <dxi-column dataField="lastUpdatedOn" caption="LAST UPDATED ON" *ngIf="count.includes('lastUpdatedOn')" [visible]="true"
+                                [allowEditing]="false" dataType="date" format="MM/dd/yyyy hh:mm a">
+                            </dxi-column>
+                            <dxi-column type="buttons" styleClass="action-col" [width]="50" caption="ACTION" *ngIf="dataSource?.length && actionBtn" [visible]="true">
+                                <dxi-button *ngIf="actions?.canDelete"  type="danger" icon="trash" [onClick]="deleteShipBtn"></dxi-button>
+                            </dxi-column>
+                        </dx-data-grid>
+                        <!-- <p-paginator *ngIf="dataSource?.length" [rowsPerPageOptions]="allowedPageSizes" [rows]="paging.pageSize" [totalRecords]="paging.totalElements" (onPageChange)="paginate($event)"></p-paginator> -->
+                        <app-pagination *ngIf="dataSource?.length" [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-dialog #pdialog styleClass="generate-dialog" header="Generate New SHIPID" class="max-btn" [(visible)]="displayMaximizable" [modal]="true"
+        [style]="{ width: '65vw' }" [draggable]="true" [closable]="true" [resizable]="false" dismissableMask="false"
+        [maximizable]="true">
+
+        <div class="top-relative">
+            <p-button class="abs-bt" (click)="closeAndSave($event);"><span class="pi pi-times"
+                    style="margin-left: 4px; margin-top: 4px;"></span></p-button>
+        </div>
+
+        <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+            <p-table #dt [columns]="" [value]="">
+                <ng-template pTemplate="caption">
+                    <div class="table-header">
+                    </div>
+                    <div class="p-d-flex table-header">
+                        <div class="one-ooo">
+                            <select matNativeControl class=" form-control" [(ngModel)]="selectLoc"
+                                (change)="changeDd()">
+                                <option value="" class="txt">Select LOC</option>
+                                <!-- <option value="Loc" class="txt">Loc</option> -->
+                                <option value="CA" class="txt">CA</option>
+                                <option value="NY" class="txt">NY</option>
+                                <option value="CAD" class="txt">CAD</option>
+                                <option value="NYD" class="txt">NYD</option>
+                                <option value="IT" class="txt">IT</option>
+                                <option value="CIT" class="txt">CIT</option>
+                            </select>
+                            <label for="name"
+                                style="color: #807f8d;font-size: 14px;margin-top: 15px !important;margin-left: 6px !important;">SHIPID</label>
+                            <input type="text" readonly id="shipId" placeholder="SHIPID" class="form-control"
+                                [(ngModel)]="shipId" />
+
+                        </div>
+                    </div>
+                </ng-template>
+            </p-table>
+
+        </div>
+
+
+
+
+        <ng-template pTemplate="footer">
+            <p-button icon="pi pi-check" label="Generate  SHIPID" styleClass="p-button-text" (click)="generateShipid()">
+            </p-button>
+        </ng-template>
+
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteDialogue" [style]="{width: '500px'}" header="Delete confirmation" [modal]="true"
+        styleClass="p-fluid">
+        <ng-template pTemplate="content">
+            <div class="row">
+                <div class="p-field">
+                    <label for="name">Please enter <span style=" color: red; "><b>YES</b></span> to delete <span
+                            style=" color: #c9a168; "> <b></b></span></label>
+                    <input type="text" pInputText id="deleteText" maxlength="3" [(ngModel)]="deleteText" required />
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.category">Type YES is
+                        required.</small> -->
+                </div>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDeleteDialog()"
+                class="p-button-text"></button>
+            <button pButton pRipple label="Delete" icon="pi pi-check" *ngIf="!itemLoading" (click)="finalDelete()"
+                class="p-button-text"></button>
+            <i class="fa fa-spinner fa-spin" *ngIf="itemLoading"
+                style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+    <p-dialog [(visible)]="defaultColumnsPop" [style]="{width: '1000px'}" header="Default Ordering" [modal]="true" styleClass="p-fluid">
+        <ng-template pTemplate="content">
+            <div class="row">
+                <div *ngFor="let cl of columnArr; let i = index" class="col-lg-3">
+                    <div class="columnsHead">
+                        <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl.headerName}}
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Cancel" (click)="closeModal()" icon="pi pi-times" class="p-button-text"></button>
+            <button pButton pRipple label="Set default order" icon="pi pi-check"  (click)="saveDefault()" class="p-button-text"></button>
+        </ng-template>
+    </p-dialog>

@@ -1,0 +1,151 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body">
+                <!-- <h5 class="card-title">Pivot report</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Demo Grid</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <!-- <app-users-with-permissions [pageName]="'sales'"></app-users-with-permissions>
+                        <p class="test-pp">{{hideGraph ? 'Hide' : 'Show'}} graph
+                        </p>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" id="graph" [(ngModel)]="hideGraph" class="custom-control-input">
+                            <label class="custom-control-label" for="graph"></label>
+                        </div> -->
+
+                        <!-- <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Report is {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                            
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p> -->
+                    </div>
+                </div>
+                <p-toolbar styleClass="p-mb-4">
+                    <ng-template pTemplate="left">
+                        <!-- <div class="clp-calender">
+                            <p-calendar [(ngModel)]="startYYMM" view="month" dateFormat="mm/yy" [yearNavigator]="true"
+                                yearRange="2000:2030" placeholder="Start Date" [showIcon]="true" inputId="icon2"
+                                appendTo="body">
+                            </p-calendar>
+                        </div>
+                        <div class="clp-calender">
+                            <p-calendar [(ngModel)]="endYYMM" view="month" dateFormat="mm/yy" [yearNavigator]="true"
+                                yearRange="2000:2030" placeholder="End Date" [showIcon]="true" inputId="icon3"
+                                appendTo="body">
+                            </p-calendar>
+                        </div>
+                        <button pButton type="button" label="Load" class="p-button-success" style=" left: 1%; "
+                            (click)="loadReport()"></button> -->
+                        <div class="pivot-reportdiv">
+                            <p-multiSelect [options]="years" [style]="{'maxWidth':'200px'}" [(ngModel)]="selectedYears" defaultLabel="---Select Year ---" optionLabel="year"></p-multiSelect>
+                            <!-- <span *ngIf="selectedYears.length>1"
+                                style=" padding-right: 5px; ">({{selectedYears.length}})</span> -->
+                            <p-multiSelect [options]="months" [style]="{'maxWidth':'150px'}" [(ngModel)]="selectedMonths" defaultLabel="---Select month ---" optionLabel="name">
+                            </p-multiSelect>
+                            <!-- <span *ngIf="selectedMonths.length>1"
+                                style=" padding-right: 5px; ">({{selectedMonths.length}})</span> -->
+
+                            <button pButton type="button" label=" " class="p-button-success" (click)="loadMonthReport()">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+
+
+                    </ng-template>
+                    <ng-template pTemplate="right">
+                        <!-- <button style="margin-right: 7px;" class="refresBtn" ngbTooltip="LOAD From Excel" placement="left" (click)="refreshRepo()">
+                            <i class="fa fa-refresh" style=" color: white;" aria-hidden="true"></i>
+                        </button>
+                        <button pButton type="button" label=" " placement="left" ngbTooltip="Clear filters" class="p-button-warning" (click)="refreshWarn()"><i class="fa fa-times"
+                                aria-hidden="true"></i></button> -->
+                    </ng-template>
+
+                </p-toolbar>
+
+                <div class="table-responsive">
+                    <div class="dx-viewport">
+                        <div class="demo-container">
+                            <div id="pivotgrid-demo">
+                                <div class="chart-holder" [class.hide]="!hideGraph">
+                                    <dx-chart id="sales-chart">
+                                        <dxo-common-series-settings type="bar"></dxo-common-series-settings>
+                                        <dxo-size [height]="200"></dxo-size>
+                                        <dxo-adaptive-layout [width]="450"></dxo-adaptive-layout>
+                                        <dxo-tooltip [enabled]="true" format="currency" [customizeTooltip]="customizeTooltip"></dxo-tooltip>
+                                    </dx-chart>
+                                </div>
+
+                                <!-- <dx-button text="Reset the PivotGrid's State" (onClick)="onResetButtonClick()">
+                                </dx-button> -->
+                                <dx-pivot-grid [allowSorting]="true" [allowSortingBySummary]="true" [allowFiltering]="true" [height]="620" [showBorders]="true" rowHeaderLayout="tree" [dataSource]="dataSource">
+                                    <!-- <dx-pivot-grid [allowSorting]="true" [allowSortingBySummary]="true" #dataGridVar class="textsr" id="myDataGrid" [allowFiltering]="true" alignment="center" [showColumnGrandTotals]="false" [showBorders]="true" rowHeaderLayout="tree" [dataSource]="pivotGridDataSource"
+                                    (onContextMenuPreparing)="prepareContextMenu($event)"> -->
+                                    <!-- <dxo-field-panel [showDataFields]="showDataFields" [showRowFields]="showRowFields" [showColumnFields]="showColumnFields" [showFilterFields]="showFilterFields" [allowFieldDragging]="true" [visible]="true">
+                                    </dxo-field-panel> -->
+
+                                    <dxo-header-filter [allowSearch]="true" [showRelevantValues]="true" [width]="300" [height]="400"></dxo-header-filter>
+                                    <dxo-field-chooser [enabled]="true" [height]="80+'%'" [width]="70+'%'" [applyChangesMode]="applyChangesMode" [allowSearch]="true">
+                                    </dxo-field-chooser>
+                                    <dxo-scrolling mode="virtual"></dxo-scrolling>
+                                    <dxo-state-storing [enabled]="true" type="localStorage" storageKey="dx-widget-gallery-pivotgrid-storing">
+                                    </dxo-state-storing>
+                                </dx-pivot-grid>
+                                <!-- <div class=row>
+                                <div class="options">
+                                    <div class="caption">Filters</div>
+                                    <div class="option">
+                                        <dx-check-box text="Show Data Fields" [(value)]="showDataFields"></dx-check-box>
+                                    </div>
+                                    <div class="option">
+                                        <dx-check-box text="Show Row Fields" [(value)]="showRowFields"></dx-check-box>
+                                    </div>
+                                    <div class="option">
+                                        <dx-check-box text="Show Column Fields" [(value)]="showColumnFields"></dx-check-box>
+                                    </div>
+                                    <div class="option">
+                                        <dx-check-box text="Show Filter Fields" [(value)]="showFilterFields"></dx-check-box>
+                                    </div>
+                                </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

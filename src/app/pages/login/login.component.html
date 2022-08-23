@@ -1,0 +1,175 @@
+<p-toast class="custom-toast"></p-toast>
+
+<section class="common-form login">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-form">
+                    <div class="row">
+                        <form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
+
+                            <div class="col-lg-12 ">
+                                <img class=" login-logo" src="assets/images/logog.png">
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="mb-3 cus-mb">
+                                    <input type="text" class="form-control common-input-css" placeholder="email" formControlName="email" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" trim>
+
+                                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.email.errors.required">Username is
+                                            required</span>
+                                        <span class="for-sub-name" *ngIf="f.email.errors.email">Email must be a valid
+                                            email
+                                            address</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12  form-group">
+                                <div class="mb-3 cus-mb password">
+                                    <input [type]="show ? 'text' : 'password'" class="form-control common-input-css " placeholder="Password" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" maxlength="20" trim>
+
+                                    <i [className]="show ? 'fa fa-eye common-fa' : 'fa fa-eye-slash common-fa'" class="" (click)="password()"></i>
+
+                                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                                        <span class="for-sub-name" *ngIf="f.password.errors.required">Password is
+                                            required</span>
+                                        <span class="for-sub-name" *ngIf="f.password.errors.minlength">Password must be
+                                            at least 8 characters</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12  form-group">
+                                <div class="mb-3 cus-mb password rememberMe">
+                                    <input type="checkbox" name="" id="" [checked]="checked" formControlName="isRemember"> Remember me
+                                </div>
+                            </div>
+
+                            <!-- <div class="col-lg-12 form-group" *ngIf="errorMsg">
+                                <div class="mb-3 cus-mb password consecAttempt">
+                                    {{errorMsg}}
+                                </div>
+                            </div> -->
+
+                            <div class="col-lg-12">
+                                <div class="mb-3 cus-mb">
+                                    <button class="BT login-bt" [disabled]="isBtnDisabled" type="submit">login
+                                        <i class="fa fa-spinner fa-spin" *ngIf="isBtnDisabled" aria-hidden="true"></i>
+
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="col-lg-12">
+                            <div class="mb-3 cus-mb">
+                                <a class="form-a" href="javascript:void(0)" [routerLink]="['/register']">Not Registered?
+                                    Register now</a>
+                                <a class="form-a" href="javascript:void(0)" [routerLink]="['/forgot-password']">Forgot
+                                    password? Click here</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- <p-dialog [(visible)]="showAuthTokenModal" [style]="{width: '540px'}" header="Two-Factor Authentication" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-field">
+                    <div class="twaFA-mail">
+                        In order to confirm your identity, we have sent a temporary identification code to
+                        <b>{{transformEmail(loginResponse.user.email)}} </b>. Once you receive your code, enter it below.
+                    </div>
+                    <input type="text" pInputText id="sixDigitCode" [disabled]="loadingSecurityData" trim [(ngModel)]="sixDigitCode" type="text" class="form-control" (keyup)="changedSixdigit()" placeholder="Enter 6-Digit Code" />
+                </div>
+
+            </div>
+            <div class="col-lg-12">
+                <div class="p-field">
+                    <input type="checkbox" [(ngModel)]="isSkipTwoFactAuth" name="" id=""> Don't ask for next 14 days for this device
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Verify" icon="pi pi-check" [disabled]="loadingSecurityData || !sixDigitCode" (click)="verifyGoogleAuth()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingSecurityData" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog> -->
+<!-- <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>  -->
+
+
+<p-dialog [(visible)]="twoFactAuthQr" [style]="{width: '540px'}" header="Activate 2FA" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div>
+                    <div class="image-div">
+                        <img *ngIf="!gettingQr && qrResponse?.authBarcodeImage" src="{{qrResponse.authBarcodeImage}}">
+                        <span *ngIf="gettingQr">
+                            <i class="fa fa-spinner fa-spin"  style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="twaFA-mail text-center">
+                        Scan above QR code using Authenticator App and enter 6-digit code below.
+                        <div style="margin: 10px;">
+                            <ng-otp-input type="number" #ngOtpInput (onInputChange)="onOtpChange($event)" *ngIf="showOtpComponent" [config]="config" (keyup.enter)="activateGoogleauth()"></ng-otp-input>
+                            <span style="display:none" *ngIf="otp" class="o-t-p">{{otp}}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="p-field">
+                    <input type="text" pInputText id="sixDigitCode" [disabled]="loadingSecurityData" trim [(ngModel)]="sixDigitCode" type="text" class="form-control" (keyup)="changedSixdigit()" placeholder="Enter 6-Digit Code" />
+                </div> -->
+
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="closneModal()" class="p-button-text"></button>
+        <button pButton pRipple label="Verify" icon="pi pi-check" [disabled]="loadingSecurityData || !otp" (click)="activateGoogleauth()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingSecurityData" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showAuthTokenModal" [style]="{width: '540px'}" header="Two-Factor Authentication" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-field">
+                    <div class="twaFA-mail text-center">
+                        Please enter 6-digit code from Authenticator App.
+                        <div style="margin: 10px;">
+                            <ng-otp-input type="number" #ngOtpInput (onInputChange)="onOtpChange($event)" *ngIf="showOtpComponent" [config]="config" (keyup.enter)="verifyGoogleAuth()"></ng-otp-input>
+                            <span style="display:none" *ngIf="otp" class="o-t-p">{{otp}}</span>
+                        </div>
+                    </div>
+                    <!-- <input type="text" pInputText id="sixDigitCode" [disabled]="loadingSecurityData" trim [(ngModel)]="sixDigitCode" type="text" class="form-control" (keyup)="changedSixdigit()" placeholder="Enter 6-Digit Code" />
+                     -->
+
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Verify" icon="pi pi-check" [disabled]="loadingSecurityData || !otp" (click)="verifyGoogleAuth()" class="p-button-text"></button>
+        <!-- <input pButton pRipple [disabled]="loadingSecurityData || !otp" (keypress)="verifyGoogleAuth()" (blur)="verifyGoogleAuth();" class=" p-button-text " /> -->
+        <i class="fa fa-spinner fa-spin " *ngIf="loadingSecurityData " style="color: #2196F3;font-weight: 900;vertical-align: super; " aria-hidden="true "></i>
+    </ng-template>
+</p-dialog>

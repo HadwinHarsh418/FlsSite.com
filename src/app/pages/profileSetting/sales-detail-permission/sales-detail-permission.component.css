@@ -1,0 +1,66 @@
+.d-flex.right-side {
+    display: flex !important;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.p-toolbar-group-right {
+    width: 100%;
+}
+
+.d-flex.right-side button img {
+    max-width: 17px !important;
+}
+
+.d-flex.right-side button {
+    padding: 0 7px !important;
+    margin: 5px 10px 5px 0px !important;
+    min-height: 30px;
+    line-height: 40px;
+}
+
+.statusbtn {
+    width: 100% !important;
+    border-radius: 2px;
+    padding: 0.25em 0.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    background-color: #c8e6c9;
+    color: #256029;
+    border: none;
+    max-width: 120px;
+}
+
+th {
+    width: 100% !important;
+}
+
+td {
+    position: relative !important;
+    width: 100% !important;
+}
+
+.ico {
+    position: absolute !important;
+    top: 6px !important;
+}
+
+.header2 {
+    background: #cba269 !important;
+}
+
+.header1 {
+    background: #c5ac89 !important;
+}
+
+.txt {
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+    padding: 8px 7px!important;
+}

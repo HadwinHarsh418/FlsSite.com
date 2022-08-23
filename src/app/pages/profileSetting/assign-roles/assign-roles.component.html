@@ -1,0 +1,31 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="card">
+    <div class="card-body new-body">
+        <!-- <h5 class="card-title">Assign role to users</h5> -->
+        <div class="p-fluid p-formgrid p-grid">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="p-field p-col-12 p-md-3">
+                        <label for="state">Users</label>
+                        <p-dropdown inputId="state1" [options]="users" [(ngModel)]="selectedUser" placeholder="Select user" optionLabel="firstName"></p-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="p-field p-col-12 p-md-3">
+                        <label for="state">Roles</label>
+                        <p-dropdown inputId="state" [options]="roles" [(ngModel)]="selectedRole" placeholder="Select role" optionLabel="roleName"></p-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button pButton type="button" label="Save" (click)="submit()"></button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="p-field-checkbox" *ngFor="let pm of permissions">
+                    <p-checkbox name="city1" value="{{pm.id}}" [(ngModel)]="cities1" inputId="pm.id"></p-checkbox>
+                    <label for="city1">{{pm.permissionName}} - {{pm.permissionDesc}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

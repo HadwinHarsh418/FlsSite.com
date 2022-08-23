@@ -1,0 +1,47 @@
+<p class="breadcrumb-item active breadBtn" aria-current="page" style="display: contents;">
+    <button pButton type="button" icon="pi pi-users" style=" height: 23px; margin-right: 3px;" ngbTooltip="View all users with permissions" placement="left" iconPos="left" (click)="getAllUsersWithPermissions()" [disabled]="loading">
+        <i class="fa fa-spinner fa-spin" *ngIf="loading" style=" color: white " aria-hidden="true"></i></button>
+</p>
+
+<p-dialog [(visible)]="showUserDialogue " header="Users with permissions allowed" [modal]="true" styleClass="myStyle">
+    <ng-template pTemplate="content">
+        <div class="row">
+
+            <div class="  permit_table">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>First name</th>
+                            <th>Last name</th>
+                            <th>View</th>
+                            <th>Add</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            <th>Export csv</th>
+                            <th>Export xlxs</th>
+                            <th>Export pdf</th>
+                            <th>Assign roles</th>
+                            <th>Assign permissions to roles</th>
+                            <th>Import data</th>
+                            <th>Save all</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let np of usWdPrms">
+                            <td>{{np.firstName}}</td>
+                            <td>{{np.lastName}}</td>
+                            <td *ngFor="let pp of np.permissions"><input type="checkbox" [(ngModel)]="pp.value" *ngIf="pp.havethis"></td>
+                            <!-- [disabled]="pp.isDisabled" (change)="disableOther(np.pageName,pp.name,pp.value)" -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialogueBox()"></button>
+
+    </ng-template>
+</p-dialog>

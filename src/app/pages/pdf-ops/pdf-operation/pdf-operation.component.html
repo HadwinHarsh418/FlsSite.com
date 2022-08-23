@@ -1,0 +1,685 @@
+<p-toast class="custom-toast"></p-toast>
+
+<div class="card">
+
+    <div class="card-body new-body">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">PDF Operations</li>
+        </ol>
+        <br>
+
+        <p-tabView (onChange)="resetValue()">
+            <p-tabPanel header="Merge Files">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="container" appDnd (fileDropped)="onFileDropped($event)">
+                            <input type="file" #fileDropRef id="fileDropRef" multiple accept="application/pdf" (change)="fileBrowseHandler($event.target.files)" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64">
+                                <g fill="#3B454F" fill-rule="nonzero">
+                                    <path
+                                        d="M42.656 15.135a1.953 1.953 0 0 1-1.391-.578L31.5 4.795l-9.765 9.762a1.97 1.97 0 1 1-2.785-2.785L30.106.616a1.97 1.97 0 0 1 2.785 0l11.157 11.156a1.97 1.97 0 0 1-1.392 3.363z" />
+                                    <path
+                                        d="M31.5 36.791a1.97 1.97 0 0 1-1.969-1.969V2.01a1.97 1.97 0 0 1 3.938 0v32.812a1.97 1.97 0 0 1-1.969 1.969z" />
+                                    <path
+                                        d="M55.781 63.041H7.22A7.225 7.225 0 0 1 0 55.822V41.385a4.599 4.599 0 0 1 4.594-4.594h7.234a4.567 4.567 0 0 1 4.402 3.276l2.814 9.382a.658.658 0 0 0 .628.467h23.656a.658.658 0 0 0 .628-.467l2.814-9.385a4.572 4.572 0 0 1 4.402-3.273h7.234A4.599 4.599 0 0 1 63 41.385v14.437a7.225 7.225 0 0 1-7.219 7.219zM4.594 40.729a.656.656 0 0 0-.657.656v14.437a3.286 3.286 0 0 0 3.282 3.282H55.78a3.286 3.286 0 0 0 3.282-3.282V41.385a.656.656 0 0 0-.657-.656h-7.234a.65.65 0 0 0-.628.467L47.73 50.58a4.628 4.628 0 0 1-4.402 3.274H19.672a4.567 4.567 0 0 1-4.402-3.276l-2.814-9.382a.65.65 0 0 0-.628-.467H4.594z" />
+                                </g>
+                            </svg>
+
+                            <h3>Drag and drop file here</h3>
+                            <h3>or</h3>
+                            <label for="fileDropRef">Browse for file</label>
+                        </div>
+                        <div class="files-list" dragula="VAMPIRES" [(dragulaModel)]="files">
+                            <div class="single-file" *ngFor="let file of files; let i = index" (click)="previewFile(file)">
+                                <div class="file-icon" style="width: 50px">
+                                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
+                                        <polygon style="fill:#EDEADA;" points="51.5,14 37.5,0 6.5,0 6.5,58 51.5,58 " />
+                                        <g>
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,23h25c0.552,0,1-0.447,1-1s-0.448-1-1-1h-25c-0.552,0-1,0.447-1,1S15.948,23,16.5,23z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,15h10c0.552,0,1-0.447,1-1s-0.448-1-1-1h-10c-0.552,0-1,0.447-1,1S15.948,15,16.5,15z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,29h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,29,41.5,29z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,37h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,37,41.5,37z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,45h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,45,41.5,45z" />
+                                        </g>
+                                        <polygon style="fill:#CEC9AE;" points="37.5,0 37.5,14 51.5,14 " />
+                                    </svg>
+                                </div>
+                                <div class="info">
+                                    <h4 class="name">
+                                        {{ file?.name }}
+                                    </h4>
+                                    <p class="size">
+                                        {{ formatBytes(file?.size) }}
+                                    </p>
+                                    <div class="progress-cont">
+                                        <div class="progress" [style.width]="file?.progress + '%'">
+                                        </div>
+                                    </div>
+                                    <!-- <app-progress [progress]="file?.progress"></app-progress> -->
+                                </div>
+
+                                <button class="delete" (click)="deleteFile(i)" style=" outline: none; border: none; " [disabled]="file?.progress<100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18">
+                                        <path fill="#B1B1B1" fill-rule="nonzero"
+                                            d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- <div class="p-field">
+                            <input type="text" pInputText id="fty_Id" [(ngModel)]="fileName"
+                                placeholder="Enter filename" required style=" width: 100%; " />
+                            <small class="p-invalid" *ngIf="submitted && !fileName">File name is
+                                required.</small>
+                        </div> -->
+                        <p-tabView (onChange)="resetValueBtn()">
+                            <p-tabPanel header="Direct Download">
+                                <div class="p-field">
+                                    <input type="text" pInputText id="fty_Id" [(ngModel)]="fileName" placeholder="Enter filename" style=" width: 100%; " />
+                                    <small class="p-invalid" *ngIf="submitted && !fileName">File name is
+                                        required.</small>
+                                </div>
+                                <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('direct')">Download
+                                    File
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                </button>
+                            </p-tabPanel>
+                            <p-tabPanel header="Save As">
+                                <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('merge')">Download
+                                    File
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                </button>
+                            </p-tabPanel>
+
+                        </p-tabView>
+
+                    </div>
+                    <div class="col-md-7">
+                        <div *ngIf="pdfSrc" class="pdf-view">
+                            <pdf-viewer [src]="pdfSrc" [original-size]="true" [fit-to-page]="true" [autoresize]="true" [render-text]="true" style="display: block;height: 78vh;"></pdf-viewer>
+                        </div>
+                        <div *ngIf="!pdfSrc" class="no-preview">
+                            <img src="/assets/images/no-preview.png" alt="">
+                            <!-- <h3>No Preview found!</h3> -->
+                        </div>
+
+                    </div>
+                </div>
+            </p-tabPanel>
+            <p-tabPanel header="Manual Split">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="container" appDnd (fileDropped)="onFileDropped($event,'split')">
+                            <input type="file" #fileDropRef id="fileDropRef" onclick="this.value = null" accept="application/pdf" (change)="fileBrowseHandler($event.target.files,'split')" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64">
+                                <g fill="#3B454F" fill-rule="nonzero">
+                                    <path
+                                        d="M42.656 15.135a1.953 1.953 0 0 1-1.391-.578L31.5 4.795l-9.765 9.762a1.97 1.97 0 1 1-2.785-2.785L30.106.616a1.97 1.97 0 0 1 2.785 0l11.157 11.156a1.97 1.97 0 0 1-1.392 3.363z" />
+                                    <path
+                                        d="M31.5 36.791a1.97 1.97 0 0 1-1.969-1.969V2.01a1.97 1.97 0 0 1 3.938 0v32.812a1.97 1.97 0 0 1-1.969 1.969z" />
+                                    <path
+                                        d="M55.781 63.041H7.22A7.225 7.225 0 0 1 0 55.822V41.385a4.599 4.599 0 0 1 4.594-4.594h7.234a4.567 4.567 0 0 1 4.402 3.276l2.814 9.382a.658.658 0 0 0 .628.467h23.656a.658.658 0 0 0 .628-.467l2.814-9.385a4.572 4.572 0 0 1 4.402-3.273h7.234A4.599 4.599 0 0 1 63 41.385v14.437a7.225 7.225 0 0 1-7.219 7.219zM4.594 40.729a.656.656 0 0 0-.657.656v14.437a3.286 3.286 0 0 0 3.282 3.282H55.78a3.286 3.286 0 0 0 3.282-3.282V41.385a.656.656 0 0 0-.657-.656h-7.234a.65.65 0 0 0-.628.467L47.73 50.58a4.628 4.628 0 0 1-4.402 3.274H19.672a4.567 4.567 0 0 1-4.402-3.276l-2.814-9.382a.65.65 0 0 0-.628-.467H4.594z" />
+                                </g>
+                            </svg>
+
+                            <h3>Drag and drop file here</h3>
+                            <h3>or</h3>
+                            <label for="fileDropRef">Browse for file</label>
+                        </div>
+                        <div class="files-list" dragula="VAMPIRES" [(dragulaModel)]="files">
+                            <div class="single-file" *ngFor="let file of files; let i = index" (click)="previewFile(file)">
+                                <div class="file-icon" style="width: 50px">
+                                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
+                                        <polygon style="fill:#EDEADA;" points="51.5,14 37.5,0 6.5,0 6.5,58 51.5,58 " />
+                                        <g>
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,23h25c0.552,0,1-0.447,1-1s-0.448-1-1-1h-25c-0.552,0-1,0.447-1,1S15.948,23,16.5,23z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,15h10c0.552,0,1-0.447,1-1s-0.448-1-1-1h-10c-0.552,0-1,0.447-1,1S15.948,15,16.5,15z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,29h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,29,41.5,29z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,37h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,37,41.5,37z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,45h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,45,41.5,45z" />
+                                        </g>
+                                        <polygon style="fill:#CEC9AE;" points="37.5,0 37.5,14 51.5,14 " />
+                                    </svg>
+                                </div>
+
+                                <div class="info">
+
+                                    <h4 class="name">
+                                        {{ file?.name }}
+                                    </h4>
+                                    <p class="size">
+                                        {{ formatBytes(file?.size) }}
+                                    </p>
+                                    <div class="progress-cont">
+                                        <div class="progress" [style.width]="file?.progress + '%'">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="delete" (click)="deleteFile(i)" style=" outline: none; border: none; " [disabled]="file?.progress<100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18">
+                                        <path fill="#B1B1B1" fill-rule="nonzero"
+                                            d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="text" pInputText style="width: 55%;" placeholder="Prefix" [(ngModel)]="data">
+                            </div>
+                        </div>
+
+                        <div class="height-fix">
+                            <table class="table table-bordered" *ngIf="pagesArray.length">
+                                <tbody>
+                                    <tr>
+                                        <th>Page No.</th>
+                                        <th>File Name</th>
+                                    </tr>
+                                    <tr *ngFor="let pg of pagesArray; let i = index">
+                                        <td>{{pg.pageNum}}</td>
+                                        <td>
+
+                                            <div class="input-box">
+                                                <span>{{pg.prefix}}</span>
+                                                <input type="text" [(ngModel)]="pg.pageName" (focus)="pagechanging(pg); onClick(pg)" #input (keydown.arrowUp)="focusElement(i-1)" (keydown.arrowDown)="focusElement(i+1)" />
+                                            </div>
+                                            <!-- <input type="text" type="text" (ngModelChange)="changeValue(pg)" -->
+                                            <!-- <span matPrefix> {{data}}- &nbsp;</span>
+                                            <input type="text" matInput (focusin)="addPrefix($event)" [(ngModel)]="pg.pageName" (focus)="pagechanging(pg)" #input (keydown.arrowUp)="focusElement(i-1)" (keydown.arrowDown)="focusElement(i+1)"> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p-tabView (onChange)="resetValueBtn()">
+                            <p-tabPanel header="Direct Download">
+                                <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('split')">Download
+                                    File
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                </button>
+                            </p-tabPanel>
+                            <p-tabPanel header="Save As">
+                                <ng-container *ngIf="splitLinks && splitLinks.length">
+                                    <div class="filelist">
+                                        <div class="filelistHeader">
+                                            <p>Split Result</p>
+                                        </div>
+                                        <div class="filelistItem" *ngFor="let lnks of splitLinks; let ifd = index">
+                                            {{ifd+1}} <a href="{{lnks.url}}" target="_blank">{{lnks.filename}}
+                                            <i class="ml-2 fa fa-external-link"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-info generate-btn" (click)="resetValueBtn()">Reset</button>
+                                </ng-container>
+                                <ng-container *ngIf="!splitLinks || !splitLinks.length">
+                                    <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('split', false, true)">Download
+                                        File
+                                        <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                    </button>
+                                </ng-container>
+                            </p-tabPanel>
+
+                        </p-tabView>
+                        <!-- <div class="check-container">
+                            <input type="checkbox" [(ngModel)]="splitSaveAs"> Save as 
+                            <i class="fa fa-info-circle" ngbTooltip="Check this to force save as" placement="top"></i>
+                        </div>
+                        <button class="btn btn-info generate-btn" [disabled]="loadingRes"
+                            (click)="getFile('split')">Download
+                            File
+                            <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                        </button> -->
+                    </div>
+                    <div class="col-md-7">
+                        <div *ngIf="pdfSrc" class="pdf-view">
+                            <pdf-viewer [src]="pdfSrc" [original-size]="true" [fit-to-page]="true" (pageChange)="pChange($event)" [(page)]="page" (after-load-complete)="afterLoadComplete($event)" [autoresize]="true" [render-text]="true" style="display: block;height: 78vh;"></pdf-viewer>
+                        </div>
+                        <div *ngIf="!pdfSrc" class="no-preview">
+                            <img src="/assets/images/no-preview.png" alt="">
+                            <!-- <h3>No Preview found!</h3> -->
+                        </div>
+
+                    </div>
+                </div>
+            </p-tabPanel>
+            <p-tabPanel header="Split By Shipment">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="container" appDnd (fileDropped)="onFileDropped($event,'split')">
+                            <input type="file" #fileDropRef id="fileDropRef" onclick="this.value = null" accept="application/pdf" (change)="fileBrowseHandler($event.target.files,'split')" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64">
+                                <g fill="#3B454F" fill-rule="nonzero">
+                                    <path
+                                        d="M42.656 15.135a1.953 1.953 0 0 1-1.391-.578L31.5 4.795l-9.765 9.762a1.97 1.97 0 1 1-2.785-2.785L30.106.616a1.97 1.97 0 0 1 2.785 0l11.157 11.156a1.97 1.97 0 0 1-1.392 3.363z" />
+                                    <path
+                                        d="M31.5 36.791a1.97 1.97 0 0 1-1.969-1.969V2.01a1.97 1.97 0 0 1 3.938 0v32.812a1.97 1.97 0 0 1-1.969 1.969z" />
+                                    <path
+                                        d="M55.781 63.041H7.22A7.225 7.225 0 0 1 0 55.822V41.385a4.599 4.599 0 0 1 4.594-4.594h7.234a4.567 4.567 0 0 1 4.402 3.276l2.814 9.382a.658.658 0 0 0 .628.467h23.656a.658.658 0 0 0 .628-.467l2.814-9.385a4.572 4.572 0 0 1 4.402-3.273h7.234A4.599 4.599 0 0 1 63 41.385v14.437a7.225 7.225 0 0 1-7.219 7.219zM4.594 40.729a.656.656 0 0 0-.657.656v14.437a3.286 3.286 0 0 0 3.282 3.282H55.78a3.286 3.286 0 0 0 3.282-3.282V41.385a.656.656 0 0 0-.657-.656h-7.234a.65.65 0 0 0-.628.467L47.73 50.58a4.628 4.628 0 0 1-4.402 3.274H19.672a4.567 4.567 0 0 1-4.402-3.276l-2.814-9.382a.65.65 0 0 0-.628-.467H4.594z" />
+                                </g>
+                            </svg>
+
+                            <h3>Drag and drop file here</h3>
+                            <h3>or</h3>
+                            <label for="fileDropRef">Browse for file</label>
+                        </div>
+                        <div class="files-list" dragula="VAMPIRES" [(dragulaModel)]="files">
+                            <div class="single-file" *ngFor="let file of files; let i = index" (click)="previewFile(file)">
+                                <div class="file-icon" style="width: 50px">
+                                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
+                                        <polygon style="fill:#EDEADA;" points="51.5,14 37.5,0 6.5,0 6.5,58 51.5,58 " />
+                                        <g>
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,23h25c0.552,0,1-0.447,1-1s-0.448-1-1-1h-25c-0.552,0-1,0.447-1,1S15.948,23,16.5,23z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M16.5,15h10c0.552,0,1-0.447,1-1s-0.448-1-1-1h-10c-0.552,0-1,0.447-1,1S15.948,15,16.5,15z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,29h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,29,41.5,29z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,37h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,37,41.5,37z" />
+                                            <path style="fill:#CEC9AE;"
+                                                d="M41.5,45h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,45,41.5,45z" />
+                                        </g>
+                                        <polygon style="fill:#CEC9AE;" points="37.5,0 37.5,14 51.5,14 " />
+                                    </svg>
+                                </div>
+                                <div class="info">
+                                    <h4 class="name">
+                                        {{ file?.name }}
+                                    </h4>
+                                    <p class="size">
+                                        {{ formatBytes(file?.size) }}
+                                    </p>
+                                    <div class="progress-cont">
+                                        <div class="progress" [style.width]="file?.progress + '%'">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="delete" (click)="deleteFile(i)" style=" outline: none; border: none; " [disabled]="file?.progress<100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18">
+                                        <path fill="#B1B1B1" fill-rule="nonzero"
+                                            d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- <table class="table table-bordered" *ngIf="pagesArray.length">
+                            <tr>
+                                <th>Page No.</th>
+                                <th>File Name</th>
+                            </tr>
+                            <tr *ngFor="let pg of pagesArray; let i = index">
+                                <td>{{pg.pageNum}}</td>
+                                <td>
+                                    <input type="text" [(ngModel)]="pg.pageName" (focus)="pagechanging(pg)" #input
+                                        (keydown.arrowUp)="focusElement(i-1)" (keydown.arrowDown)="focusElement(i+1)">
+                                </td>
+                            </tr>
+                        </table> -->
+                        <p-tabView (onChange)="resetValueBtn()">
+                            <p-tabPanel header="Direct Download">
+                                <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('auto-split')">Download
+                                    File
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                </button>
+                            </p-tabPanel>
+                            <p-tabPanel header="Save As">
+                                <ng-container *ngIf="splitLinks && splitLinks.length">
+                                    <div class="filelist">
+                                        <div class="filelistHeader">
+                                            <p>Split Result</p>
+                                        </div>
+                                        <div class="filelistItem" *ngFor="let lnks of splitLinks; let ifd = index">
+                                            {{ifd+1}} <a href="{{lnks.url}}" target="_blank">{{lnks.filename}}
+                                            <i class="ml-2 fa fa-external-link"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-info generate-btn" (click)="resetValueBtn()">Reset</button>
+                                </ng-container>
+                                <ng-container *ngIf="!splitLinks || !splitLinks.length">
+                                    <button class="btn btn-info generate-btn" [disabled]="loadingRes" (click)="getFile('auto-split', false, true)">Download
+                                        File
+                                        <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                                    </button>
+                                </ng-container>
+                            </p-tabPanel>
+
+                        </p-tabView>
+                        <!-- <div class="check-container">
+                            <input type="checkbox" [(ngModel)]="splitSaveAs"> Save as 
+                            <i class="fa fa-info-circle" ngbTooltip="Check this to force save as" placement="top"></i>
+                        </div>
+                        <button class="btn btn-info generate-btn" [disabled]="loadingRes"
+                            (click)="getFile('split')">Download
+                            File
+                            <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                        </button> -->
+                    </div>
+                    <div class="col-md-7">
+                        <!-- <input type="text" (keyup)="search($event.target.value)" style="position: absolute; top: 0; left: 0; z-index: 1;"/> -->
+                        <div *ngIf="pdfSrc" class="pdf-view">
+                            <pdf-viewer #PdfViewerComponent [src]="pdfSrc" [original-size]="true" [fit-to-page]="true" [(page)]="page" (after-load-complete)="afterLoadComplete($event)" [autoresize]="true" [render-text]="true" style="display: block;height: 78vh;"></pdf-viewer>
+                        </div>
+                        <div *ngIf="!pdfSrc" class="no-preview">
+                            <img src="/assets/images/no-preview.png" alt="">
+                            <!-- <h3>No Preview found!</h3> -->
+                        </div>
+
+                    </div>
+                </div>
+            </p-tabPanel>
+            <!-- to PDF -->
+            <p-tabPanel header="Convert to PDF">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="container npb">
+                            <div class="p-field p-450">
+                                <!-- <label for="name" class="set-texts">Select Conversion : </label> -->
+                                <p-dropdown appendTo="body" class="for-input" [options]="toPdfOptions" [(ngModel)]="selectedToPdfOption" (onChange)="ontoPdfChange($event)" placeholder="---Select Conversion---" optionLabel="label" [showClear]="false" [disabled]="loadingRes"></p-dropdown>
+                            </div>
+                        </div>
+                        <div class="container" appDnd (fileDropped)="onFileDropped($event,'topdf')" *ngIf="selectedToPdfOption?.label">
+                            <input multiple type="file" #fileDropRef id="fileDropRef" onclick="this.value = null" accept="{{selectedToPdfOption.accept}}" (change)="fileBrowseHandler($event.target.files,'topdf')" [disabled]="loadingRes" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64">
+                                <g fill="#3B454F" fill-rule="nonzero">
+                                    <path
+                                        d="M42.656 15.135a1.953 1.953 0 0 1-1.391-.578L31.5 4.795l-9.765 9.762a1.97 1.97 0 1 1-2.785-2.785L30.106.616a1.97 1.97 0 0 1 2.785 0l11.157 11.156a1.97 1.97 0 0 1-1.392 3.363z" />
+                                    <path
+                                        d="M31.5 36.791a1.97 1.97 0 0 1-1.969-1.969V2.01a1.97 1.97 0 0 1 3.938 0v32.812a1.97 1.97 0 0 1-1.969 1.969z" />
+                                    <path
+                                        d="M55.781 63.041H7.22A7.225 7.225 0 0 1 0 55.822V41.385a4.599 4.599 0 0 1 4.594-4.594h7.234a4.567 4.567 0 0 1 4.402 3.276l2.814 9.382a.658.658 0 0 0 .628.467h23.656a.658.658 0 0 0 .628-.467l2.814-9.385a4.572 4.572 0 0 1 4.402-3.273h7.234A4.599 4.599 0 0 1 63 41.385v14.437a7.225 7.225 0 0 1-7.219 7.219zM4.594 40.729a.656.656 0 0 0-.657.656v14.437a3.286 3.286 0 0 0 3.282 3.282H55.78a3.286 3.286 0 0 0 3.282-3.282V41.385a.656.656 0 0 0-.657-.656h-7.234a.65.65 0 0 0-.628.467L47.73 50.58a4.628 4.628 0 0 1-4.402 3.274H19.672a4.567 4.567 0 0 1-4.402-3.276l-2.814-9.382a.65.65 0 0 0-.628-.467H4.594z" />
+                                </g>
+                            </svg>
+
+                            <h3>Drag and drop file here</h3>
+                            <h3>or</h3>
+                            <label for="fileDropRef">Browse for file</label>
+                        </div>
+                        <!-- list -->
+                        <div class="container npb">
+                            <div class="files-list" dragula="VAMPIRES" [(dragulaModel)]="files">
+                                <div class="single-file" *ngFor="let file of files; let i = index" (click)="previewFile(file)">
+                                    <div class="file-icon" style="width: 50px">
+                                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
+                                            <polygon style="fill:#EDEADA;" points="51.5,14 37.5,0 6.5,0 6.5,58 51.5,58 " />
+                                            <g>
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M16.5,23h25c0.552,0,1-0.447,1-1s-0.448-1-1-1h-25c-0.552,0-1,0.447-1,1S15.948,23,16.5,23z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M16.5,15h10c0.552,0,1-0.447,1-1s-0.448-1-1-1h-10c-0.552,0-1,0.447-1,1S15.948,15,16.5,15z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,29h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,29,41.5,29z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,37h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,37,41.5,37z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,45h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,45,41.5,45z" />
+                                            </g>
+                                            <polygon style="fill:#CEC9AE;" points="37.5,0 37.5,14 51.5,14 " />
+                                        </svg>
+                                    </div>
+                                    <div class="info">
+                                        <h4 class="name">
+                                            {{ file?.name }}
+                                        </h4>
+                                        <p class="size">
+                                            {{ formatBytes(file?.size) }}
+                                        </p>
+                                        <div class="progress-cont">
+                                            <div class="progress" [style.width]="file?.progress + '%'">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="delete" [disabled]="loadingRes" (click)="deleteFile(i)" style=" outline: none; border: none; " [disabled]="file?.progress<100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18">
+                                            <path fill="#B1B1B1" fill-rule="nonzero"
+                                                d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- submit button -->
+                            <button *ngIf="files?.length" (click)="submitToPdf()" class="btn btn-info generate-btn" [disabled]="loadingRes">Convert Now
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </p-tabPanel>
+            <!-- from PDF  -->
+            <p-tabPanel header="Convert from PDF">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="container npb">
+                            <div class="p-field p-450">
+                                <!-- <label for="name" class="set-texts">Select Conversion : </label> -->
+                                <p-dropdown appendTo="body" class="for-input" [options]="fromPdfOptions" [(ngModel)]="selectedFromPdfOption" (onChange)="ontoPdfChange($event)" placeholder="---Select Conversion---" optionLabel="label" [showClear]="false" [disabled]="loadingRes"></p-dropdown>
+                            </div>
+                        </div>
+                        <div class="container" appDnd (fileDropped)="onFileDropped($event,'frompdf')" *ngIf="selectedFromPdfOption?.label">
+                            <input multiple type="file" #fileDropRef id="fileDropRef" onclick="this.value = null" accept="{{selectedFromPdfOption.accept}}" (change)="fileBrowseHandler($event.target.files,'frompdf')" [disabled]="loadingRes" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64">
+                                <g fill="#3B454F" fill-rule="nonzero">
+                                    <path
+                                        d="M42.656 15.135a1.953 1.953 0 0 1-1.391-.578L31.5 4.795l-9.765 9.762a1.97 1.97 0 1 1-2.785-2.785L30.106.616a1.97 1.97 0 0 1 2.785 0l11.157 11.156a1.97 1.97 0 0 1-1.392 3.363z" />
+                                    <path
+                                        d="M31.5 36.791a1.97 1.97 0 0 1-1.969-1.969V2.01a1.97 1.97 0 0 1 3.938 0v32.812a1.97 1.97 0 0 1-1.969 1.969z" />
+                                    <path
+                                        d="M55.781 63.041H7.22A7.225 7.225 0 0 1 0 55.822V41.385a4.599 4.599 0 0 1 4.594-4.594h7.234a4.567 4.567 0 0 1 4.402 3.276l2.814 9.382a.658.658 0 0 0 .628.467h23.656a.658.658 0 0 0 .628-.467l2.814-9.385a4.572 4.572 0 0 1 4.402-3.273h7.234A4.599 4.599 0 0 1 63 41.385v14.437a7.225 7.225 0 0 1-7.219 7.219zM4.594 40.729a.656.656 0 0 0-.657.656v14.437a3.286 3.286 0 0 0 3.282 3.282H55.78a3.286 3.286 0 0 0 3.282-3.282V41.385a.656.656 0 0 0-.657-.656h-7.234a.65.65 0 0 0-.628.467L47.73 50.58a4.628 4.628 0 0 1-4.402 3.274H19.672a4.567 4.567 0 0 1-4.402-3.276l-2.814-9.382a.65.65 0 0 0-.628-.467H4.594z" />
+                                </g>
+                            </svg>
+
+                            <h3>Drag and drop file here</h3>
+                            <h3>or</h3>
+                            <label for="fileDropRef">Browse for file</label>
+                        </div>
+                        <!-- list -->
+                        <div class="container npb">
+                            <div class="files-list" dragula="VAMPIRES" [(dragulaModel)]="files">
+                                <div class="single-file" *ngFor="let file of files; let i = index" (click)="previewFile(file)">
+                                    <div class="file-icon" style="width: 50px">
+                                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 58 58" style="enable-background:new 0 0 58 58;" xml:space="preserve">
+                                            <polygon style="fill:#EDEADA;" points="51.5,14 37.5,0 6.5,0 6.5,58 51.5,58 " />
+                                            <g>
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M16.5,23h25c0.552,0,1-0.447,1-1s-0.448-1-1-1h-25c-0.552,0-1,0.447-1,1S15.948,23,16.5,23z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M16.5,15h10c0.552,0,1-0.447,1-1s-0.448-1-1-1h-10c-0.552,0-1,0.447-1,1S15.948,15,16.5,15z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,29h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,29,41.5,29z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,37h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,37,41.5,37z" />
+                                                <path style="fill:#CEC9AE;"
+                                                    d="M41.5,45h-25c-0.552,0-1,0.447-1,1s0.448,1,1,1h25c0.552,0,1-0.447,1-1S42.052,45,41.5,45z" />
+                                            </g>
+                                            <polygon style="fill:#CEC9AE;" points="37.5,0 37.5,14 51.5,14 " />
+                                        </svg>
+                                    </div>
+                                    <div class="info">
+                                        <h4 class="name">
+                                            {{ file?.name }}
+                                        </h4>
+                                        <p class="size">
+                                            {{ formatBytes(file?.size) }}
+                                        </p>
+                                        <div class="progress-cont">
+                                            <div class="progress" [style.width]="file?.progress + '%'">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="delete" [disabled]="loadingRes" (click)="deleteFile(i)" style=" outline: none; border: none; " [disabled]="file?.progress<100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" viewBox="0 0 14 18">
+                                            <path fill="#B1B1B1" fill-rule="nonzero"
+                                                d="M1 16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v10zm3.17-7.83a.996.996 0 0 1 1.41 0L7 9.59l1.42-1.42a.996.996 0 1 1 1.41 1.41L8.41 11l1.42 1.42a.996.996 0 1 1-1.41 1.41L7 12.41l-1.42 1.42a.996.996 0 1 1-1.41-1.41L5.59 11 4.17 9.58a.996.996 0 0 1 0-1.41zM10.5 1L9.79.29C9.61.11 9.35 0 9.09 0H4.91c-.26 0-.52.11-.7.29L3.5 1H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1h-2.5z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- submit button -->
+                            <button *ngIf="files?.length" (click)="submitFromPdf()" class="btn btn-info generate-btn" [disabled]="loadingRes">Convert Now
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </p-tabPanel>
+
+        </p-tabView>
+
+
+
+    </div>
+</div>
+<!-- <div class="card">
+    <div class="card-body">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">PDF Operations</li>
+        </ol>
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-header">
+                    <h3>Merge <small>(Select multiple files) </small></h3>
+                </div>
+                <div class="card-body custom-pdf-data">
+                    <p-fileUpload #fileInput name="files" (onSelect)="onSelect($event)" [showUploadButton]="false"
+                        multiple="multiple" customUpload="true" accept="application/pdf" maxFileSize="1000000">
+
+                        <ng-template let-file pTemplate='files'>
+                            <div style="display: flex;align-items: center;padding: 2px 0;">
+                                <div style="width: 46%;">{{file.name}}</div>
+                                <div style="width: 42%;">{{file.size}} bytes</div>
+                                <div style=" width: 4%; ">
+                                    <button (click)="removeFile(file, fileInput)" type="button" icon="pi pi-times"
+                                        pbutton="" class="p-button p-component p-button-icon-only">
+                                        <span class="p-button-icon pi pi-times" aria-hidden="true"></span>
+                                        <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+                                    </button>
+                                </div>
+                                <div style=" width: 4%;">
+                                    <button type="button" icon="pi pi-file-pdf" (click)="viewPreview(file, fileInput)"
+                                        class="p-button p-component p-button-icon-only">
+                                        <span class="p-button-icon pi pi-file-pdf" aria-hidden="true"></span>
+                                        <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" icon="pi pi-file-pdf" (click)="showSortingPopup()" pbutton=""
+                                        class="p-button p-component p-button-icon-only">
+                                        <span class="p-button-icon pi pi-sort-alt" aria-hidden="true"></span>
+                                        <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-fileUpload>
+                    <button class="btn btn-info" [disabled]="loadingRes" (click)="getFile('merge')">Download File
+                        <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                    </button>
+
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card-header">
+                    <h3>Split <small>(Select single file)</small></h3>
+                </div>
+                <div class="card-body custom-pdf-data">
+                    <p-fileUpload #fileInputmerge name="files" [showUploadButton]="false" multiple=""
+                        accept="application/pdf" maxFileSize="1000000" customUpload="true">
+
+                        <ng-template let-file pTemplate='files'>
+                            <div style="display: flex;align-items: center;padding: 2px 0;">
+                                <div style="width: 46%;">{{file.name}}</div>
+                                <div style="width: 42%;">{{file.size}} bytes</div>
+                                <div style=" width: 4%; ">
+                                    <button (click)="removeFile(file, fileInputmerge)" type="button" icon="pi pi-times"
+                                        pbutton="" class="p-button p-component p-button-icon-only">
+                                        <span class="p-button-icon pi pi-times" aria-hidden="true"></span>
+                                        <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" icon="pi pi-file-pdf"
+                                        (click)="viewPreview(file, fileInputmerge)" pbutton=""
+                                        class="p-button p-component p-button-icon-only">
+                                        <span class="p-button-icon pi pi-file-pdf" aria-hidden="true"></span>
+                                        <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-fileUpload>
+                    <button class="btn btn-info" [disabled]="loadingRes" (click)="getFile('split')">Download Zip
+                        <i class="fa fa-spinner fa-spin" *ngIf="loadingRes" aria-hidden="true"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="sortingPopup" [style]="{width: '540px'}" header="Sort files" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+                        <div class="example-box" *ngFor="let file of sortedArr" cdkDrag>{{file}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideSortDialog()"
+            class="p-button-text"></button>
+        <button pButton pRipple label="Download file" icon="pi pi-check" *ngIf="!loadingFile"
+            (click)="saveOrderGetfile('merge')" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingFile"
+            style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+-->
+<div class="modal show bd-example-modal-lg pdfview" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [style.display]="pdfViewPoppup ? 'block' : 'none'" [style.visibilty]="'visible'">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="exampleModalLabel">
+                    <span class="resultTitle">PDF Viewer</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="hideDefaultDialog()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12" style="padding: 0;">
+                        <iframe [src]="mergedUrl | safe:'resourceUrl'" id="frame1" name="frame1" style=" width: 100%; height: 500px; " allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

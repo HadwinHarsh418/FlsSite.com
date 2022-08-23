@@ -1,0 +1,77 @@
+<p-toast class="custom-toast"></p-toast>
+
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">Fty Notes</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">FTY Notes</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'ftyNotes'"></app-users-with-permissions>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="FTY Notes are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()"> 
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i></button>
+
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input type="text" style="height: 32px;border: 1px solid #808080c7;margin-top: 6px;border-radius: 3px; outline: none; margin-bottom: 6px;" class="search-text" placeholder="Search ..." [(ngModel)]="seachStr" (keyup)="search()" />
+                    </div>
+
+                </div>
+                <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <i class="fa fa-spinner fa-spin" *ngIf="loading" style=" text-align: center; width: 100%; font-size: 29px; margin-top: 17px; " aria-hidden="true"></i>
+                    <div class="dx-viewport" *ngIf="dataSource && dataSource.length">
+                        <div class="demo-container">
+                            <div id="data-grid-demo">
+
+                                <dx-data-grid id="gridContainer" [dataSource]="dataSource" [showBorders]="true" [remoteOperations]="true" [repaintChangesOnly]="true" keyExpr="pkNoteId" (onSaving)="onSaving($event)" [columnAutoWidth]="true">
+
+                                    <dxo-paging [enabled]="false"></dxo-paging>
+                                    <dxo-editing mode="batch" [allowUpdating]="true" [selectTextOnEditStart]="selectTextOnEditStart" [startEditAction]="startEditAction">
+                                    </dxo-editing>
+
+                                    <dxi-column dataField="ftyGroup" [allowEditing]="false" caption="FTY Group">
+                                    </dxi-column>
+                                    <dxi-column dataField="vendId" caption="FTY" [allowEditing]="false">
+                                    </dxi-column>
+                                    <dxi-column dataField="fty" [allowEditing]="false"></dxi-column>
+                                    <dxi-column dataField="lastPoDate" dataType="date"></dxi-column>
+                                    <dxi-column dataField="note" [minWidth]="250"></dxi-column>
+                                    <dxi-column dataField="updatedBy" [allowEditing]="false"></dxi-column>
+                                    <dxi-column dataField="dateTimeCreated" [allowEditing]="false" caption="Last Updated" dataType="date" format="MM/dd/yyyy hh:mm a'">
+                                    </dxi-column>
+                                    <dxi-column dataField="clpReview" caption="CLP Review" dataType="date" format="MM/dd/yyyy"></dxi-column>
+                                </dx-data-grid>
+
+                                <!-- <div class="options">
+                                    <div class="caption">Options</div>
+                                    <div class="option">
+                                        <dx-check-box [(value)]="selectTextOnEditStart" text="Select Text on Edit Start">
+                                        </dx-check-box>
+                                    </div>
+                                    <div class="option">
+                                        <span>Start Edit Action</span>
+                                        <dx-select-box [items]="[ 'dblClick','click']" [(value)]="startEditAction">
+                                        </dx-select-box>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

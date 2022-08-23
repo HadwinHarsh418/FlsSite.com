@@ -1,0 +1,15 @@
+<ng-container *ngIf="fl">
+    <div class="item-imgList-img">
+        <img [src]="icon"/>
+    </div>
+    <div class="item-imgList">
+        <a href="{{fl.attachmentPath}}" target="_blank" download="{{fl.origionalName || fl.attachmentName}}">{{fl.origionalName || fl.attachmentName}}</a>
+    </div>
+    <div>
+        <button (click)="deleteMe()" type="button" icon="pi pi-times" pbutton=""
+            class="p-button p-component p-button-icon-only">
+            <span class="p-button-icon pi pi-times" aria-hidden="true"></span>
+            <span aria-hidden="true" class="p-button-label">&amp;nbsp;</span>
+        </button>
+    </div>
+</ng-container>

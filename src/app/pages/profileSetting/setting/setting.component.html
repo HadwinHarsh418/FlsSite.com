@@ -1,0 +1,93 @@
+<p-toast class="custom-toast"></p-toast>
+
+<div class="card">
+    <div class="card-body new-body">
+        <!-- <h5 class="card-title">Login Security</h5> -->
+        <div class="temp-div">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Enable 2FA</li>
+
+            </ol>
+            <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="Setting is {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                     <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                     <i class="fa fa fa-share" aria-hidden="true"></i>
+                    <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut" style=" color: white; margin-left: 5px; "
+                        aria-hidden="true"></i></button>
+            </p>
+        </div>
+
+        <br>
+        <div class="settings-notification">
+            <ul>
+                <li>
+                    <div class="notification-info">
+                        <p>Two Factor Auth</p>
+                        <span>
+                            <span [innerHTML]="this.currentUser.isTwoFactAuth == '0' ? 'Enable' : 'Disable'"></span> two factor authentication service
+                        </span>
+                    </div>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" id="GoogleAuth" [(ngModel)]="isGoogleAuthEnabled" class="custom-control-input" (change)="activate2Fa(isGoogleAuthEnabled)">
+                        <label class="custom-control-label" for="GoogleAuth"></label>
+                    </div>
+                </li>
+                <!-- <li class="settings-profile"
+                        *ngIf="!isGoogleAuthEnabled && this.currentUser.isTwoFactAuth == '0'">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div>
+                                    <label for="googlec">Google Auth Code</label> <br>
+                                    <input id="googlec" [disabled]="loadingSecurityData" trim [(ngModel)]="sixDigitCode"
+                                        type="text" class="form-control" (keyup)="changedSixdigit()"
+                                        placeholder="Enter 6-Digit Code">
+                                    <button [disabled]="loadingSecurityData || !sixDigitCode"
+                                        (click)="submitDisableGoogleAuth()" value="Disable" class="btn hover-bt"
+                                        type="submit">Disable</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-profile"
+                        *ngIf="isGoogleAuthEnabled && this.currentUser.isTwoFactAuth == '1' && googleauthData">
+                        <div class="form-row extr-form-row">
+                            <div class="col-md-44 text-center">
+                                <img class="qrImage google-auth" [src]="googleauthData.qrcode">
+                            </div>
+                            <div class="col-md-88 flx-center">
+                                <div class="set-the-flex">
+                                    <label for="googlec">Google Auth Code</label> <br>
+                                    <div class="under-fl-e">
+                                        <input id="googlec" [disabled]="loadingSecurityData" trim
+                                            [(ngModel)]="sixDigitCode" type="text" class="form-control"
+                                            (keyup)="changedSixdigit()" placeholder="Enter 6-Digit Code">
+                                        <button [disabled]="loadingSecurityData || !sixDigitCode"
+                                            (click)="submitEnableGoogleAuth()" class="btn hover-bt"
+                                            type="submit">Enable</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li> 
+                    <li class="settings-profile"
+                        *ngIf="!isGoogleAuthEnabled && this.currentUser.isTwoFactAuth == '0'">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div>
+                                    <label for="googlec">Google Auth Code</label> <br>
+                                    <input id="googlec" [disabled]="loadingSecurityData" trim [(ngModel)]="sixDigitCode"
+                                        type="text" class="form-control" (keyup)="changedSixdigit()"
+                                        placeholder="Enter 6-Digit Code">
+                                    <button [disabled]="loadingSecurityData || !sixDigitCode"
+                                        (click)="submitDisableGoogleAuth()" value="Disable" class="btn hover-bt"
+                                        type="submit">Disable</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>-->
+
+            </ul>
+        </div>
+    </div>
+</div>

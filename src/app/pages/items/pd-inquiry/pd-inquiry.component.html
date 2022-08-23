@@ -1,0 +1,384 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)" [routerLink]="['/']">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">PD Inquiry</li>
+
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'PD Inquiry'"></app-users-with-permissions>
+
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" class="custom-control-input" (change)="updateActionButtons()">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="PD Inquiry is {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <div class="table-responsive calender-class pr-table">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                        <p-table #dt [columns]="cols" [value]="PDInqueries" dataKey="id" [rowHover]="true" [rows]="50" [showCurrentPageReport]="true" [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'"  [loading]="loading" [paginator]="false"
+                            columnResizeMode="expand" [autoLayout]="true" [filterDelay]="500" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [resizableColumns]="true" [reorderableColumns]="true" [lazy]="true" [totalRecords]="totalRecords"
+                             (onLazyLoad)="getAllPDInqueries($event)" [globalFilterFields]="['mailSubject','customer']">
+                            <ng-template pTemplate="caption">
+                                <div class="table-header">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                    <span class="p-input">
+                                        <p-dropdown appendTo="body" [options]="statusOption" [style]="{'minWidth':'150px', 'width': '150px'}"
+                                            (onChange)="getAllPDInqueries()" [(ngModel)]="filterByStatus" placeholder="---Select Status---"
+                                            optionLabel="label" [showClear]="false"></p-dropdown>
+                                    </span>
+                                    <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                            filters'}}</label>
+                                    </span>
+                                    <div class="d-flex">
+                                        <div class="justify-content-center">
+                                            <button *ngIf="actions.canAdd" type="button" class="btn btn-primary  btn-icon-text" style="margin-right: 5px;" (click)="openNew()">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i> </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field" [class.col-desc]="col.field === 'description'" [pSortableColumnDisabled]="col.field === 'Action'" *ngIf="!col.hidden">
+                                            <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <ng-container *ngFor="let col of columns">
+                                    <col *ngIf="!col.hidden">
+                                </ng-container>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index" [class.p-completed]="rowData['status']==2">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td class="ui-resizable-column" *ngIf="!col.hidden">
+                                            <div [ngSwitch]="col.field">
+                                                <span *ngSwitchCase="'sentForApproval'">
+                                                    <div class="custom-control custom-switch new">
+                                                        <input type="checkbox" [disabled]="true"  id="GoogleAuth{{rowData.id}}"
+                                                            [(ngModel)]="rowData[col.field]"
+                                                            class="custom-control-input" >
+                                                        <label class="custom-control-label"
+                                                            for="GoogleAuth{{rowData.id}}"></label>
+                                                    </div>
+                                                </span>
+                                                <span *ngSwitchCase="'project'">
+                                                    <a *ngIf="rowData[col.field]" href="javascript:void(0);" (click)="viewProject(rowData)">{{ rowData[col.field] }}</a>
+                                                </span>
+                                                <span *ngSwitchDefault>
+                                                    {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                        (rowData[col.field] | currency:'USD') :
+                                                        rowData[col.field] | decimalNumber : col.field }}
+                                                </span>
+                                            </div>
+
+                                            <button pButton pRipple icon="pi pi-pencil" *ngIf="actions.canEdit && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-success p-mr-2" (click)="editProduct(rowData)"></button>
+                                            <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="8" style="text-align: center;">No inquiries found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '1000px'}" header="PD Inquiry" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Email Subject</label>
+                    <input type="text" pInputText id="mailSubject" [(ngModel)]="editableObject.mailSubject" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.mailSubject">Email Subject is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Customer</label>
+                    <input type="text" pInputText id="customer" [(ngModel)]="editableObject.customer" />
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.customer">Customer is required.</small> -->
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Project name and brief details </label>
+                    <input type="text" pInputText id="project" [(ngModel)]="editableObject.project" />
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.project">Project is required.</small> -->
+                </div>
+            </div>
+
+            <div class="col-lg-6 no-pd" *ngIf="!editableObject.id" style="margin: 2px;">
+                <div class="clp-calender">
+                    <label for="name" style="margin-top: 6px;">Need Response By</label>
+                    <p-calendar style="height: 33px !important" [(ngModel)]="editableObject.needDate" placeholder="Select Date" [showIcon]="true" inputId="icon3" appendTo="body"></p-calendar>
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.needDate">Response By is required.</small>
+                </div>
+
+            </div>
+            <div class="col-lg-6" *ngIf="!editableObject.id">
+                <label for="name">Item # </label>
+                <div class="p-field sp">
+                    <input type="text" pInputText id="itemNo" [(ngModel)]="editableObject.itemNo" required />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="name">Dimensions </label>
+                <div class="p-field sp">
+                    <input type="text" pInputText id="dimension" [(ngModel)]="editableObject.dimension" required />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="name">Weight</label>
+                <div class="p-field sp">
+                    <input type="text" pInputText id="weight" [(ngModel)]="editableObject.weight" required />
+                </div>
+            </div>
+            <div class="col-lg-6" *ngIf="editableObject.id">
+                <p class="test-pp sent-ap">Status</p>
+                <div class="p-field sp">
+                    <p-dropdown appendTo="body" [options]="assingablestatusOption" [style]="{'minWidth':'250px', 'width': '250px'}" [(ngModel)]="editableObject.statusNow" placeholder="---Select Status---" optionLabel="label" [showClear]="false"></p-dropdown>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="test-pp sent-ap">Notes</p>
+                <div class="p-field sp">
+                    <textarea pInputText id="notes" [(ngModel)]="editableObject.notes"></textarea>
+                    <!-- <small class="p-invalid" *ngIf="submitted && !editableObject.needDate">Notes is required.</small> -->
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="p-field">
+                    <p-fileUpload #fileInput name="files" [showUploadButton]="false" multiple="multiple" customUpload="true" maxFileSize="1000000" styleClass="have-drop">
+                        <ng-template pTemplate="content">
+                            <div class="drag-drop">
+                                <p><i class="ti ti-upload"></i> <br>Drag your files here.</p>
+                            </div>
+                            <ul class="editableDiv" *ngIf="editableObject.attachments && editableObject.attachments.length">
+                                <li class="sv-title">Saved Files</li>
+                                <li *ngFor="let fl of editableObject.attachments" class="w-100 d-flex mt-2 justify-content-around">
+                                    <div class="item-imgList">
+                                        <a href="{{fl.attachmentPath}}" target="_blank" download="{{fl.attachmentName}}">{{fl.attachmentName}}</a>
+                                        <!-- <img class="editImg" src="{{fl.attachmentPath}}" alt=""> -->
+                                    </div>
+                                    <!-- <div>{{fl.name}} </div> -->
+                                    <div><button (click)="deleteImg(fl)" type="button" icon="pi pi-times" pbutton="" class="p-button p-component p-button-icon-only"><span
+                                                class="p-button-icon pi pi-times" aria-hidden="true"></span><span
+                                                aria-hidden="true" class="p-button-label">&amp;nbsp;</span></button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </ng-template>
+                    </p-fileUpload>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="openProject" [style]="{width: '800px'}" header="Project Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-end">
+                    <button *ngIf="actions.canAdd" type="button" style="margin-top: 7px;" class="btn btn-primary  btn-icon-text" (click)="addTable()"><!--(click)="addNewProjectItem()"-->
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> 
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive calender-class mt-3">
+            <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper">
+                <p-table #dt [columns]="cols1" [value]="projectItems">
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <ng-container *ngFor="let col of columns">
+                                <th [class.comment-st]="col.field === 'weight'">
+                                    {{col.header}}
+                                </th>
+                            </ng-container>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="colgroup" let-columns>
+                        <ng-container *ngFor="let col of columns">
+                            <col *ngIf="!col.hidden">
+                        </ng-container>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                        <tr [pReorderableRow]="index">
+                            <ng-container *ngFor="let col of columns; let ls = last">
+                                <td class="padded-td ui-resizable-column" *ngIf="!col.hidden">
+
+                                    <div [ngSwitch]="col.field">
+                                        <span *ngSwitchCase="'itemNo'">
+                                            <input type="text" (keyup.enter)="addTable()"  pInputText class="styling-input"
+                                                [(ngModel)]="rowData[col.field]" />
+                                        </span>
+                                        <span *ngSwitchCase="'dimension'">
+                                            <input type="text" (keyup.enter)="addTable()"  inputDirective inptype="styling-input" pInputText class="styling-input"
+                                                [(ngModel)]="rowData[col.field]" />
+                                        </span>
+                                        <span *ngSwitchCase="'weight'" class="w-100 d-flex align-items-center ">
+                                            <input type="text" (keyup.enter)="addTable()"  pInputText class="styling-input"
+                                               [(ngModel)]="rowData[col.field]" />
+                                            <i class="fa fa-remove ml-2" (click)="deleteRow(rowData)"                        
+                                                aria-hidden="true"></i>
+                                        </span>
+                                        <span *ngSwitchDefault>
+                                            {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                (rowData[col.field] | currency:'USD') :
+                                                rowData[col.field] | decimalNumber : col.field }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="3" style="text-align: center; background-color:#f3f3f3;">No records found.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+
+            <div class="p-field">
+                <p-fileUpload #fileInput name="files" [showUploadButton]="true" [disabled]="uploadingAttachments" (uploadHandler)="attachmentUpload($event)" multiple="multiple" customUpload="true" maxFileSize="1000000" styleClass="have-drop">
+                    <ng-template pTemplate="content">
+                        <div class="drag-drop">
+                            <p><i class="ti ti-upload"></i> <br>Drag your files here.</p>
+                        </div>
+                        <ul class="editableDiv" *ngIf="projectAttachments && projectAttachments.length">
+                            <li class="sv-title">Saved Files</li>
+                            <li *ngFor="let fl of projectAttachments" class="w-100 d-flex mt-2 justify-content-around">
+                                <app-image-item [fl]="fl" (deleteImg)="deleteImg($event?.item, $event?.type)"></app-image-item>
+                            </li>
+                        </ul>
+                    </ng-template>
+                </p-fileUpload>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openAddEditProject" [style]="{width: '800px'}" header="Project Item" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">ITEM#</label>
+                    <input type="text" pInputText id="itemNo" [(ngModel)]="editableProjectItem.itemNo" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableProjectItem.itemNo">Item No. is required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">DIMENSIONS</label>
+                    <input type="text" pInputText id="dimension" [(ngModel)]="editableProjectItem.dimension" required />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">WEIGHT</label>
+                    <input type="text" pInputText id="weight" [(ngModel)]="editableProjectItem.weight" required />
+                </div>
+            </div>
+
+            <!-- <div class="col-lg-12">
+                <div class="p-field">
+                    <p-fileUpload #projectFileInput name="files" [showUploadButton]="false" multiple="multiple"
+                        customUpload="true" maxFileSize="1000000" styleClass="have-drop">
+                        <ng-template pTemplate="content">
+                            <div class="drag-drop">
+                                <p><i class="ti ti-upload"></i> <br>Drag your files here.</p>
+                            </div>
+                        </ng-template>
+                    </p-fileUpload>
+                </div>
+            </div> -->
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" [disabled]="loading" icon="pi pi-times" (click)="hideEditProject()" class="p-button-text"></button>
+        <button pButton pRipple label="Save" [disabled]="loading" icon="pi pi-save" (click)="saveProjectDetails()" class="p-button-text">
+            <i class="fa fa-spinner fa-spin" *ngIf="loading"></i>
+        </button>
+    </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

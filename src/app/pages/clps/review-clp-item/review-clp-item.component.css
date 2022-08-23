@@ -1,0 +1,12 @@
+.table-header input.p-inputtext.p-component {
+    height: 33px !important;
+    font-size: 12px !important;
+}
+
+.loadBtn {
+    /* padding: 34px 0px; */
+    height: 32px !important;
+    vertical-align: initial!important;
+    margin-left: 5px!important;
+    line-height: 22px;
+}

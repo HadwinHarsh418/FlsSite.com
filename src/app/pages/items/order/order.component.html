@@ -1,0 +1,665 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm ">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">CLP</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Sales Order
+                        </li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions
+                            *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')"
+                            [pageName]="'Sales'"></app-users-with-permissions>
+                    </div>
+                </div>
+
+                <p-toolbar class="full-1 ">
+                    <ng-template pTemplate="left">
+                        <div class=" mr">
+                            <select matNativeControl class="txt sel search-text" name="" [(ngModel)]="selectFilter">
+
+                                <option value="" class="txt">Contains</option>
+                                <option value="or" class="txt">Or</option>
+                                <option value="and" class="txt">And</option>
+                            </select>
+                        </div>
+                        <input type="text" pInputText class="search-text mr" placeholder="PO No"
+                            [(ngModel)]="searchPoNo" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder="Order No"
+                            [(ngModel)]="searchOrder" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder=" Cust Name"
+                            [(ngModel)]="searchCust" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder=" Cust No"
+                            [(ngModel)]="searchCustNo" (keyup.enter)="newSearch()" />
+                        <input type="text" pInputText class="search-text mr" placeholder=" Item No"
+                            [(ngModel)]="searchItemNo" (keyup.enter)="newSearch()" />
+
+                        <div class=" mr">
+                            <div class="custom_row">
+                                <label style="margin-left: 2px;
+                                margin-top: 6px;
+                                margin-right: 2px;
+                                color: #495057;
+                               ">Search date:</label>
+                                <select matNativeControl class="txt sel1 search-text" placeholder="select" name=""
+                                    [(ngModel)]="selectedDate">
+                                    <option value="" class="txt">--Select--</option>
+                                    <option value="orderDate" class="txt">Order Date</option>
+                                    <option value="shipDate" class="txt">Ship Date</option>
+                                    <option value="expShipDate" class="txt">Exp. Ship Date</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="clp-calender mr-3 ord"
+                            *ngIf="['orderDate','shipDate','expShipDate'].includes(selectedDate)">
+                            <div class="row cal-inp-row">
+                                <div class="col col-6">
+                                    <p-calendar type="text" onkeypress="handle(event)" placeholder="Start Date"
+                                        [showIcon]="true" inputId="icon2" appendTo="body" [(ngModel)]="startDate"
+                                        (onSelect)="newSearch()">
+                                    </p-calendar>
+                                </div>
+                                <div class="col col-6">
+                                    <p-calendar type="text" placeholder=" End Date" [showIcon]="true" inputId="icon2"
+                                        appendTo="body" [(ngModel)]="endDate" (onSelect)="newSearch()"></p-calendar>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button pButton type="button" label=" " class="p-button-success mr" (click)="newSearch()">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button pButton type="button" label=" " class="p-button-primary mr" (click)="clearNew()">
+                            <i class="fa fa-close" aria-hidden="true"></i>
+                        </button>
+                    </ng-template>
+
+
+                </p-toolbar>
+
+                <div class="table-responsive calender-class new-table-color ">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper  ">
+
+                        <p-table #dt [value]="cpls" [columns]="selectedColumns" dataKey="id" [rowHover]="true"
+                            [autoLayout]="true" [showCurrentPageReport]="true" [reorderableColumns]="true"
+                             [resizableColumns]="true"
+                            responsiveLayout="scroll" columnResizeMode="expand" [totalRecords]="totalRecords"
+                            [scrollable]="true" [scrollHeight]="'calc(100vh - 404px)'"
+                            styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers"
+                            [filterDelay]="500" (onColReorder)="saveReorderedColumns($event)"
+                            [paginator]="false" [lazy]="true" (onLazyLoad)="newSearch($event)"
+                            [loading]="loading"
+                             [rows]="50"
+                            [globalFilterFields]="['orderNo','orderDate','poNo','custNo','custName','expShipDate','loc','shipState']">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex table-header">
+                                    <div class="one-ooo">
+                                        <span class="p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input pInputText type="text" style="padding-left: 30px !important;"
+                                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                placeholder="Global Search" />
+                                        </span>
+                                        <!-- <span class="p-input-icon-left defaltCol">
+                                        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" appendTo="body"
+                                            optionLabel="header" selectedItemsLabel="{0} col selected"
+                                            (onChange)="onChange($event)" placeholder="Choose Columns"></p-multiSelect>
+                                    </span> -->
+
+                                        <span class="checkClass">
+                                            <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                            <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                                filters'}}</label>
+                                        </span>
+                                        <span class="checkClass">
+                                            <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                                (click)="openDefaultCol()">
+                                                <i class="fa fa-columns" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <app-export-buttons 
+                                (exportExcel)="getExcel('xlsx')"
+                                (exportCsv)="getExcel('csv')"
+                                (exportPdf)="getExcel('pdf')"
+                                [loadExlFile]="loadExlFile"
+                                [loadCsvFile]="loadCsvFile"
+                                [loadPdfFile]="loadPdfFile"
+                            ></app-export-buttons>
+                                    
+                                </div>
+
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <ng-container *ngFor="let col of columns">
+                                        <col *ngIf="col.isDisplay">
+                                    </ng-container>
+                                </colgroup>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <ng-container *ngFor="let col of columns">
+                                        <th pReorderableColumn pResizableColumn [pSortableColumn]="col.field"
+                                            [class.custNameCol]="col.field === 'custName'"
+                                            [class.custNoCol]="col.field === 'custNo'"
+                                            [class.poNoCol]="col.field === 'poNo'"
+                                            [class.expCol]="col.field === 'expShipDate'"
+                                            [class.orderNoCol]="col.field === 'orderNo'"
+                                            [class.shipCol]="col.field === 'shipState'"
+                                            [class.orderCol]="col.field === 'orderDate'" *ngIf="!col.hidden"
+                                            [pSortableColumnDisabled]="col.field === 'Action'"
+                                            [class.locCol]="col.field === 'loc'">
+                                            <p-columnFilter
+                                                *ngIf="col.field != 'Action' && col.field != 'status' &&  hide "
+                                                type="text" [field]="col.field" display="menu">
+                                            </p-columnFilter>
+                                            <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                            {{col.header}}
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index">
+                                    <ng-container *ngFor="let col of columns">
+                                        <td class="ui-resizable-column" *ngIf="!col.hidden"
+                                            [class.custNameCol]="col.field === 'custName'"
+                                            [class.custNoCol]="col.field === 'custNo'"
+                                            [class.poNoCol]="col.field === 'poNo'"
+                                            [class.expCol]="col.field === 'expShipDate'"
+                                            [class.orderNoCol]="col.field === 'orderNo'"
+                                            [class.shipCol]="col.field === 'shipState'"
+                                            [class.orderCol]="col.field === 'orderDate'"
+                                            [class.locCol]="col.field === 'loc'">
+
+                                            <div *ngIf="col.field === 'orderNo'; else ngElse_noPhotoUrl"
+                                                style=" cursor: pointer; " (click)="getmodeldata(rowData)">
+                                                <a href="javascript:void(0)">{{rowData[col.field]}}</a>
+                                                <!-- {{rowData[col.field]}} -->
+                                            </div>
+                                            <div [ngSwitch]="col.field">
+                                                <ng-template #ngElse_noPhotoUrl>
+                                                    {{ col.data ? (rowData[col.field] | date : col.format) :
+                                                    rowData[col.field] }}
+                                                </ng-template>
+                                            </div>
+
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-template>
+
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center; width: 100% !important;">
+                                        No items found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+    </div>
+</div>
+<p-dialog (onMaximize)="resetPosition()" #pDialog *ngIf="displayMaximizable"
+    header="Sales Order Details - Order Number-{{ product.orderNo }}" [(visible)]="displayMaximizable" [modal]="true"
+    [style]="{ width: '75vw'}" [resizable]="true" dismissableMask="true" blockScroll="false" [maximizable]="true">
+    <div class="row rowheight  ">
+        <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer  p-datatable-wrapper ">
+            <p-table #dt [value]="productdetail.data">
+                <ng-template pTemplate="caption">
+                    <div class="table-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span> ORDER NUMBER :</span>
+                                <span style="padding-left: 10px">{{product.orderNo }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span> ORDER DATE :</span>
+                                <span style="padding-left: 10px">{{product.orderDate | date: "MM/dd/yy" }}</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-md-6">
+                                <span> SOLD TO :</span><span style="padding-left: 5px">
+                                    {{ productdetail.bilName }}</span>
+                                <div class="row" style="font-weight: 400; margin: 0px 0px 1px -16px;">
+                                    <div class="col-12">{{ productdetail.bilAddr1 }}</div>
+                                    <div class="col-12">{{ productdetail.bilAddr2 }}</div>
+                                    <div class="col-12">{{ productdetail.bilAddr3 }}</div>
+
+
+                                    <div class="col-12">
+                                        <span>{{productdetail.bilCity}},</span>
+                                        <span style="padding-left: 5px;">{{productdetail.bilState}}</span>
+                                        <span style="padding-left: 5px;">{{productdetail.bilZip}}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <span>SHIP TO :</span>
+                                <span style="padding-left: 10px">{{
+                                    productdetail.shipName
+                                    }}</span>
+                                <div class="row" style="font-weight: 400; margin: 0px 0px 1px -16px;">
+                                    <div class="col-12">{{ productdetail.shipAddr1 }}</div>
+                                    <div class="col-12">{{ productdetail.shipAddr2 }}</div>
+                                    <div class="col-12">{{ productdetail.shipAddr3 }}</div>
+
+                                    <div class="col-12">
+                                        <span>{{productdetail.shipCity}},</span>
+                                        <span style="padding-left: 5px;">{{productdetail.shipState}}</span>
+                                        <span style="padding-left: 10px;">{{productdetail.shipZip}}</span>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </ng-template>
+
+            </p-table>
+        </div>
+
+
+        <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper mr2 restable ">
+            <table class="table new-tb table-bordered table-striped res_table">
+                <thead>
+                    <tr>
+
+                        <th>Customer #</th>
+
+
+                        <th>PO #</th>
+
+
+                        <th>Broker Name</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                        <td style="padding-left: 33px;">
+                            {{ productdetail.custNo }}
+                        </td>
+
+                        <td style="padding-left: 33px;">
+                            {{ productdetail.poNo }}
+                        </td>
+
+                        <td style="padding-left: 33px;">
+                            {{ productdetail.broker }}
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div id="example2_wrapper1"
+            class="dataTables_wrapper dt-bootstrap4 no-footer  p-datatable-wrapper new-table-color restable"
+            style="margin-bottom: 50px;">
+            <p-table #dt1 [value]="productdetail1" dataKey="id" [showCurrentPageReport]="true" [scrollable]="true"
+                [scrollHeight]="'calc(100vh - 500px)'"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [globalFilterFields]="['itemNo','itemDesc','qtyOrdered','qtyOpen','qtyShipped']"
+                styleClass="p-datatable-gridlines res_table" responsiveLayout="scroll"
+                (onLazyLoad)="getSalesOrderItems($event)">
+                <ng-template pTemplate="caption">
+                    <div class="p-d-flex table-header">
+                        <div class="one-ooo">
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" style="padding-left: 30px !important;"
+                                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="Global Search" />
+                            </span>
+                        </div>
+                        <div class="d-flex-1" style="margin-top: 3px">
+                            <button *ngIf="actions.canImportExl" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn" style="background: green;"
+                                (click)="getExcelPop2('xlsx')">
+                                <img src="assets/images/xl.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadExlFile"
+                                    style="color: white; margin-left: 5px" aria-hidden="true"></i>
+                            </button>
+                            <button *ngIf="actions.canImportCsv" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+                                style="background: #2196f3;position: relative;" (click)="getExcelPop2('csv')">
+                                <img src="assets/images/csv.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadCsvFile" aria-hidden="true"
+                                    style="color: white; margin-left: 5px"></i>
+                            </button>
+                            <button *ngIf="actions.canImportPSD" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+                                style="background: red;position: relative;" (click)="getExcelPop('pdf')">
+                                <img src="assets/images/pdf.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadPdfFile" aria-hidden="true"
+                                    style="color: white; margin-left: 5px"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </ng-template>
+                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style=" width: 39px !important;">
+                            Item #
+                        </th>
+                        <th style="width:140px !important">
+
+                            Description</th>
+                        <th style=" width: 20px !important;">
+                            Qty Ord</th>
+                        <th style=" width: 20px !important;">
+                            Qty Open</th>
+                        <th style=" width: 20px !important;">
+                            Qty Ship</th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+
+                        <td style=" width: 34px !important;">
+                            {{ item.itemNo }}
+                        </td>
+                        <td style="width:125px !important">
+                            {{ item.itemDesc }}
+                        </td>
+
+                        <td style=" width: 10px !important;">
+                            {{ item.qtyOrdered }}
+                        </td>
+                        <td style="width: 10px !important; ">{{item.qtyOpen}}
+                        </td>
+
+                        <td (click)="loadShipments(item)"
+                            style="color: #6259ca;width: 10px !important; padding-left: 8px !important;">
+                            <a class="under">{{ item.qtyShipped }}</a>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+    </div>
+</p-dialog>
+
+<!-- Shipped Items -->
+<p-dialog (onMaximize)="resetPosition()" #pDialog1 *ngIf="displayShipped"
+    header="Shipments - Order Number - {{ product.orderNo }}" [(visible)]="displayShipped" [modal]="true"
+    [style]="{ width: '75vw'}" [baseZIndex]="10000" [draggable]="true" [resizable]="false" dismissableMask="true"
+    [maximizable]="true">
+    <div class="row">
+        <div id="example2_wrapper"
+            class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper new-table-color"
+            style="margin-bottom: 50px;">
+            <p-table #dt1 [value]="shippedItems" [rows]="4" [scrollable]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [scrollHeight]="'calc(100vh - 204px)'" styleClass="p-datatable-gridlines" responsiveLayout="scroll">
+                <ng-template pTemplate="caption">
+
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Shipment #</th>
+                        <th>Invoice #</th>
+                        <th>Ship Date</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td (click)="loadShipmentDetails(item)" style="color: #6259ca">
+                            <a class="under"> {{ item.shipNo }}</a>
+                        </td>
+                        <td>
+                            {{ item.invoiceNo }}
+                        </td>
+
+                        <td>
+                            {{ item.shipDate | date: "MM/dd/yy" }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</p-dialog>
+
+<!-- Shipment Details -->
+<p-dialog (onMaximize)="resetPosition()" #pDialog2 *ngIf="displayShimentDetails"
+    header="Shipment Details - Shipment Number-{{ shipmentDetails.shipNo }}" [(visible)]="displayShimentDetails"
+    [modal]="true" [style]="{ width: '75vw'}" [baseZIndex]="10000" [draggable]="true" [resizable]="false"
+    [maximizable]="true" dismissableMask="true">
+    <div class="row rowheight">
+        <div id="example_wrapper"
+            class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper new-table-color">
+
+            <p-table #dt [value]="shipmentDetails.data">
+                <ng-template pTemplate="caption">
+                    <div class="table-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span> SHIPMENT NUMBER :</span>
+                                <span style="padding-left: 10px">{{shipmentDetails.shipNo }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span> SHIPMENT DATE :</span>
+                                <span style="padding-left: 10px">{{
+                                    shipmentDetails.shipDate | date: "MM/dd/yy" }}</span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-md-6">
+                                <span> SOLD TO :</span><span style="padding-left: 5px">
+                                    {{ productdetail.bilName }}</span>
+                                <div class="row" style="font-weight: 400; margin: 0px 0px 1px -16px;">
+                                    <div class="col-12">{{ productdetail.bilAddr1 }}</div>
+                                    <div class="col-12">{{ productdetail.bilAddr2 }}</div>
+                                    <div class="col-12">{{ productdetail.bilAddr3 }}</div>
+
+
+                                    <div class="col-12">
+                                        <span>{{productdetail.bilCity}},</span>
+                                        <span style="padding-left: 5px;">{{productdetail.bilState}}</span>
+                                        <span style="padding-left: 5px;">{{productdetail.bilZip}}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <span>SHIP TO :</span>
+                                <span style="padding-left: 10px">{{
+                                    productdetail.shipName
+                                    }}</span>
+                                <div class="row" style="font-weight: 400; margin: 0px 0px 1px -16px;">
+                                    <div class="col-12">{{ productdetail.shipAddr1 }}</div>
+                                    <div class="col-12">{{ productdetail.shipAddr2 }}</div>
+                                    <div class="col-12">{{ productdetail.shipAddr3 }}</div>
+
+                                    <div class="col-12">
+                                        <span>{{productdetail.shipCity}},</span>
+                                        <span style="padding-left: 5px;">{{productdetail.shipState}}</span>
+                                        <span style="padding-left: 10px;">{{productdetail.shipZip}}</span>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </ng-template>
+
+            </p-table>
+        </div>
+
+
+        <div id="example_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper mr2 restable">
+            <table class="table new-tb1 table-bordered table-striped res_table ">
+                <thead>
+                    <tr>
+                        <th>Order#</th>
+                        <th>PO#</th>
+                        <th>Ship Via</th>
+                        <th>Tracking </th>
+                        <th>Invoice #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-left: 33px;">
+                            {{ shipmentDetails.orderNo }}
+                        </td>
+
+                        <td style="padding-left: 33px;">
+                            {{ shipmentDetails.poNo }}
+                        </td>
+                        <td style="padding-left: 33px;">
+                            {{ shipmentDetails.shipVia }}
+                        </td>
+
+
+                        <td style="padding-left: 33px;">{{shipmentDetails.trackingNo}}</td>
+                        <td style="padding-left: 33px;">{{shipmentDetails.invoiceNo}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+
+        <div id="example2_wrapper1"
+            class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper new-table-color restable "
+            style="margin-bottom: 50px;">
+            <p-table #dt1 [value]="shipmentDetails1" dataKey="id" (onLazyLoad)="loadShipmentsDetailsItem($event)"
+                [showCurrentPageReport]="true" [scrollable]="true" [scrollHeight]="'calc(100vh - 500px)'"
+                [globalFilterFields]="['itemNo','itemDesc','qtyOrdered','qtyOpen','qtyShipped']"
+                styleClass="p-datatable-gridlines res_table" responsiveLayout="scroll">
+                <ng-template pTemplate="caption">
+                    <div class="p-d-flex table-header">
+                        <div class="one-ooo">
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" style="padding-left: 30px !important;"
+                                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="Global Search" />
+                            </span>
+                        </div>
+                        <div class="d-flex-1" style="margin-top: 3px">
+                            <button *ngIf="actions.canImportExl" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn" style="background: green;"
+                                (click)="getExcelPop5('xlsx')">
+                                <img src="assets/images/xl.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadExlFile"
+                                    style="color: white; margin-left: 5px" aria-hidden="true"></i>
+                            </button>
+                            <button *ngIf="actions.canImportCsv" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+                                style="background: #2196f3;position: relative;" (click)="getExcelPop5('csv')">
+                                <img src="assets/images/csv.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadCsvFile" aria-hidden="true"
+                                    style="color: white; margin-left: 5px"></i>
+                            </button>
+                            <button *ngIf="actions.canImportPSD" type="button"
+                                class="btn btn-white btn-icon-text my-2 mr-2 filesBtn"
+                                style="background: red;position: relative;" (click)="getExcelPop1('pdf')">
+                                <img src="assets/images/pdf.png" alt="" />
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadPdfFile" aria-hidden="true"
+                                    style="color: white; margin-left: 5px"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </ng-template>
+                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+
+
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style=" width: 44px !important;">Item #</th>
+                        <th style="width: 140px !important;">Description</th>
+
+                        <th style=" width: 30px !important;">Qty Ordered</th>
+                        <th style=" width: 30px !important;">Qty Ship</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td style=" width: 50px !important;">
+                            {{ item.itemNo }}
+                        </td>
+                        <td style="width: 162px !important;">
+                            {{ item.itemDesc }}
+                        </td>
+
+                        <td style=" width: 34px !important;">
+                            {{ item.qtyOrdered }}
+                        </td>
+
+                        <td style=" width: 33px !important;">{{ item.qtyShipped }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+
+</p-dialog>
+
+
+<p-dialog [(visible)]="defaultColumnsPop" [style]="{width: '1000px'}" header="Default Ordering" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div *ngFor="let cl of columnArr; let i = index" class="col-lg-3">
+                <div class="columnsHead">
+                    <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl.header}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDefaultDialog()" style=" color: #2196F3;"
+            class="p-button-text"></button>
+        <button pButton pRipple label="Set default order" icon="pi pi-check" *ngIf="!loadingDefaultCol"
+            [disabled]="!isShow" style=" color: #2196F3;" (click)=" saveDefault()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingDefaultCol"
+            style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

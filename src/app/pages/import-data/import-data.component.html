@@ -1,0 +1,78 @@
+<p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+        <!-- <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='item'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">Download sample file for
+            ITEMS
+            <i class="fa fa-spinner fa-spin" *ngIf="loadExlFile" style=" color: white; margin-left: 5px; "
+                aria-hidden="true"></i>
+        </button> -->
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()"
+            ngbTooltip="Download Item sample file " placement="right" *ngIf="type=='item'"></button>
+        <!-- <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='clp'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">
+
+
+        </button> -->
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()"
+            ngbTooltip="Download CLP sample file " placement="right" *ngIf="type=='clp'"></button>
+
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()" *ngIf="type=='fty'"
+            ngbTooltip="Download FTY sample file" placement="right">
+        </button>
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()"
+            *ngIf="type=='category'" ngbTooltip="Download Category sample file " placement="right">
+        </button>
+
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()" *ngIf="type=='sales'"
+            ngbTooltip="Download Sales sample file " placement="right">
+        </button>
+        <button pButton type="button" icon="pi pi-download" iconPos="left" (click)="downloadCsv()"
+            *ngIf="type=='ClpInfo'" ngbTooltip="Download CLP Info sample file " placement="right">
+        </button>
+
+        <!-- <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='fty'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">Download sample file FTY
+
+        </button>
+        <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='category'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">Download sample file Category
+        </button>
+
+        <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='sales'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">Download sample file Sales
+        </button>
+        <button class="btn btn-info" (click)="downloadCsv()" *ngIf="type=='ClpInfo'"
+            ngbTooltip="Please use file with .xlsx & .csv extension" placement="right">Download sample file Sales
+        </button> -->
+        <div class="p-field p-col-12 p-md-3" style="margin-left: 10px !important;">
+            <label for="state">Select sample file</label>
+            <p-dropdown inputId="state1" [options]="types" [(ngModel)]="selectedType" (onChange)="onChange($event)"
+                placeholder="Select type" optionLabel="type"></p-dropdown>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="right">
+        <input type="file" id="fileUpload" accept=".xlsx, .csv, .xls" (change)="fileChange($event)" #file>
+        <button pButton type="button" icon="pi pi-upload" ngbTooltip="Upload" iconPos="left" [disabled]="isLoading"
+            (click)="uploadFile()">
+            <i class="fa fa-spinner fa-spin" *ngIf="isLoading" aria-hidden="true"></i>
+        </button>
+    </ng-template>
+</p-toolbar>
+
+<!-- <p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog> -->

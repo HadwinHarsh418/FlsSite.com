@@ -1,0 +1,47 @@
+.p-field.sp {
+    display: flex;
+}
+
+.custom-switch.new {
+    margin: 0 0 15px 21px;
+}
+
+p.test-pp.sent-ap {
+    margin: 0;
+    margin-right: 27px;
+    padding-top: 7px;
+}
+
+.clp-calender button.p-button.p-component.p-button-icon-only {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 5px;
+    top: 9px;
+}
+
+.clp-calender span.p-calendar.p-calendar-w-btn {
+    position: relative;
+}
+
+.clp-calender span.p-calendar.p-calendar-w-btn {
+    display: block;
+}
+
+.fa-remove:before,
+.fa-close:before,
+.fa-times:before {
+    content: "\f00d";
+    line-height: 37px !important;
+}
+
+.table-responsive.calender-class.pr-table {
+    overflow: initial !important;
+}
+
+@media screen and (max-width: 767px) {
+    .table-responsive.calender-class.pr-table {
+        overflow: initial !important;
+    }
+}

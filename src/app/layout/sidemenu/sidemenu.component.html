@@ -1,0 +1,44 @@
+<!-- <div class="nav flex-column nav-pills settings-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical" >
+    <a class="nav-link" routerLinkActive="active" [routerLink]="['/dashboard']" [routerLinkActiveOptions]="{exact: true}" id="settings-profile-tab" role="tab"><i class="icon ion-md-person"></i>All items</a>
+    <a class="nav-link" routerLinkActive="active"id="settings-wallet-tab" [routerLink]="['/data-management']" role="tab"><i class="icon ion-md-wallet"></i> Data Management</a>
+    <a class="nav-link" routerLinkActive="active"id="settings-wallet-tab" [routerLink]="['/data-import']" role="tab"><i class="icon ion-md-wallet"></i> Data Import</a>
+    <a class="nav-link" routerLinkActive="active"id="settings-wallet-tab" [routerLink]="['/setting']" role="tab"><i class="icon ion-md-settings"></i> Setting</a>
+</div> -->
+
+
+<div class="main-sidebar main-sidebar-sticky side-menu ps ps--active-y">
+    <div class="sidemenu-logo">
+        <a class="main-logo" href="javascript.void(0)" [routerLink]="['/']">
+            <img src="assets/images/dextop-logo.png" class="header-brand-img desktop-logo" alt="logo">
+            <img src="assets/images/mobile-logo.png" class="header-brand-img icon-logo" alt="logo">
+        </a>
+    </div>
+    <div class="main-sidebar-body">
+        <ul class="nav">
+            <li *ngFor="let menu of allMenuItems">
+                <a class="nav-link  with-sub" (click)="collapseMenu()" *ngIf="!menu.noSubmenu && menu.canViewMainMenu" href="javascript:void(0)">
+                    <span class="shape1"></span><span class="shape2"></span>
+                    <i class="{{menu.icon}}"></i>
+                    <span class="sidemenu-label">{{menu.label}}</span>
+                    <i class="angle fe fe-chevron-right"></i>
+                </a>
+                <a class="nav-link  with-sub" (click)="collapseMenu()" *ngIf="menu.noSubmenu && menu.canViewMainMenu" href="javascript:void(0)" routerLinkActive="active" routerLink="{{menu.item.path}}" [routerLinkActiveOptions]="{exact: true}">
+                    <span class="shape1"></span><span class="shape2"></span>
+                    <i class="{{menu.item.icon}}"></i>
+                    <span class="sidemenu-label">{{menu.item.title}}</span>
+                    <i class="angle fe fe-chevron-right"></i>
+                </a>
+                <div class="dropdown-content-1" *ngIf="!menu.noSubmenu">
+                    <div *ngFor="let submen of menu.subMenus">
+                        <a href="javascript:void(0)" (click)="collapseMenu()" routerLink="{{submen.path}}" *ngIf="submen.canView">
+                            <i *ngIf="!submen.pngIcon" class="{{submen.icon}}"></i>
+                            <img *ngIf="submen.pngIcon" src="/assets/assets/img/icon/{{submen.pngIcon}}" alt="">
+                            <span style=" margin-left: 6px; ">{{submen.title}}</span>
+
+                        </a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,610 @@
+<p-toast class="custom-toast"></p-toast>
+<div class="row row-sm">
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-body new-body">
+                <!-- <h5 class="card-title">CLP</h5> -->
+                <div class="temp-div">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Container Load Plan</li>
+                    </ol>
+                    <div class="flex-upload">
+                        <app-users-with-permissions *ngIf="user.roleArray.includes('SuperAdmin') || user.roleArray.includes('Admin')" [pageName]="'clp'"></app-users-with-permissions>
+                        <p class="test-pp" *ngIf="actions.canDelete || actions.canEdit">{{actionBtn ? 'Hide' : 'Show'}} Action buttons</p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canDelete || actions.canEdit">
+                            <input type="checkbox" id="hideAction" [(ngModel)]="actionBtn" (change)="updateActionButtons()" class="custom-control-input">
+                            <label class="custom-control-label" for="hideAction"></label>
+                        </div>
+                        <p class="test-pp" *ngIf="actions.canUpload">{{hideUploadSec ? 'Hide' : 'Show'}} Upload section
+                        </p>
+                        <div class="custom-control custom-switch" *ngIf="actions.canUpload">
+                            <input type="checkbox" id="GoogleAuth" [(ngModel)]="hideUploadSec" class="custom-control-input">
+                            <label class="custom-control-label" for="GoogleAuth"></label>
+                        </div>
+                        <p class="breadcrumb-item active breadBtn addshortcut" aria-current="page" ngbTooltip="ClP's are {{stCode > 0 ? 'already' : 'not'}}  added to the shortcuts" placement="left">
+                            <button class="shortcutButton {{stCode > 0 ? 'shortAdded' : 'shortNtAdded'}}" [disabled]="stCode > 0" (click)="addToshortcut()">
+                                <!-- {{stCode > 0 ? 'Added' : 'Add'}} to -->
+                                <i class="fa fa fa-share" aria-hidden="true"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="loadingShortCut"
+                                    style=" color: white; margin-left: 5px; " aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <app-import-data *ngIf="hideUploadSec" [type]="'clp'" (result)="handler($event)"></app-import-data>
+
+                <p-toolbar class="full-1 ">
+                    <ng-template pTemplate="left">
+                        <input type="text" pInputText class="search-text" placeholder="Search Item No." [(ngModel)]="searchItemNo" (keyup)="search('itemNo')" />
+                        <input type="text" pInputText class="search-text" placeholder="Search PO" style=" margin-left: 1%;" [(ngModel)]="searchPo" (keyup)="search('po')" />
+                        <input type="text" pInputText class="search-text" placeholder="Search Ship Id" style=" margin-left: 1%;" [(ngModel)]="searchShpTid" (keyup)="search('shipId')" />
+                    </ng-template>
+                    <!-- <ng-template pTemplate="right">
+                        <div class="d-flex">
+
+                        </div>
+                    </ng-template> -->
+                </p-toolbar>
+
+                <div class="table-responsive calender-class">
+                    <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer p-datatable-wrapper ">
+                        <p-table #dt [value]="cpls" [columns]="selectedColumns" dataKey="id" [rowHover]="true" [showCurrentPageReport]="true"  [reorderableColumns]="true" [resizableColumns]="true" columnResizeMode="expand" [totalRecords]="totalRecords"
+                            [scrollable]="true" [scrollHeight]="'calc(100vh - 204px)'" [autoLayout]="true" styleClass="p-datatable-customers p-datatable-gridlines p-datatable-customers" [filterDelay]="500" (onColReorder)="saveReorderedColumns($event)" [paginator]="false"
+                            [lazy]="true" (onLazyLoad)="loadCustomers($event)" [loading]="loading"  [globalFilterFields]="['itemNo','po','vdCode','um','itemDesc','prd','shipId','notes','qty','gwCtn','gw','fty','etd','cntrNo','cbmCtn','cost','extCost','cbm']">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex table-header">
+                                    <div class="one-ooo">
+                                        <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" style="padding-left: 30px !important;"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+                                        <span class="p-input-icon-left defaltCol">
+                                        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" appendTo="body"
+                                            optionLabel="header" selectedItemsLabel="{0} col selected"
+                                            (onChange)="onChange($event)" placeholder="Choose Columns"></p-multiSelect>
+                                    </span>
+                                        <span class="checkClass">
+                                        <p-checkbox [(ngModel)]="hide" binary="true" inputId="binary"></p-checkbox>
+                                        <label for="binary" class="checkBoxlb">{{!hide ? 'Show filters' :'Hide
+                                            filters'}}</label>
+                                    </span>
+
+                                        <span class="checkClass">
+                                        <button type="button" class="btn btn-primary my-2 btn-icon-text"
+                                            (click)="openDefaultCol()">
+                                            <i class="fa fa-columns" aria-hidden="true"></i></button>
+                                    </span>
+                                    </div>
+                                    
+                                    <div class="d-flex-1 dflx-Itmcentr" >
+                                        <app-export-buttons
+                                            (exportExcel)="getExcel('xls')"
+                                            (exportCsv)="getExcel('CSV')"
+                                            [loadExlFile]="loadExlFile"
+                                            [loadCsvFile]="loadCsvFile"
+                                            [toShowButtons]="['xlsx','csv']"
+                                            [excelPermission]="actions.canImportExl"
+                                            [csvPermission]="actions.canImportCsv"
+                                            [btnClass]="'clps-export'"
+                                        ></app-export-buttons>
+
+
+                                        <button *ngIf="actions.canAdd" type="button" class="btn btn-primary my-2 btn-icon-text" (click)="openNew()">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i> </button>
+
+
+                                        <button style="margin-left: 7px;" type="button" class="btn btn-primary my-2 btn-icon-text" (click)="saveAllClp()" [disabled]="btnDisabled">
+                                                <i class="fa fa-floppy-o" aria-hidden="true"></i> Save all
+                                                <i class="fa fa-spinner fa-spin" *ngIf="btnDisabled" aria-hidden="true"
+                                                    style=" color: white; margin-left: 5px; "></i></button>
+
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <col *ngFor="let col of columns">
+                                </colgroup>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns" pResizableColumn pReorderableColumn [pSortableColumn]="col.field" [pSortableColumnDisabled]="col.field === 'Action'">
+                                        <p-columnFilter *ngIf="col.field != 'Action' && hide" type="text" [field]="col.field" display="menu">
+                                        </p-columnFilter>
+                                        <p-sortIcon *ngIf="col.field != 'Action'" [field]="col.field"></p-sortIcon>
+                                        {{col.header}}
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                                <tr [pReorderableRow]="index" [ngClass]="rowData.isSplit ? 'blue' : ''">
+                                    <!-- <tr [pReorderableRow]="index" [ngClass]="rowData.isParent ? '' : 'blue'"> -->
+                                    <td *ngFor="let col of columns" class="ui-resizable-column">
+                                        <div [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'poLine'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'shipId'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'loc'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'bk'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'cCost'">
+                                                <input type="number" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'cont'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'shipVia'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'notes'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'terminal'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+                                            <span *ngSwitchCase="'consignee'">
+                                                <input type="text" pInputText class="split-class"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                            </span>
+
+                                            <span *ngSwitchCase="'erd'">
+                                                <p-calendar [(ngModel)]="rowData[col.field]" appendTo="body"
+                                                    [showIcon]="true" inputId="erd{{index}} {{rowData[col.field]}}">
+                                                </p-calendar>
+                                            </span>
+                                            <span *ngSwitchCase="'rrd'">
+                                                <p-calendar [(ngModel)]="rowData[col.field]" appendTo="body"
+                                                    [showIcon]="true" inputId="rrd{{index}} {{rowData[col.field]}}">
+                                                </p-calendar>
+                                            </span>
+                                            <span *ngSwitchCase="'etd'">
+                                                <p-calendar [(ngModel)]="rowData[col.field]" appendTo="body"
+                                                    [showIcon]="true" inputId="etd{{index}} {{rowData[col.field]}}">
+                                                </p-calendar>
+                                            </span>
+                                            <span *ngSwitchCase="'eta'">
+                                                <p-calendar [(ngModel)]="rowData[col.field]" appendTo="body"
+                                                    [showIcon]="true" inputId="eta{{index}}{{rowData[col.field]}}">
+                                                </p-calendar>
+                                            </span>
+                                            <span *ngSwitchCase="'splitQty'">
+                                                <input [type]="col.field == 'splitQty' ? 'number' : 'text'" pInputText
+                                                    class="split-class" (change)="splitQty(rowData,col.field)"
+                                                    [(ngModel)]="rowData[col.field]" />
+                                                <i class="fa fa-remove" (click)="deleteRow(rowData)"
+                                                    *ngIf="!rowData.id && col.field == 'splitQty'"
+                                                    aria-hidden="true"></i>
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{ col.data ? (rowData[col.field] | date : col.format) : col.currency ?
+                                                (rowData[col.field] | currency:'USD') :
+                                                rowData[col.field] | decimalNumber : col.field }}
+                                            </span>
+                                        </div>
+                                        <!-- <ng-template #ngElse_noPhotoUrl>
+                                            {{ col.data ? (rowData[col.field] | date : col.format) : rowData[col.field] }}
+                                            {{rowData[col.field]}}
+                                        </ng-template> -->
+
+                                        <button pButton pRipple icon="pi pi-trash" *ngIf="actions.canDelete && col.field === 'Action' && actionBtn" class="p-button-rounded p-button-warning" (click)="deleteProduct(rowData)"></button>
+
+
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="footer" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns">
+                                        <span *ngIf="col.field == 'extCost'"><b>{{totalAmount |
+                                                currency:'USD'}}</b></span>
+                                        <span *ngIf="col.field == 'cbm'"><b>{{totalCbm | number : '1.2-2'}}</b></span>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td [attr.colspan]="colLength" style="text-align: center;">No clps found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<app-pagination [totalPages]="paging.totalPages" [totalElements]="paging.totalElements" [rowOnPage]="Limit" (pageChanged)="pageChanged($event)" (pageSizeChanged)="pageSizeChanged($event)"></app-pagination>
+
+<p-dialog [(visible)]="clpsDialogue" [style]="{width: '1000px'}" header="CLP Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Item no</label>
+                    <input type="text" pInputText id="itemNo" [(ngModel)]="editableObject.itemNo" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.itemNo">Item no. is required.</small>
+
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Fty</label>
+                    <input type="text" pInputText id="fty" [(ngModel)]="editableObject.fty" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.fty">Code is
+                        required.</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Shpt id</label>
+                    <input type="text" pInputText id="shptId" [(ngModel)]="editableObject.shipId" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">PO</label>
+                    <input type="text" pInputText id="po" [(ngModel)]="editableObject.po" required />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.po">PO is required.</small>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">ETD</label>
+                    <p-calendar [(ngModel)]="editableObject.etd" [showIcon]="true" inputId="icon2" appendTo="body">
+                    </p-calendar>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CNTR No</label>
+                    <input type="number" pInputText id="cntrNo" [(ngModel)]="editableObject.cntrNo" (keypress)="validateDec($event)" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">GW</label>
+                    <input type="number" pInputText id="gw" [(ngModel)]="editableObject.gw" (keypress)="validateDec($event)" />
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CBM</label>
+                    <input type="number" pInputText id="cbm" [(ngModel)]="editableObject.cbm"
+                        (keypress)="validateDec($event)" />
+                </div>
+            </div> -->
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">GQCTN</label>
+                    <input type="number" pInputText id="gwCtn" [(ngModel)]="editableObject.gwCtn" (keypress)="validateDec($event)" />
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Ext  Cost</label>
+                    <input type="number" pInputText id="amount" [(ngModel)]="editableObject.extCost"
+                        (keypress)="validateDec($event)" />
+                </div>
+            </div> -->
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CBMCTN</label>
+                    <input type="number" pInputText id="cbmCtn" [(ngModel)]="editableObject.cbmCtn" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">COST</label>
+                    <input type="number" pInputText id="price" [(ngModel)]="editableObject.cost" (keypress)="validateDec($event)" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">QTY</label>
+                    <input type="number" pInputText id="qty" [(ngModel)]="editableObject.qty" />
+                    <small class="p-invalid" *ngIf="submitted && !editableObject.qty">Qty is required.</small>
+
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Split qty</label>
+                    <input type="number" pInputText id="splitQty" [(ngModel)]="editableObject.splitQty"
+                        (keypress)="validateDec($event)" />
+                </div>
+            </div> -->
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">PO Line</label>
+                    <input type="text" pInputText id="poLine" [(ngModel)]="editableObject.poLine" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Ship via</label>
+                    <input type="text" pInputText id="shipVia" [(ngModel)]="editableObject.shipVia" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">LOC</label>
+                    <input type="text" pInputText id="loc" [(ngModel)]="editableObject.loc" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CLP</label>
+                    <input type="text" pInputText id="clp" [(ngModel)]="editableObject.clp" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Notes</label>
+                    <input type="text" pInputText id="notes" [(ngModel)]="editableObject.notes" />
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Web Id</label>
+                    <input type="number" pInputText id="webId" [(ngModel)]="editableObject.webId"
+                        (keypress)="validateDec($event)" />
+                </div>
+            </div> -->
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Org Po qty</label>
+                    <input type="number" pInputText id="orgPoQty" [(ngModel)]="editableObject.orgPoQty"
+                        (keypress)="validateDec($event)" />
+                </div>
+            </div> -->
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Bk</label>
+                    <input type="text" pInputText id="bk" [(ngModel)]="editableObject.bk" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">C COST</label>
+                    <input type="number" pInputText id="cCost" [(ngModel)]="editableObject.cCost" (keypress)="validateDec($event)" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CHGBK</label>
+                    <input type="text" pInputText id="chgbk" [(ngModel)]="editableObject.chgbk" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Consignee</label>
+                    <input type="text" pInputText id="consignee" [(ngModel)]="editableObject.consignee" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CONT</label>
+                    <input type="text" pInputText id="cont" [(ngModel)]="editableObject.cont" />
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">CUBE</label>
+                    <input type="number" pInputText id="cube" [(ngModel)]="editableObject.cube" />
+                </div>
+            </div> -->
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">DO</label>
+                    <input type="text" pInputText id="do" [(ngModel)]="editableObject.do" />
+                </div>
+            </div>
+
+            <!-- 
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">EXT Cube</label>
+                    <input type="number" pInputText id="extCube" [(ngModel)]="editableObject.extCube" />
+                </div>
+            </div> -->
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">FDA Desc</label>
+                    <input type="text" pInputText id="fdaDesc" [(ngModel)]="editableObject.fdaDesc" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">GRI</label>
+                    <input type="text" pInputText id="gri" [(ngModel)]="editableObject.gri" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">HTS Code</label>
+                    <input type="text" pInputText id="htsCode" [(ngModel)]="editableObject.htsCode" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">HTS Value</label>
+                    <input type="number" pInputText id="htsValue" [(ngModel)]="editableObject.htsValue" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">L</label>
+                    <input type="number" pInputText id="l" [(ngModel)]="editableObject.l" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">H</label>
+                    <input type="text" pInputText id="h" [(ngModel)]="editableObject.h" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">W</label>
+                    <input type="number" pInputText id="w" [(ngModel)]="editableObject.w" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">LB</label>
+                    <input type="number" pInputText id="lb" [(ngModel)]="editableObject.lb" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">logo</label>
+                    <input type="text" pInputText id="logo" [(ngModel)]="editableObject.logo" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">pcscs</label>
+                    <input type="text" pInputText id="pcscs" [(ngModel)]="editableObject.pcscs" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Tariff Value</label>
+                    <input type="number" pInputText id="tariffCode" [(ngModel)]="editableObject.tariffCode" />
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">Terminal</label>
+                    <input type="text" pInputText id="terminal" [(ngModel)]="editableObject.terminal" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">USC</label>
+                    <input type="text" pInputText id="usc" [(ngModel)]="editableObject.usc" />
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">ETA</label>
+                    <p-calendar [(ngModel)]="editableObject.eta" [showIcon]="true" inputId="icon"></p-calendar>
+                </div>
+            </div>
+
+
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">RRD</label>
+                    <p-calendar [(ngModel)]="editableObject.rrd" [showIcon]="true" inputId="iconRrd"></p-calendar>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">ERD</label>
+                    <p-calendar [(ngModel)]="editableObject.erd" [showIcon]="true" inputId="icon1"></p-calendar>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-field">
+                    <label for="name">PO Date</label>
+                    <p-calendar [(ngModel)]="editableObject.poDate" [showIcon]="true" inputId="icon3"></p-calendar>
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="{{btnText}}" icon="pi pi-check" *ngIf="!itemLoading" (click)=" saveProduct()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="itemLoading" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="defaultColumnsPop" [style]="{width: '1000px'}" header="Default Ordering" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div *ngFor="let cl of columnArr; let i = index" class="col-lg-3">
+                <div class="columnsHead">
+                    <span style=" font-weight: 800; ">{{i+1}}.</span> {{cl.header}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hideDefaultDialog()" class="p-button-text"></button>
+        <button pButton pRipple label="Set default order" icon="pi pi-check" *ngIf="!loadingDefaultCol" (click)=" saveDefault()" class="p-button-text"></button>
+        <i class="fa fa-spinner fa-spin" *ngIf="loadingDefaultCol" style="color: #2196F3;font-weight: 900;vertical-align: super;" aria-hidden="true"></i>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="openExtraCol" [style]="{width: '500px'}" header="Data Import Warning" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="warning-cols"></div>
+            </div>
+            <div class="responseTxt">
+                <div>Total numbers of rows : {{uploadStatus.totalRows}}</div>
+                <div class="responseInserted">Total number of rows inserted : {{uploadStatus.rowsInserted}}</div>
+                <div class="responseNot">Total number of rows not inserted : {{uploadStatus.rowsNotInserted}}</div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" (click)="hidewarningDialog()" class="p-button-text"></button>
+
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
